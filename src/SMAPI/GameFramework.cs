@@ -1,12 +1,15 @@
+using System;
+
 namespace StardewModdingAPI
 {
     /// <summary>The game framework running the game.</summary>
     public enum GameFramework
     {
-        /// <summary>The XNA Framework on Windows.</summary>
+        /// <summary>The XNA Framework, previously used on Windows.</summary>
+        [Obsolete("Stardew Valley no longer uses XNA Framework on any supported platform.")]
         Xna,
 
-        /// <summary>The MonoGame framework, usually on non-Windows platforms.</summary>
+        /// <summary>The MonoGame framework.</summary>
         MonoGame
     }
 }

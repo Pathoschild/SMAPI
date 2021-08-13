@@ -19,9 +19,7 @@ namespace StardewModdingAPI.Mods.ErrorHandler.Patches
         public override void Apply(Harmony harmony, IMonitor monitor)
         {
             harmony.Patch(
-                original: Constants.GameFramework == GameFramework.Xna
-                    ? this.RequireMethod<SpriteBatch>("InternalDraw")
-                    : this.RequireMethod<SpriteBatch>("CheckValid", new[] { typeof(Texture2D) }),
+                original: this.RequireMethod<SpriteBatch>("CheckValid", new[] { typeof(Texture2D) }),
                 postfix: this.GetHarmonyMethod(nameof(SpriteBatchPatcher.After_CheckValid))
             );
         }
@@ -30,13 +28,8 @@ namespace StardewModdingAPI.Mods.ErrorHandler.Patches
         /*********
         ** Private methods
         *********/
-#if SMAPI_FOR_XNA
-        /// <summary>The method to call after <see cref="SpriteBatch.InternalDraw"/>.</summary>
-        /// <param name="texture">The texture to validate.</param>
-#else
         /// <summary>The method to call after <see cref="SpriteBatch.CheckValid"/>.</summary>
         /// <param name="texture">The texture to validate.</param>
-#endif
         private static void After_CheckValid(Texture2D texture)
         {
             if (texture?.IsDisposed == true)
