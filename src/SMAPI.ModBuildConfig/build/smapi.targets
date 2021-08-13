@@ -56,9 +56,6 @@
 
     <!-- Harmony -->
     <Reference Include="0Harmony" Condition="'$(EnableHarmony)' == 'true'" HintPath="$(GamePath)\smapi-internal\0Harmony.dll" Private="$(CopyModReferencesToBuildOutput)" />
-
-    <!-- Windows only -->
-    <Reference Include="Netcode" HintPath="$(GamePath)\Netcode.dll" Private="$(CopyModReferencesToBuildOutput)" Condition="'$(OS)' == 'Windows_NT'" />
   </ItemGroup>
 
 

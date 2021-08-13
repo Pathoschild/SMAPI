@@ -235,12 +235,8 @@ namespace StardewModdingAPI
             // The game assembly can have one of three names depending how the mod was compiled:
             //   - 'StardewValley': assembly name on Linux/macOS;
             //   - 'Stardew Valley': assembly name on Windows;
-            //   - 'Netcode': an assembly that's separate on Windows only.
-            resolver.AddWithExplicitNames(AssemblyDefinition.ReadAssembly(typeof(Game1).Assembly.Location), "StardewValley", "Stardew Valley"
-#if !SMAPI_FOR_WINDOWS
-                , "Netcode"
-#endif
-            );
+            //   - 'Netcode': an assembly that was separate on Windows only before Stardew Valley 1.5.5.
+            resolver.AddWithExplicitNames(AssemblyDefinition.ReadAssembly(typeof(Game1).Assembly.Location), "StardewValley", "Stardew Valley", "Netcode");
         }
 
         /// <summary>Get metadata for mapping assemblies to the current platform.</summary>

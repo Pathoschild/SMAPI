@@ -20,11 +20,6 @@
     <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="False" />
   </ItemGroup>
 
-  <!-- Windows only -->
-  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <Reference Include="Netcode" HintPath="$(GamePath)\Netcode.dll" Private="False" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Update="i18n\*.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="manifest.json" CopyToOutputDirectory="PreserveNewest" />
