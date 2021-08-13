@@ -56,10 +56,7 @@ namespace StardewModdingAPI.Toolkit.Framework.GameScanning
         {
             return
                 dir.Exists
-                && (
-                    dir.EnumerateFiles("StardewValley.exe").Any()
-                    || dir.EnumerateFiles("Stardew Valley.exe").Any()
-                );
+                && dir.EnumerateFiles("Stardew Valley.dll").Any();
         }
 
 

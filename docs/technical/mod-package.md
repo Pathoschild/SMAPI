@@ -366,6 +366,7 @@ when you compile it.
 
 ## Release notes
 ## Upcoming release
+* Updated for Stardew Valley 1.5.5 and SMAPI 3.13.0. **The older versions are no longer supported.**
 * Improved analyzer performance by enabling parallel execution.
 
 ## 3.3.0

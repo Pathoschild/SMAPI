@@ -290,7 +290,7 @@ namespace StardewModdingAPI.Framework.Logging
         /// <param name="customSettings">The custom SMAPI settings.</param>
         public void LogIntro(string modsPath, IDictionary<string, object> customSettings)
         {
-            // log platform & patches
+            // log platform
             this.Monitor.Log($"SMAPI {Constants.ApiVersion} with Stardew Valley {Constants.GameVersion} on {EnvironmentUtility.GetFriendlyPlatformName(Constants.Platform)}", LogLevel.Info);
 
             // log basic info

@@ -14,7 +14,7 @@
       <OutRootPath>$(SolutionDir)\..\bin</OutRootPath>
 
       <SmapiBin>$(BuildRootPath)\SMAPI\bin\$(Configuration)</SmapiBin>
-      <ToolkitBin>$(BuildRootPath)\SMAPI.Toolkit\bin\$(Configuration)\net4.5</ToolkitBin>
+      <ToolkitBin>$(BuildRootPath)\SMAPI.Toolkit\bin\$(Configuration)\net5.0</ToolkitBin>
       <ConsoleCommandsBin>$(BuildRootPath)\SMAPI.Mods.ConsoleCommands\bin\$(Configuration)</ConsoleCommandsBin>
       <ErrorHandlerBin>$(BuildRootPath)\SMAPI.Mods.ErrorHandler\bin\$(Configuration)</ErrorHandlerBin>
       <SaveBackupBin>$(BuildRootPath)\SMAPI.Mods.SaveBackup\bin\$(Configuration)</SaveBackupBin>
@@ -35,12 +35,17 @@
     <Copy SourceFiles="$(TargetDir)\assets\unix-install.sh" DestinationFiles="$(PackagePath)\install on Linux.sh" />
     <Copy SourceFiles="$(TargetDir)\assets\unix-install.sh" DestinationFiles="$(PackagePath)\install on macOS.command" />
     <Copy SourceFiles="$(TargetDir)\assets\windows-install.bat" DestinationFiles="$(PackagePath)\install on Windows.bat" />
-    <Copy SourceFiles="$(TargetDir)\assets\README.txt" DestinationFiles="$(PackagePath)\README.txt" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFiles="$(PackagePath)\internal\$(PlatformName)-install.exe" />
-    <Copy Condition="$(PlatformName) == 'windows'" SourceFiles="$(TargetDir)\assets\windows-exe-config.xml" DestinationFiles="$(PackagePath)\internal\$(PlatformName)-install.exe.config" />
+    <Copy SourceFiles="$(TargetDir)\assets\README.txt" DestinationFolder="$(PackagePath)" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(PackagePath)\internal" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFiles="$(PackagePath)\internal\$(PlatformName)-install.exe" Condition="$(PlatformName) == 'windows'" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName)" DestinationFiles="$(PackagePath)\internal\$(PlatformName)-install" Condition="$(PlatformName) != 'windows'" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).runtimeconfig.json" DestinationFolder="$(PackagePath)\internal" />
+    <Copy SourceFiles="$(TargetDir)\assets\windows-exe-config.xml" DestinationFiles="$(PackagePath)\internal\$(PlatformName)-install.exe.config" Condition="$(PlatformName) == 'windows'" />
 
     <!--copy bundle files-->
-    <Copy SourceFiles="$(SmapiBin)\StardewModdingAPI.exe" DestinationFolder="$(PackagePath)\bundle" />
+    <Copy SourceFiles="$(SmapiBin)\StardewModdingAPI.dll" DestinationFolder="$(PackagePath)\bundle" />
+    <Copy SourceFiles="$(SmapiBin)\StardewModdingAPI.exe" DestinationFolder="$(PackagePath)\bundle" Condition="$(PlatformName) == 'windows'" />
+    <Copy SourceFiles="$(SmapiBin)\StardewModdingAPI" DestinationFolder="$(PackagePath)\bundle" Condition="$(PlatformName) != 'windows'" />
     <Copy SourceFiles="$(SmapiBin)\StardewModdingAPI.pdb" DestinationFolder="$(PackagePath)\bundle" />
     <Copy SourceFiles="$(SmapiBin)\StardewModdingAPI.xml" DestinationFolder="$(PackagePath)\bundle" />
     <Copy SourceFiles="$(SmapiBin)\steam_appid.txt" DestinationFolder="$(PackagePath)\bundle" />
@@ -61,10 +66,15 @@
     <Copy SourceFiles="$(ToolkitBin)\SMAPI.Toolkit.CoreInterfaces.pdb" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
     <Copy SourceFiles="$(ToolkitBin)\SMAPI.Toolkit.CoreInterfaces.xml" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
     <Copy SourceFiles="@(TranslationFiles)" DestinationFolder="$(PackagePath)\bundle\smapi-internal\i18n" />
-    <Copy Condition="$(PlatformName) == 'unix'" SourceFiles="$(TargetDir)\assets\unix-launcher.sh" DestinationFiles="$(PackagePath)\bundle\StardewModdingAPI" />
-    <Copy Condition="$(PlatformName) == 'unix'" SourceFiles="$(SmapiBin)\System.Numerics.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
+    <Copy Condition="$(PlatformName) == 'unix'" SourceFiles="$(TargetDir)\assets\unix-launcher.sh" DestinationFolder="$(PackagePath)\bundle" />
     <Copy Condition="$(PlatformName) == 'unix'" SourceFiles="$(SmapiBin)\System.Runtime.Caching.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
     <Copy Condition="$(PlatformName) == 'windows'" SourceFiles="$(TargetDir)\assets\windows-exe-config.xml" DestinationFiles="$(PackagePath)\bundle\StardewModdingAPI.exe.config" />
+
+    <!-- copy .NET dependencies -->
+    <Copy SourceFiles="$(SmapiBin)\System.Configuration.ConfigurationManager.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
+    <Copy SourceFiles="$(SmapiBin)\System.Management.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" Condition="$(PlatformName) == 'windows'" />
+    <Copy SourceFiles="$(SmapiBin)\System.Runtime.Caching.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
+    <Copy SourceFiles="$(SmapiBin)\System.Security.Permissions.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
 
     <!--copy bundled mods-->
     <Copy SourceFiles="$(ConsoleCommandsBin)\ConsoleCommands.dll" DestinationFolder="$(PackagePath)\bundle\Mods\ConsoleCommands" />
@@ -78,63 +88,33 @@
     <Copy SourceFiles="$(SaveBackupBin)\SaveBackup.pdb" DestinationFolder="$(PackagePath)\bundle\Mods\SaveBackup" />
     <Copy SourceFiles="$(SaveBackupBin)\manifest.json" DestinationFolder="$(PackagePath)\bundle\Mods\SaveBackup" />
 
-    <!-- fix errors on Linux/macOS (sample: https://smapi.io/log/mMdFUpgB) -->
-    <Copy Condition="$(PlatformName) == 'unix'" SourceFiles="$(TargetDir)\assets\System.Numerics.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
-    <Copy Condition="$(PlatformName) == 'unix'" SourceFiles="$(TargetDir)\assets\System.Runtime.Caching.dll" DestinationFolder="$(PackagePath)\bundle\smapi-internal" />
-
     <!-- fix Linux/macOS permissions -->
-    <Exec Condition="$(PlatformName) == 'unix'" Command="chmod 755 &quot;$(PackagePath)\install on Linux.sh&quot;" />
-    <Exec Condition="$(PlatformName) == 'unix'" Command="chmod 755 &quot;$(PackagePath)\install on macOS.command&quot;" />
+    <Exec Condition="$(PlatformName) == 'unix'" Command="chmod 755 &quot;$(PackagePath)/install on Linux.sh&quot;" />
+    <Exec Condition="$(PlatformName) == 'unix'" Command="chmod 755 &quot;$(PackagePath)/install on macOS.command&quot;" />
+    <Exec Condition="$(PlatformName) == 'unix'" Command="chmod 755 &quot;$(PackagePath)/bundle/unix-launcher.sh&quot;" />
 
     <!-- finalise 'for developers' installer -->
     <ItemGroup>
       <PackageFiles Include="$(PackagePath)\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(PackageDevPath)\%(RecursiveDir)" />
-    <ZipDirectory FromDirPath="$(PackageDevPath)\bundle" ToFilePath="$(PackageDevPath)\internal\$(PlatformName)-install.dat" />
+    <ZipDirectory SourceDirectory="$(PackageDevPath)\bundle" DestinationFile="$(PackageDevPath)\internal\$(PlatformName)-install.dat" />
     <RemoveDir Directories="$(PackageDevPath)\bundle" />
 
     <!-- finalise normal installer -->
     <ReplaceFileText FilePath="$(PackagePath)\bundle\smapi-internal\config.json" Search="&quot;DeveloperMode&quot;: true" Replace="&quot;DeveloperMode&quot;: false" />
-    <ZipDirectory FromDirPath="$(PackagePath)\bundle" ToFilePath="$(PackagePath)\internal\$(PlatformName)-install.dat" />
+    <ZipDirectory SourceDirectory="$(PackagePath)\bundle" DestinationFile="$(PackagePath)\internal\$(PlatformName)-install.dat" />
     <RemoveDir Directories="$(PackagePath)\bundle" />
   </Target>
 
-  <!-- Create a zip file with the contents of a given folder path. Derived from https://stackoverflow.com/a/38127938/262123. -->
-  <UsingTask TaskName="ZipDirectory" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
-    <ParameterGroup>
-      <FromDirPath ParameterType="System.String" Required="true" />
-      <ToFilePath ParameterType="System.String" Required="true" />
-    </ParameterGroup>
-    <Task>
-      <Reference Include="System.IO.Compression.FileSystem" />
-      <Using Namespace="System.IO.Compression" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-        try
-        {
-          ZipFile.CreateFromDirectory(FromDirPath, ToFilePath);
-          return true;
-        }
-        catch(Exception ex)
-        {
-          Log.LogErrorFromException(ex);
-          return false;
-        }
-        ]]>
-      </Code>
-    </Task>
-  </UsingTask>
-
   <!-- Replace text in a file based on a regex pattern. Derived from https://stackoverflow.com/a/22571621/262123. -->
-  <UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+  <UsingTask TaskName="ReplaceFileText" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <FilePath ParameterType="System.String" Required="true" />
       <Search ParameterType="System.String" Required="true" />
       <Replace ParameterType="System.String" Required="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Core" />
       <Using Namespace="System" />
       <Using Namespace="System.IO" />
       <Using Namespace="System.Text.RegularExpressions" />

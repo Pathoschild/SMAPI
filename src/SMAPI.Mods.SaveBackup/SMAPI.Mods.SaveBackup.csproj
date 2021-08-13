@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>SaveBackup</AssemblyName>
     <RootNamespace>StardewModdingAPI.Mods.SaveBackup</RootNamespace>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).exe" Private="False" />
+    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).dll" Private="False" />
   </ItemGroup>
 
   <ItemGroup>

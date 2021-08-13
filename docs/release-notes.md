@@ -3,6 +3,23 @@
 # Release notes
 ## Upcoming release
 * For players:
+  * Updated for Stardew Valley 1.5.5.
+
+* For mod authors:
+  * Migrated to 64-bit MonoGame and .NET 5 on all platforms (see [migration guide for mod authors](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5.5)).
+
+**Update note for players with older systems:**  
+The game now has two branches: the _main branch_ which you'll get by default, and an optional
+_compatibility branch_ for [older systems](https://www.stardewvalley.net/compatibility/). The two
+branches have identical content, but use [different technologies](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5.5#Stardew_Valley_compatibility_branch).
+
+Unfortunately **SMAPI only supports the main branch of the game**. There are formidable difficulties
+across all mods in supporting all three variations, the [Steam hardware stats](https://store.steampowered.com/hwsurvey)
+show that 99.69% of players have 64-bit, and 32-bit imposes significant restrictions on what mods
+can do.
+
+## Upcoming release
+* For players:
   * Fixed crash loading mods with corrupted translation files.
 
 * For mod authors:

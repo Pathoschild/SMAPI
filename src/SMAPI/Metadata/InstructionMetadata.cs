@@ -48,7 +48,7 @@ namespace StardewModdingAPI.Metadata
                 // rewrite for Stardew Valley 1.5.5
                 if (platformChanged)
                     yield return new MethodParentRewriter(typeof(SpriteBatch), typeof(SpriteBatchFacade));
-                //yield return new ArchitectureAssemblyRewriter();
+                yield return new ArchitectureAssemblyRewriter();
 
                 // detect Harmony & rewrite for SMAPI 3.12 (Harmony 1.x => 2.0 update)
                 yield return new HarmonyRewriter();
