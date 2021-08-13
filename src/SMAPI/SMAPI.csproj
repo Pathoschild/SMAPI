@@ -38,11 +38,6 @@
     <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="False" />
   </ItemGroup>
 
-  <!-- Windows only -->
-  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <Reference Include="Netcode" HintPath="$(GamePath)\Netcode.dll" Private="False" Condition="!$(DefineConstants.Contains(SMAPI_FOR_WINDOWS_64BIT_HACK))" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SMAPI.Toolkit.CoreInterfaces\SMAPI.Toolkit.CoreInterfaces.csproj" />
     <ProjectReference Include="..\SMAPI.Toolkit\SMAPI.Toolkit.csproj" />
