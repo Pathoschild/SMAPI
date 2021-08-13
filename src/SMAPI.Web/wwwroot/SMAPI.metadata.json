@@ -168,6 +168,15 @@
         },
 
         /*********
+        ** Broke in SDV 1.5.5
+        *********/
+        "Skip Intro": {
+            "ID": "Pathoschild.SkipIntro",
+            "~1.9.1 | Status": "AssumeBroken",
+            "~1.9.1 | StatusReasonDetails": "causes freeze during game launch"
+        },
+
+        /*********
         ** Broke in SMAPI 3.12.0
         *********/
         "PlatoTK": {

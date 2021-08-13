@@ -5,6 +5,8 @@
 * For players:
   * Updated for Stardew Valley 1.5.5.
   * Dropped support for [unofficial 64-bit Stardew Valley](https://stardewvalleywiki.com/Modding:Migrate_to_64-bit_on_Windows) (since the game is now officially 64-bit).
+  * Updated compatibility list.
+
 * For mod authors:
   * Migrated to 64-bit MonoGame and .NET 5 on all platforms (see [migration guide for mod authors](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5.5)).
 
