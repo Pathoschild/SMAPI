@@ -44,11 +44,6 @@
 
   <!-- set game metadata -->
   <PropertyGroup>
-    <!--standard executable name-->
     <GameExecutableName>Stardew Valley</GameExecutableName>
-    <GameExecutableName Condition="$(OS) != 'Windows_NT'">StardewValley</GameExecutableName>
-
-    <!--Linux install on Windows (for 64-bit hack)-->
-    <GameExecutableName Condition="$(OS) == 'Windows_NT' AND !Exists('$(GamePath)\$(GameExecutableName).exe') AND Exists('$(GamePath)\StardewValley.exe')">StardewValley</GameExecutableName>
   </PropertyGroup>
 </Project>
