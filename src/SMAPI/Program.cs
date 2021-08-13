@@ -25,7 +25,7 @@ namespace StardewModdingAPI
         /// <param name="args">The command-line arguments.</param>
         public static void Main(string[] args)
         {
-            Console.Title = $"SMAPI {EarlyConstants.RawApiVersion} - {Console.Title}";
+            Console.Title = $"SMAPI {EarlyConstants.RawApiVersion}";
 
             try
             {
