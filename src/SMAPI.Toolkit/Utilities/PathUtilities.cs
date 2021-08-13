@@ -27,7 +27,7 @@ namespace StardewModdingAPI.Toolkit.Utilities
         public static readonly char PreferredPathSeparator = Path.DirectorySeparatorChar;
 
         /// <summary>The preferred directory separator character in an asset key.</summary>
-        public static readonly char PreferredAssetSeparator = PathUtilities.PreferredPathSeparator;
+        public static readonly char PreferredAssetSeparator = '/';
 
 
         /*********
