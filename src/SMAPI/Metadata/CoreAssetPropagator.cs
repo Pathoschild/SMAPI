@@ -224,13 +224,8 @@ namespace StardewModdingAPI.Metadata
                 ** Buildings
                 ****/
                 case "buildings\\houses": // Farm
-                    {
-                        var field = reflection.GetField<Texture2D>(typeof(Farm), nameof(Farm.houseTextures));
-                        field.SetValue(
-                            this.LoadAndDisposeIfNeeded(field.GetValue(), key)
-                        );
-                        return true;
-                    }
+                    Farm.houseTextures = this.LoadAndDisposeIfNeeded(Farm.houseTextures, key);
+                    return true;
 
                 case "buildings\\houses_paintmask": // Farm
                     {
