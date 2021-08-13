@@ -26,7 +26,7 @@ namespace StardewModdingAPI
         /// <param name="args">The command-line arguments.</param>
         public static void Main(string[] args)
         {
-            Console.Title = $"SMAPI {EarlyConstants.RawApiVersion}{(EarlyConstants.IsWindows64BitHack ? " 64-bit" : "")} - {Console.Title}";
+            Console.Title = $"SMAPI {EarlyConstants.RawApiVersion} - {Console.Title}";
 
             try
             {
@@ -114,14 +114,9 @@ namespace StardewModdingAPI
                 Program.PrintErrorAndExit($"Oops! You're running Stardew Valley {Constants.GameVersion}, but this version of SMAPI is only compatible up to Stardew Valley {Constants.MaximumGameVersion}. Please check for a newer version of SMAPI: https://smapi.io.");
 
             // bitness
-            bool is64BitGame = LowLevelEnvironmentUtility.Is64BitAssembly(Path.Combine(EarlyConstants.ExecutionPath, $"{EarlyConstants.GameAssemblyName}.exe"));
-#if SMAPI_FOR_WINDOWS_64BIT_HACK
+            bool is64BitGame = LowLevelEnvironmentUtility.Is64BitAssembly(Path.Combine(EarlyConstants.ExecutionPath, $"{EarlyConstants.GameAssemblyName}.dll"));
             if (!is64BitGame)
-                Program.PrintErrorAndExit("Oops! This is the 64-bit version of SMAPI, but you have the 32-bit version of Stardew Valley. You can reinstall SMAPI using its installer to automatically install the correct version of SMAPI.");
-#elif SMAPI_FOR_WINDOWS
-            if (is64BitGame)
-                Program.PrintErrorAndExit("Oops! This is the 32-bit version of SMAPI, but you have the 64-bit version of Stardew Valley. You can reinstall SMAPI using its installer to automatically install the correct version of SMAPI.");
-#endif
+                Program.PrintErrorAndExit("Sorry! SMAPI is only compatible with the 64-bit version of Stardew Valley.");
         }
 
         /// <summary>Assert that the versions of all SMAPI components are correct.</summary>

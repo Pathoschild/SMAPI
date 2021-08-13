@@ -57,7 +57,6 @@ SMAPI uses a small number of conditional compilation constants, which you can se
 flag | purpose
 ---- | -------
 `SMAPI_FOR_WINDOWS` | Whether SMAPI is being compiled for Windows; if not set, the code assumes Linux/macOS. Set automatically in `common.targets`.
-`SMAPI_FOR_WINDOWS_64BIT_HACK` | Whether SMAPI is being [compiled for Windows with a 64-bit Linux version of the game](https://github.com/Pathoschild/SMAPI/issues/767). This is highly specialized and shouldn't be used in most cases. False by default.
 
 ## For SMAPI developers
 ### Compiling from source

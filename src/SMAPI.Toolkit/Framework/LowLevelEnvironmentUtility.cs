@@ -80,15 +80,6 @@ namespace StardewModdingAPI.Toolkit.Framework
             return name;
         }
 
-        /// <summary>Get the name of the Stardew Valley executable.</summary>
-        /// <param name="platform">The current platform.</param>
-        public static string GetExecutableName(string platform)
-        {
-            return platform == nameof(Platform.Windows)
-                ? "Stardew Valley.exe"
-                : "StardewValley.exe";
-        }
-
         /// <summary>Get whether an executable is 64-bit.</summary>
         /// <param name="path">The absolute path to the assembly file.</param>
         public static bool Is64BitAssembly(string path)

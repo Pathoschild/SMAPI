@@ -3,35 +3,35 @@
     <AssemblyName>StardewModdingAPI</AssemblyName>
     <RootNamespace>StardewModdingAPI</RootNamespace>
     <Description>The modding API for Stardew Valley.</Description>
-    <TargetFramework>net45</TargetFramework>
-    <PlatformTarget>x86</PlatformTarget>
+    <TargetFramework>net5.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
     <OutputType>Exe</OutputType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <LargeAddressAware Condition="'$(OS)' == 'Windows_NT'">true</LargeAddressAware>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+
+    <!--copy dependency DLLs to bin folder so we can include them in installer bundle -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <Import Project="..\..\build\common.targets" />
-
-  <PropertyGroup Condition="$(DefineConstants.Contains(SMAPI_FOR_WINDOWS_64BIT_HACK))">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="LargeAddressAware" Version="1.0.5" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
     <PackageReference Include="MonoMod.Common" Version="21.6.21.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Platonymous.TMXTile" Version="1.5.8" />
+    <PackageReference Include="Platonymous.TMXTile" Version="1.5.9" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="..\..\build\0Harmony.dll" Private="True" />
-    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).exe" Private="False" />
+    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).dll" Private="False" />
     <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="False" />
     <Reference Include="System.Numerics" Private="True" />
-    <Reference Include="System.Runtime.Caching" Private="True" />
     <Reference Include="GalaxyCSharp" HintPath="$(GamePath)\GalaxyCSharp.dll" Private="False" />
     <Reference Include="Lidgren.Network" HintPath="$(GamePath)\Lidgren.Network.dll" Private="False" />
     <Reference Include="MonoGame.Framework" HintPath="$(GamePath)\MonoGame.Framework.dll" Private="False" />

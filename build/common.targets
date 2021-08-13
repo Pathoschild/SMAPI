@@ -6,13 +6,8 @@
     <LangVersion>latest</LangVersion>
     <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
 
-    <!--uncomment for 64-bit Stardew Valley on Windows-->
-    <!--<GamePath>D:\dev\SDV 64-bit\6125897</GamePath>
-    <DefineConstants>$(DefineConstants);SMAPI_FOR_WINDOWS_64BIT_HACK</DefineConstants>-->
-
     <!--set platform-->
     <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);SMAPI_FOR_WINDOWS</DefineConstants>
-    <DefineConstants Condition="$(OS) == 'Windows_NT' AND !$(DefineConstants.Contains(SMAPI_FOR_WINDOWS_64BIT_HACK))">$(DefineConstants);SMAPI_FOR_XNA</DefineConstants>
   </PropertyGroup>
 
   <!--find game folder-->
@@ -32,20 +27,31 @@
       <TranslationFiles Include="$(TargetDir)\i18n\*.json" />
     </ItemGroup>
 
-    <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFolder="$(GamePath)" />
+    <!-- SMAPI -->
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(GamePath)" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFolder="$(GamePath)" Condition="$(OS) == 'Windows_NT'" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName)" DestinationFolder="$(GamePath)" Condition="$(OS) != 'Windows_NT'" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).pdb" DestinationFolder="$(GamePath)" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).xml" DestinationFolder="$(GamePath)" />
     <Copy SourceFiles="$(TargetDir)\SMAPI.config.json" DestinationFiles="$(GamePath)\smapi-internal\config.json" />
     <Copy SourceFiles="$(TargetDir)\SMAPI.metadata.json" DestinationFiles="$(GamePath)\smapi-internal\metadata.json" />
+    <Copy SourceFiles="$(TargetDir)\Newtonsoft.Json.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\TMXTile.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="@(TranslationFiles)" DestinationFolder="$(GamePath)\smapi-internal\i18n" />
+
+    <!-- Harmony + dependencies -->
     <Copy SourceFiles="$(TargetDir)\0Harmony.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\0Harmony.xml" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\Mono.Cecil.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\Mono.Cecil.Mdb.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\Mono.Cecil.Pdb.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\MonoMod.Common.dll" DestinationFolder="$(GamePath)\smapi-internal" />
-    <Copy SourceFiles="$(TargetDir)\Newtonsoft.Json.dll" DestinationFolder="$(GamePath)\smapi-internal" />
-    <Copy SourceFiles="$(TargetDir)\TMXTile.dll" DestinationFolder="$(GamePath)\smapi-internal" />
-    <Copy SourceFiles="@(TranslationFiles)" DestinationFolder="$(GamePath)\smapi-internal\i18n" />
+
+    <!-- .NET dependencies -->
+    <Copy SourceFiles="$(TargetDir)\System.Configuration.ConfigurationManager.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\System.Management.dll" DestinationFolder="$(GamePath)\smapi-internal" Condition="$(OS) == 'Windows_NT'" />
+    <Copy SourceFiles="$(TargetDir)\System.Runtime.Caching.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\System.Security.Permissions.dll" DestinationFolder="$(GamePath)\smapi-internal" />
   </Target>
 
   <Target Name="CopyDefaultMods" Condition="'$(MSBuildProjectName)' == 'SMAPI.Mods.ConsoleCommands' OR '$(MSBuildProjectName)' == 'SMAPI.Mods.ErrorHandler' OR '$(MSBuildProjectName)' == 'SMAPI.Mods.SaveBackup'">
@@ -59,13 +65,13 @@
     <Copy SourceFiles="@(TranslationFiles)" DestinationFolder="$(GamePath)\Mods\$(AssemblyName)\i18n" />
   </Target>
 
-  <Target Name="CopyToolkit" Condition="'$(MSBuildProjectName)' == 'SMAPI.Toolkit' AND $(TargetFramework) == 'net4.5'" AfterTargets="PostBuildEvent">
+  <Target Name="CopyToolkit" Condition="'$(MSBuildProjectName)' == 'SMAPI.Toolkit'" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).pdb" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).xml" DestinationFolder="$(GamePath)\smapi-internal" />
   </Target>
 
-  <Target Name="CopyToolkitCoreInterfaces" Condition="'$(MSBuildProjectName)' == 'SMAPI.Toolkit.CoreInterfaces' AND $(TargetFramework) == 'net4.5'" AfterTargets="PostBuildEvent">
+  <Target Name="CopyToolkitCoreInterfaces" Condition="'$(MSBuildProjectName)' == 'SMAPI.Toolkit.CoreInterfaces'" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).pdb" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).xml" DestinationFolder="$(GamePath)\smapi-internal" />

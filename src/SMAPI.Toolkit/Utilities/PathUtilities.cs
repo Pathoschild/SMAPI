@@ -41,8 +41,16 @@ namespace StardewModdingAPI.Toolkit.Utilities
                 : path.Split(PathUtilities.PossiblePathSeparators, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        /// <summary>Normalize separators in a file path.</summary>
+        /// <summary>Normalize an asset name to match how MonoGame's content APIs would normalize and cache it.</summary>
+        /// <param name="assetName">The asset name to normalize.</param>
+        public static string NormalizeAssetName(string assetName)
+        {
+            return string.Join(PathUtilities.PreferredPathSeparator.ToString(), PathUtilities.GetSegments(assetName)); // based on MonoGame's ContentManager.Load<T> logic
+        }
+
+        /// <summary>Normalize separators in a file path for the current platform.</summary>
         /// <param name="path">The file path to normalize.</param>
+        /// <remarks>This should only be used for file paths. For asset names, use <see cref="NormalizeAssetName"/> instead.</remarks>
         [Pure]
         public static string NormalizePath(string path)
         {
@@ -77,14 +85,18 @@ namespace StardewModdingAPI.Toolkit.Utilities
         /// <summary>Get a directory or file path relative to a given source path. If no relative path is possible (e.g. the paths are on different drives), an absolute path is returned.</summary>
         /// <param name="sourceDir">The source folder path.</param>
         /// <param name="targetPath">The target folder or file path.</param>
-        /// <remarks>
-        ///
-        /// NOTE: this is a heuristic implementation that works in the cases SMAPI needs it for, but it doesn't handle all edge cases (e.g. case-sensitivity on Linux, or traversing between UNC paths on Windows). This should be replaced with the more comprehensive <c>Path.GetRelativePath</c> if the game ever migrates to .NET Core.
-        ///
-        /// </remarks>
         [Pure]
         public static string GetRelativePath(string sourceDir, string targetPath)
         {
+#if NET5_0
+            return Path.GetRelativePath(sourceDir, targetPath);
+#else
+            // NOTE:
+            // this is a heuristic implementation that works in the cases SMAPI needs it for, but it
+            // doesn't handle all edge cases (e.g. case-sensitivity on Linux, or traversing between
+            // UNC paths on Windows). SMAPI and mods will use the more robust .NET 5 version anyway
+            // though, this is only for compatibility with the mod build package.
+
             // convert to URIs
             Uri from = new Uri(sourceDir.TrimEnd(PathUtilities.PossiblePathSeparators) + "/");
             Uri to = new Uri(targetPath.TrimEnd(PathUtilities.PossiblePathSeparators) + "/");
@@ -112,6 +124,7 @@ namespace StardewModdingAPI.Toolkit.Utilities
             }
 
             return relative;
+#endif
         }
 
         /// <summary>Get whether a path is relative and doesn't try to climb out of its containing folder (e.g. doesn't contain <c>../</c>).</summary>

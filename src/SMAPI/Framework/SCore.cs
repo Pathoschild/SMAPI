@@ -428,7 +428,7 @@ namespace StardewModdingAPI.Framework
             Game1.mapDisplayDevice = new SDisplayDevice(Game1.content, Game1.game1.GraphicsDevice);
 
             // log GPU info
-#if SMAPI_FOR_WINDOWS && !SMAPI_FOR_WINDOWS_64BIT_HACK
+#if SMAPI_FOR_WINDOWS
             this.Monitor.Log($"Running on GPU: {Game1.game1.GraphicsDevice?.Adapter?.Description ?? "<unknown>"}");
 #endif
         }
@@ -1254,7 +1254,7 @@ namespace StardewModdingAPI.Framework
         /// <summary>Set the titles for the game and console windows.</summary>
         private void UpdateWindowTitles()
         {
-            string smapiVersion = $"{Constants.ApiVersion}{(EarlyConstants.IsWindows64BitHack ? " [64-bit]" : "")}";
+            string smapiVersion = $"{Constants.ApiVersion}";
 
             string consoleTitle = $"SMAPI {smapiVersion} - running Stardew Valley {Constants.GameVersion}";
             string gameTitle = $"Stardew Valley {Constants.GameVersion} - running SMAPI {smapiVersion}";
@@ -1330,9 +1330,6 @@ namespace StardewModdingAPI.Framework
             {
                 // create client
                 string url = this.Settings.WebApiBaseUrl;
-#if !SMAPI_FOR_WINDOWS
-                url = url.Replace("https://", "http://"); // workaround for OpenSSL issues with the game's bundled Mono on Linux/macOS
-#endif
                 WebApiClient client = new WebApiClient(url, Constants.ApiVersion);
                 this.Monitor.Log("Checking for updates...");
 
@@ -1724,10 +1721,8 @@ namespace StardewModdingAPI.Framework
                 catch (Exception ex)
                 {
                     errorReasonPhrase = "its DLL couldn't be loaded.";
-#if SMAPI_FOR_WINDOWS_64BIT_HACK
                     if (!EnvironmentUtility.Is64BitAssembly(assemblyPath))
                         errorReasonPhrase = "it needs to be updated for 64-bit mode.";
-#endif
                     errorDetails = $"Error: {ex.GetLogSummary()}";
                     failReason = ModFailReason.LoadFailed;
                     return false;

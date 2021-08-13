@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>ErrorHandler</AssemblyName>
     <RootNamespace>StardewModdingAPI.Mods.ErrorHandler</RootNamespace>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).exe" Private="False" />
+    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).dll" Private="False" />
     <Reference Include="MonoGame.Framework" HintPath="$(GamePath)\MonoGame.Framework.dll" Private="False" />
     <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="False" />
     <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="False" />

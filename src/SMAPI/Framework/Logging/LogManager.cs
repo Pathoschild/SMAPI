@@ -419,12 +419,6 @@ namespace StardewModdingAPI.Framework.Logging
         /// <summary>Get human-readable labels to log for detected SMAPI and Stardew Valley customizations.</summary>
         private IEnumerable<string> GetPatchLabels()
         {
-            // custom game framework
-            if (EarlyConstants.IsWindows64BitHack)
-                yield return $"running 64-bit SMAPI with {Constants.GameFramework}";
-            else if ((Constants.GameFramework == GameFramework.Xna) != (Constants.Platform == Platform.Windows))
-                yield return $"running {Constants.GameFramework}";
-
             // patched by Stardew64Installer
             if (Constants.IsPatchedByStardew64Installer(out ISemanticVersion patchedByVersion))
                 yield return $"patched by Stardew64Installer {patchedByVersion}";
