@@ -17,9 +17,6 @@ namespace StardewModdingAPI.Framework.Content
         /// <summary>The underlying asset cache.</summary>
         private readonly IDictionary<string, object> Cache;
 
-        /// <summary>Applies platform-specific asset key normalization so it's consistent with the underlying cache.</summary>
-        private readonly Func<string, string> NormalizeAssetNameForPlatform;
-
 
         /*********
         ** Accessors
@@ -47,11 +44,7 @@ namespace StardewModdingAPI.Framework.Content
         /// <param name="reflection">Simplifies access to private game code.</param>
         public ContentCache(LocalizedContentManager contentManager, Reflector reflection)
         {
-            // init
             this.Cache = reflection.GetField<Dictionary<string, object>>(contentManager, "loadedAssets").GetValue();
-
-            // get key normalization logic
-            this.NormalizeAssetNameForPlatform = PathUtilities.NormalizePath; //this.NormalizeAssetNameForPlatform = key => key.Replace('\\', '/'); // based on MonoGame's ContentManager.Load<T> logic
         }
 
         /****
@@ -68,23 +61,24 @@ namespace StardewModdingAPI.Framework.Content
         /****
         ** Normalize
         ****/
-        /// <summary>Normalize path separators in a file path. For asset keys, see <see cref="NormalizeKey"/> instead.</summary>
+        /// <summary>Normalize path separators in an asset name.</summary>
         /// <param name="path">The file path to normalize.</param>
         [Pure]
         public string NormalizePathSeparators(string path)
         {
-            return PathUtilities.NormalizePath(path);
+            return PathUtilities.NormalizeAssetName(path);
         }
 
         /// <summary>Normalize a cache key so it's consistent with the underlying cache.</summary>
         /// <param name="key">The asset key.</param>
+        /// <remarks>This is equivalent to <see cref="NormalizePathSeparators"/> with added file extension logic.</remarks>
         [Pure]
         public string NormalizeKey(string key)
         {
             key = this.NormalizePathSeparators(key);
             return key.EndsWith(".xnb", StringComparison.OrdinalIgnoreCase)
                 ? key.Substring(0, key.Length - 4)
-                : this.NormalizeAssetNameForPlatform(key);
+                : key;
         }
 
         /****
