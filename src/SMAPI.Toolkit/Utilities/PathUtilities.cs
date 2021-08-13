@@ -23,8 +23,11 @@ namespace StardewModdingAPI.Toolkit.Utilities
         /// <summary>The possible directory separator characters in a file path.</summary>
         public static readonly char[] PossiblePathSeparators = new[] { '/', '\\', Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }.Distinct().ToArray();
 
-        /// <summary>The preferred directory separator character in an asset key.</summary>
+        /// <summary>The preferred directory separator character in a file path.</summary>
         public static readonly char PreferredPathSeparator = Path.DirectorySeparatorChar;
+
+        /// <summary>The preferred directory separator character in an asset key.</summary>
+        public static readonly char PreferredAssetSeparator = '/';
 
 
         /*********
@@ -45,7 +48,7 @@ namespace StardewModdingAPI.Toolkit.Utilities
         /// <param name="assetName">The asset name to normalize.</param>
         public static string NormalizeAssetName(string assetName)
         {
-            return string.Join(PathUtilities.PreferredPathSeparator.ToString(), PathUtilities.GetSegments(assetName)); // based on MonoGame's ContentManager.Load<T> logic
+            return string.Join(PathUtilities.PreferredAssetSeparator.ToString(), PathUtilities.GetSegments(assetName)); // based on MonoGame's ContentManager.Load<T> logic
         }
 
         /// <summary>Normalize separators in a file path for the current platform.</summary>

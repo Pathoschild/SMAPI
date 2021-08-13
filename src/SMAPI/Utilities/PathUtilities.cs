@@ -7,6 +7,13 @@ namespace StardewModdingAPI.Utilities
     public static class PathUtilities
     {
         /*********
+        ** Accessors
+        *********/
+        /// <summary>The preferred directory separator character in an asset key.</summary>
+        public static char PreferredAssetSeparator { get; } = ToolkitPathUtilities.PreferredAssetSeparator;
+
+
+        /*********
         ** Public methods
         *********/
         /// <summary>Get the segments from a path (e.g. <c>/usr/bin/example</c> => <c>usr</c>, <c>bin</c>, and <c>example</c>).</summary>
@@ -18,8 +25,16 @@ namespace StardewModdingAPI.Utilities
             return ToolkitPathUtilities.GetSegments(path, limit);
         }
 
-        /// <summary>Normalize separators in a file path.</summary>
+        /// <summary>Normalize an asset name to match how MonoGame's content APIs would normalize and cache it.</summary>
+        /// <param name="assetName">The asset name to normalize.</param>
+        public static string NormalizeAssetName(string assetName)
+        {
+            return ToolkitPathUtilities.NormalizeAssetName(assetName);
+        }
+
+        /// <summary>Normalize separators in a file path for the current platform.</summary>
         /// <param name="path">The file path to normalize.</param>
+        /// <remarks>This should only be used for file paths. For asset names, use <see cref="NormalizeAssetName"/> instead.</remarks>
         [Pure]
         public static string NormalizePath(string path)
         {

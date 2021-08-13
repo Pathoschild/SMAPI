@@ -1,3 +1,4 @@
+using System.IO;
 using NUnit.Framework;
 using StardewModdingAPI.Toolkit.Utilities;
 
@@ -175,9 +176,26 @@ namespace SMAPI.Tests.Utilities
         }
 
         /****
-        ** NormalizePathSeparators
+        ** NormalizeAssetName
         ****/
-        [Test(Description = "Assert that PathUtilities.NormalizePathSeparators normalizes paths correctly.")]
+        [Test(Description = "Assert that PathUtilities.NormalizeAssetName normalizes paths correctly.")]
+        [TestCaseSource(nameof(PathUtilitiesTests.SamplePaths))]
+        public void NormalizeAssetName(SamplePath path)
+        {
+            if (Path.IsPathFullyQualified(path.OriginalPath) || path.OriginalPath.StartsWith('/') || path.OriginalPath.StartsWith('\\'))
+                Assert.Ignore("Absolute paths can't be used as asset names.");
+
+            // act
+            string normalized = PathUtilities.NormalizeAssetName(path.OriginalPath);
+
+            // assert
+            Assert.AreEqual(path.NormalizedOnUnix, normalized); // MonoGame uses the Linux format
+        }
+
+        /****
+        ** NormalizePath
+        ****/
+        [Test(Description = "Assert that PathUtilities.NormalizePath normalizes paths correctly.")]
         [TestCaseSource(nameof(PathUtilitiesTests.SamplePaths))]
         public void NormalizePath(SamplePath path)
         {
