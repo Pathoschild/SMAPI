@@ -79,9 +79,7 @@ To prepare a crossplatform SMAPI release, you'll need to compile it on two platf
 [crossplatforming info](https://stardewvalleywiki.com/Modding:Modder_Guide/Test_and_Troubleshoot#Testing_on_all_platforms)
 on the wiki for the first-time setup.
 
-1. [Install a separate 64-bit version of Stardew Valley](https://github.com/Steviegt6/Stardew64Installer#readme)
-   on Windows.
-2. Update the version numbers in `build/common.targets`, `Constants`, and the `manifest.json` for
+1. Update the version numbers in `build/common.targets`, `Constants`, and the `manifest.json` for
    bundled mods. Make sure you use a [semantic version](https://semver.org). Recommended format:
 
    build type | format                   | example
@@ -89,14 +87,9 @@ on the wiki for the first-time setup.
    dev build  | `<version>-alpha.<date>` | `3.0.0-alpha.20171230`
    prerelease | `<version>-beta.<date>`  | `3.0.0-beta.20171230`
    release    | `<version>`              | `3.0.0`
-3. In Windows:
+2. In Windows:
    1. Rebuild the solution with the _release_ solution configuration.
-   2. Back up the `bin/SMAPI installer` and `bin/SMAPI installer for developers` folders.
-   3. Edit `common.targets` and uncomment the Stardew Valley 64-bit section at the top.
-   4. Rebuild the solution again.
-   5. Rename the compiled `StardewModdingAPI.exe` file to `StardewModdingAPI-x64.exe`, and copy it
-      into the `windows-install.dat` files from step ii.
-   6. Copy the folders from step ii to Linux/MacOS.
+   2. Copy the `bin/SMAPI installer` and `bin/SMAPI installer for developers` folders to Linux/macOS.
 4. In Linux/macOS:
    1. Rebuild the solution with the _release_ solution configuration.
    2. Add the `windows-install.*` files from Windows to the `bin/SMAPI installer` and
