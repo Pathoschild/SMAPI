@@ -35,7 +35,7 @@ namespace StardewModdingAPI
                 Program.AssertSmapiVersions();
                 Program.Start(args);
             }
-            catch (BadImageFormatException ex) when (ex.FileName == "StardewValley" || ex.FileName == "Stardew Valley") // don't use EarlyConstants.GameAssemblyName, since we want to check both possible names
+            catch (BadImageFormatException ex) when (ex.FileName == EarlyConstants.GameAssemblyName)
             {
                 Console.WriteLine($"SMAPI failed to initialize because your game's {ex.FileName}.exe seems to be invalid.\nThis may be a pirated version which modified the executable in an incompatible way; if so, you can try a different download or buy a legitimate version.\n\nTechnical details:\n{ex}");
             }

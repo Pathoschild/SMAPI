@@ -43,7 +43,7 @@ namespace StardewModdingAPI
         internal static GameFramework GameFramework { get; } = GameFramework.MonoGame;
 
         /// <summary>The game's assembly name.</summary>
-        internal static string GameAssemblyName => EarlyConstants.Platform == GamePlatform.Windows ? "Stardew Valley" : "StardewValley";
+        internal static string GameAssemblyName { get; } = "Stardew Valley";
 
         /// <summary>The <see cref="Context.ScreenId"/> value which should appear in the SMAPI log, if any.</summary>
         internal static int? LogScreenId { get; set; }
@@ -269,14 +269,8 @@ namespace StardewModdingAPI
             );
 
             // Stardew Valley reference
-            removeAssemblyReferences.Add(
-                Constants.Platform == Platform.Windows
-                    ? "StardewValley"
-                    : "Stardew Valley"
-            );
-            targetAssemblies.Add(
-                typeof(StardewValley.Game1).Assembly
-            );
+            removeAssemblyReferences.Add("StardewValley");
+            targetAssemblies.Add(typeof(StardewValley.Game1).Assembly);
 
             return new PlatformAssemblyMap(targetPlatform, removeAssemblyReferences.ToArray(), targetAssemblies.ToArray());
         }
