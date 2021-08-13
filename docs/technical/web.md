@@ -367,7 +367,7 @@ accordingly.
 Initial setup:
 
 1. Create an Azure Blob storage account for uploaded files.
-2. Create an Azure App Services environment running the latest .NET Core on Linux or Windows.
+2. Create an Azure App Services environment running the latest .NET on Linux or Windows.
 3. Add these application settings in the new App Services environment:
 
    property name                   | description

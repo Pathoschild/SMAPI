@@ -16,7 +16,6 @@ using Microsoft.Xna.Framework;
 #if SMAPI_FOR_WINDOWS
 using Microsoft.Win32;
 #endif
-using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using StardewModdingAPI.Enums;
 using StardewModdingAPI.Events;
@@ -1298,9 +1297,6 @@ namespace StardewModdingAPI.Framework
             {
                 // create client
                 string url = this.Settings.WebApiBaseUrl;
-#if !SMAPI_FOR_WINDOWS
-                url = url.Replace("https://", "http://"); // workaround for OpenSSL issues with the game's bundled Mono on Linux/macOS
-#endif
                 WebApiClient client = new WebApiClient(url, Constants.ApiVersion);
                 this.Monitor.Log("Checking for updates...");
 
@@ -1695,9 +1691,8 @@ namespace StardewModdingAPI.Framework
                 catch (Exception ex)
                 {
                     errorReasonPhrase = "its DLL couldn't be loaded.";
-                    // re-enable in Stardew Valley 1.5.5
-                    //if (ex is BadImageFormatException && !EnvironmentUtility.Is64BitAssembly(assemblyPath))
-                    //    errorReasonPhrase = "it needs to be updated for 64-bit mode.";
+                    if (ex is BadImageFormatException && !EnvironmentUtility.Is64BitAssembly(assemblyPath))
+                        errorReasonPhrase = "it needs to be updated for 64-bit mode.";
 
                     errorDetails = $"Error: {ex.GetLogSummary()}";
                     failReason = ModFailReason.LoadFailed;
