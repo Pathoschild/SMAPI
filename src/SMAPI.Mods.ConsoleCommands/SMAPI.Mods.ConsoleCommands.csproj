@@ -18,11 +18,6 @@
     <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="False" />
   </ItemGroup>
 
-  <!-- Windows only -->
-  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <Reference Include="Netcode" HintPath="$(GamePath)\Netcode.dll" Private="False" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Update="manifest.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

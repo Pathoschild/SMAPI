@@ -34,11 +34,6 @@
     <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="False" />
   </ItemGroup>
 
-  <!-- Windows only -->
-  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <Reference Include="Netcode" HintPath="$(GamePath)\Netcode.dll" Private="False" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SMAPI.Toolkit.CoreInterfaces\SMAPI.Toolkit.CoreInterfaces.csproj" />
     <ProjectReference Include="..\SMAPI.Toolkit\SMAPI.Toolkit.csproj" />
