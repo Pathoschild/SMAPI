@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace StardewModdingAPI.Framework.ModLoading.RewriteFacades
 {
-    /// <summary>Provides <see cref="SpriteBatch"/> method signatures that can be injected into mod code for compatibility between Linux/macOS or Windows.</summary>
+    /// <summary>Provides <see cref="SpriteBatch"/> method signatures that can be injected into mod code for compatibility with mods written for XNA Framework before Stardew Valley 1.5.5.</summary>
     /// <remarks>This is public to support SMAPI rewriting and should not be referenced directly by mods.</remarks>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used via assembly rewriting")]
     [SuppressMessage("ReSharper", "CS0109", Justification = "The 'new' modifier applies when compiled on Linux/macOS.")]
@@ -17,14 +17,6 @@ namespace StardewModdingAPI.Framework.ModLoading.RewriteFacades
         /// <summary>Construct an instance.</summary>
         public SpriteBatchFacade(GraphicsDevice graphicsDevice) : base(graphicsDevice) { }
 
-
-        /****
-        ** MonoGame signatures
-        ****/
-        public new void Begin(SpriteSortMode sortMode, BlendState blendState, SamplerState samplerState, DepthStencilState depthStencilState, RasterizerState rasterizerState, Effect effect, Matrix? matrix)
-        {
-            base.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, matrix ?? Matrix.Identity);
-        }
 
         /****
         ** XNA signatures

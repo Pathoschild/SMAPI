@@ -43,37 +43,23 @@
   <!--*********************************************
   ** Add assembly references
   **********************************************-->
-  <!-- common -->
   <ItemGroup>
+    <!-- game -->
     <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).exe" Private="$(CopyModReferencesToBuildOutput)" />
     <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="$(CopyModReferencesToBuildOutput)" />
+    <Reference Include="MonoGame.Framework" HintPath="$(GamePath)\MonoGame.Framework.dll" Private="$(CopyModReferencesToBuildOutput)" />
+    <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="$(CopyModReferencesToBuildOutput)" />
+
+    <!-- SMAPI -->
     <Reference Include="StardewModdingAPI" HintPath="$(GamePath)\StardewModdingAPI.exe" Private="$(CopyModReferencesToBuildOutput)" />
     <Reference Include="SMAPI.Toolkit.CoreInterfaces" HintPath="$(GamePath)\smapi-internal\SMAPI.Toolkit.CoreInterfaces.dll" Private="$(CopyModReferencesToBuildOutput)" />
-    <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="$(CopyModReferencesToBuildOutput)" />
+
+    <!-- Harmony -->
     <Reference Include="0Harmony" Condition="'$(EnableHarmony)' == 'true'" HintPath="$(GamePath)\smapi-internal\0Harmony.dll" Private="$(CopyModReferencesToBuildOutput)" />
-  </ItemGroup>
 
-  <!-- Windows only -->
-  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <Reference Include="Netcode" HintPath="$(GamePath)\Netcode.dll" Private="$(CopyModReferencesToBuildOutput)" />
+    <!-- Windows only -->
+    <Reference Include="Netcode" HintPath="$(GamePath)\Netcode.dll" Private="$(CopyModReferencesToBuildOutput)" Condition="'$(OS)' == 'Windows_NT'" />
   </ItemGroup>
-
-  <!-- Game framework -->
-  <Choose>
-    <When Condition="'$(GameFramework)' == 'Xna'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" Private="$(CopyModReferencesToBuildOutput)" />
-        <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" Private="$(CopyModReferencesToBuildOutput)" />
-        <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" Private="$(CopyModReferencesToBuildOutput)" />
-        <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" Private="$(CopyModReferencesToBuildOutput)" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="MonoGame.Framework" HintPath="$(GamePath)\MonoGame.Framework.dll" Private="$(CopyModReferencesToBuildOutput)" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
 
 
   <!--*********************************************

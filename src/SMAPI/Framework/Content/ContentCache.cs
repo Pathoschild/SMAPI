@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI.Framework.Reflection;
 using StardewModdingAPI.Toolkit.Utilities;
 using StardewValley;
@@ -52,13 +51,7 @@ namespace StardewModdingAPI.Framework.Content
             this.Cache = reflection.GetField<Dictionary<string, object>>(contentManager, "loadedAssets").GetValue();
 
             // get key normalization logic
-            if (Constants.GameFramework == GameFramework.Xna)
-            {
-                IReflectedMethod method = reflection.GetMethod(typeof(TitleContainer), "GetCleanPath");
-                this.NormalizeAssetNameForPlatform = path => method.Invoke<string>(path);
-            }
-            else
-                this.NormalizeAssetNameForPlatform = key => key.Replace('\\', '/'); // based on MonoGame's ContentManager.Load<T> logic
+            this.NormalizeAssetNameForPlatform = PathUtilities.NormalizePath; //this.NormalizeAssetNameForPlatform = key => key.Replace('\\', '/'); // based on MonoGame's ContentManager.Load<T> logic
         }
 
         /****

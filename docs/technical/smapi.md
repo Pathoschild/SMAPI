@@ -57,7 +57,6 @@ SMAPI uses a small number of conditional compilation constants, which you can se
 flag | purpose
 ---- | -------
 `SMAPI_FOR_WINDOWS` | Whether SMAPI is being compiled for Windows; if not set, the code assumes Linux/macOS. Set automatically in `common.targets`.
-`SMAPI_FOR_XNA` | Whether SMAPI is being compiled for XNA Framework; if not set, the code assumes MonoGame. Set automatically in `common.targets` with the same value as `SMAPI_FOR_WINDOWS`.
 
 ## For SMAPI developers
 ### Compiling from source

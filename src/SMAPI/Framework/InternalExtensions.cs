@@ -6,7 +6,6 @@ using System.Threading;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Framework.Events;
 using StardewModdingAPI.Framework.Reflection;
-using StardewValley;
 using StardewValley.Menus;
 
 namespace StardewModdingAPI.Framework
@@ -150,11 +149,7 @@ namespace StardewModdingAPI.Framework
         /// <param name="reflection">The reflection helper with which to access private fields.</param>
         public static bool IsOpen(this SpriteBatch spriteBatch, Reflector reflection)
         {
-            string fieldName = Constants.GameFramework == GameFramework.Xna
-                ? "inBeginEndPair"
-                : "_beginCalled";
-
-            return reflection.GetField<bool>(Game1.spriteBatch, fieldName).GetValue();
+            return reflection.GetField<bool>(spriteBatch, "_beginCalled").GetValue();
         }
     }
 }
