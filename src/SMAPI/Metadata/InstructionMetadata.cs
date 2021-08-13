@@ -36,9 +36,6 @@ namespace StardewModdingAPI.Metadata
             // rewrite for crossplatform compatibility
             if (rewriteMods)
             {
-                if (platformChanged)
-                    yield return new MethodParentRewriter(typeof(SpriteBatch), typeof(SpriteBatchFacade));
-
                 // rewrite for Stardew Valley 1.5
                 yield return new FieldReplaceRewriter(typeof(DecoratableLocation), "furniture", typeof(GameLocation), nameof(GameLocation.furniture));
                 yield return new FieldReplaceRewriter(typeof(Farm), "resourceClumps", typeof(GameLocation), nameof(GameLocation.resourceClumps));
@@ -50,6 +47,10 @@ namespace StardewModdingAPI.Metadata
 
                 // rewrite for SMAPI 3.12 (Harmony 1.x => 2.0 update)
                 yield return new Harmony1AssemblyRewriter();
+
+                // rewrite for Stardew Valley 1.5.5
+                if (platformChanged)
+                    yield return new MethodParentRewriter(typeof(SpriteBatch), typeof(SpriteBatchFacade));
             }
 
             /****

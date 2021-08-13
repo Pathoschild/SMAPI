@@ -16,9 +16,6 @@ using System.Threading.Tasks;
 using Microsoft.Win32;
 #endif
 using Microsoft.Xna.Framework;
-#if SMAPI_FOR_XNA
-using System.Windows.Forms;
-#endif
 using Newtonsoft.Json;
 using StardewModdingAPI.Enums;
 using StardewModdingAPI.Events;
@@ -223,10 +220,6 @@ namespace StardewModdingAPI.Framework
                     this.Toolkit.JsonHelper.JsonSettings.Converters.Add(converter);
 
                 // add error handlers
-#if SMAPI_FOR_XNA
-                Application.ThreadException += (sender, e) => this.Monitor.Log($"Critical thread exception: {e.Exception.GetLogSummary()}", LogLevel.Error);
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-#endif
                 AppDomain.CurrentDomain.UnhandledException += (sender, e) => this.Monitor.Log($"Critical app domain exception: {e.ExceptionObject}", LogLevel.Error);
 
                 // add more lenient assembly resolver

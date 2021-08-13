@@ -48,12 +48,7 @@ namespace StardewModdingAPI
 #endif
 
         /// <summary>The game framework running the game.</summary>
-        internal static GameFramework GameFramework { get; } =
-#if SMAPI_FOR_XNA
-            GameFramework.Xna;
-#else
-            GameFramework.MonoGame;
-#endif
+        internal static GameFramework GameFramework { get; } = GameFramework.MonoGame;
 
         /// <summary>The game's assembly name.</summary>
         internal static string GameAssemblyName => EarlyConstants.Platform == GamePlatform.Windows && !EarlyConstants.IsWindows64BitHack ? "Stardew Valley" : "StardewValley";
@@ -268,61 +263,32 @@ namespace StardewModdingAPI
             removeAssemblyReferences.Add("StardewModdingAPI.Toolkit.CoreInterfaces");
             targetAssemblies.Add(typeof(StardewModdingAPI.IManifest).Assembly);
 
-            // get changes for platform
-            if (Constants.Platform != Platform.Windows || EarlyConstants.IsWindows64BitHack)
+            // XNA Framework before Stardew Valley 1.5.5
+            removeAssemblyReferences.AddRange(new[]
             {
-                removeAssemblyReferences.AddRange(new[]
-                {
-                    "Netcode",
-                    "Stardew Valley"
-                });
-                targetAssemblies.Add(
-                    typeof(StardewValley.Game1).Assembly // note: includes Netcode types on Linux/macOS
-                );
-            }
-            else
-            {
-                removeAssemblyReferences.Add(
-                    "StardewValley"
-                );
-                targetAssemblies.AddRange(new[]
-                {
-                    typeof(Netcode.NetBool).Assembly,
-                    typeof(StardewValley.Game1).Assembly
-                });
-            }
+                "Microsoft.Xna.Framework",
+                "Microsoft.Xna.Framework.Game",
+                "Microsoft.Xna.Framework.Graphics",
+                "Microsoft.Xna.Framework.Xact"
+            });
+            targetAssemblies.Add(
+                typeof(Microsoft.Xna.Framework.Vector2).Assembly
+            );
 
-            // get changes for game framework
-            switch (framework)
-            {
-                case GameFramework.MonoGame:
-                    removeAssemblyReferences.AddRange(new[]
-                    {
-                        "Microsoft.Xna.Framework",
-                        "Microsoft.Xna.Framework.Game",
-                        "Microsoft.Xna.Framework.Graphics",
-                        "Microsoft.Xna.Framework.Xact"
-                    });
-                    targetAssemblies.Add(
-                        typeof(Microsoft.Xna.Framework.Vector2).Assembly
-                    );
-                    break;
+            // `Netcode.dll` merged into the game assembly in Stardew Valley 1.5.5
+            removeAssemblyReferences.Add(
+                "Netcode"
+            );
 
-                case GameFramework.Xna:
-                    removeAssemblyReferences.Add(
-                        "MonoGame.Framework"
-                    );
-                    targetAssemblies.AddRange(new[]
-                    {
-                        typeof(Microsoft.Xna.Framework.Vector2).Assembly,
-                        typeof(Microsoft.Xna.Framework.Game).Assembly,
-                        typeof(Microsoft.Xna.Framework.Graphics.SpriteBatch).Assembly
-                    });
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"Unknown game framework '{framework}'.");
-            }
+            // Stardew Valley reference
+            removeAssemblyReferences.Add(
+                Constants.Platform == Platform.Windows
+                    ? "StardewValley"
+                    : "Stardew Valley"
+            );
+            targetAssemblies.Add(
+                typeof(StardewValley.Game1).Assembly
+            );
 
             return new PlatformAssemblyMap(targetPlatform, removeAssemblyReferences.ToArray(), targetAssemblies.ToArray());
         }

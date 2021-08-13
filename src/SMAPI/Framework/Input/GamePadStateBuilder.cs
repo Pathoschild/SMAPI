@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -157,11 +158,8 @@ namespace StardewModdingAPI.Framework.Input
                 yield break;
 
             // buttons
-            foreach (var pair in this.ButtonStates)
-            {
-                if (pair.Value == ButtonState.Pressed && pair.Key.TryGetController(out Buttons button))
-                    yield return button.ToSButton();
-            }
+            foreach (Buttons button in this.GetPressedGamePadButtons())
+                yield return button.ToSButton();
 
             // triggers
             if (this.LeftTrigger > 0.2f)
@@ -201,7 +199,7 @@ namespace StardewModdingAPI.Framework.Input
                 rightThumbStick: this.RightStickPos,
                 leftTrigger: this.LeftTrigger,
                 rightTrigger: this.RightTrigger,
-                buttons: this.GetButtonBitmask() // MonoGame requires one bitmask here; don't specify multiple values
+                buttons: this.GetPressedGamePadButtons().ToArray()
             );
 
             return this.State.Value;
@@ -211,17 +209,14 @@ namespace StardewModdingAPI.Framework.Input
         /*********
         ** Private methods
         *********/
-        /// <summary>Get a bitmask representing the pressed buttons.</summary>
-        private Buttons GetButtonBitmask()
+        /// <summary>Get the pressed gamepad buttons.</summary>
+        private IEnumerable<Buttons> GetPressedGamePadButtons()
         {
-            Buttons flag = 0;
             foreach (var pair in this.ButtonStates)
             {
                 if (pair.Value == ButtonState.Pressed && pair.Key.TryGetController(out Buttons button))
-                    flag |= button;
+                    yield return button;
             }
-
-            return flag;
         }
     }
 }
