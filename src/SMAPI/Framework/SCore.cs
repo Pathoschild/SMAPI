@@ -11,7 +11,6 @@ using System.Runtime.ExceptionServices;
 using System.Security;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 #if SMAPI_FOR_WINDOWS
 using Microsoft.Win32;
@@ -236,7 +235,7 @@ namespace StardewModdingAPI.Framework
                     monitor: this.Monitor,
                     reflection: this.Reflection,
                     eventManager: this.EventManager,
-                    modHooks: new SModHooks(this.OnNewDayAfterFade),
+                    modHooks: new SModHooks(this.OnNewDayAfterFade, this.Monitor),
                     multiplayer: this.Multiplayer,
                     exitGameImmediately: this.ExitGameImmediately,
 
@@ -650,13 +649,6 @@ namespace StardewModdingAPI.Framework
                     this.Monitor.Log("Game loader done.");
                 }
 
-                if (instance.NewDayTask?.Status == TaskStatus.Created)
-                {
-                    this.Monitor.Log("New day task synchronizing...");
-                    instance.NewDayTask.RunSynchronously();
-                    this.Monitor.Log("New day task done.");
-                }
-
                 // While a background task is in progress, the game may make changes to the game
                 // state while mods are running their code. This is risky, because data changes can
                 // conflict (e.g. collection changed during enumeration errors) and data may change
@@ -666,7 +658,7 @@ namespace StardewModdingAPI.Framework
                 // a small chance that the task will finish after we defer but before the game checks,
                 // which means technically events should be raised, but the effects of missing one
                 // update tick are negligible and not worth the complications of bypassing Game1.Update.
-                if (instance.NewDayTask != null || Game1.gameMode == Game1.loadingMode)
+                if (Game1.gameMode == Game1.loadingMode)
                 {
                     events.UnvalidatedUpdateTicking.RaiseEmpty();
                     runUpdate();
