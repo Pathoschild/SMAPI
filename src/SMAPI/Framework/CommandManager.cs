@@ -36,10 +36,11 @@ namespace StardewModdingAPI.Framework
         /// <param name="documentation">The human-readable documentation shown when the player runs the built-in 'help' command.</param>
         /// <param name="callback">The method to invoke when the command is triggered. This method is passed the command name and arguments submitted by the user.</param>
         /// <param name="allowNullCallback">Whether to allow a null <paramref name="callback"/> argument; this should only used for backwards compatibility.</param>
+        /// <param name="autoCompleteHandler">The method to invoke for auto-complete handling. This method is passed the command name and current input, and should return the potential matches.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="name"/> or <paramref name="callback"/> is null or empty.</exception>
         /// <exception cref="FormatException">The <paramref name="name"/> is not a valid format.</exception>
         /// <exception cref="ArgumentException">There's already a command with that name.</exception>
-        public CommandManager Add(IModMetadata mod, string name, string documentation, Action<string, string[]> callback, bool allowNullCallback = false, Func<string, string[]> autoCompleteHandler = null)
+        public CommandManager Add(IModMetadata mod, string name, string documentation, Action<string, string[]> callback, bool allowNullCallback = false, Func<string, string, string[]> autoCompleteHandler = null)
         {
             name = this.GetNormalizedName(name);
 
@@ -66,7 +67,7 @@ namespace StardewModdingAPI.Framework
         /// <exception cref="ArgumentException">There's already a command with that name.</exception>
         public CommandManager Add(IInternalCommand command, IMonitor monitor)
         {
-            return this.Add(null, command.Name, command.Description, (name, args) => command.HandleCommand(args, monitor), autoCompleteHandler: command.HandleAutoCompletion);
+            return this.Add(null, command.Name, command.Description, (name, args) => command.HandleCommand(args, monitor), autoCompleteHandler: (name, input) => command.HandleAutoCompletion(input));
         }
 
         /// <summary>Get a command by its unique name.</summary>
@@ -190,7 +191,7 @@ namespace StardewModdingAPI.Framework
                 // Take out the command name and space from what we pass to the command's auto-complete handler
                 text = text.Substring(space + 1);
 
-                return cmd.AutoCompleteHandler.Invoke(text);
+                return cmd.AutoCompleteHandler.Invoke(currCmdName, text);
             }
         }
 

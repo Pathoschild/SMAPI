@@ -36,7 +36,7 @@ namespace StardewModdingAPI.Framework.ModHelpers
         }
         
         /// <inheritdoc />
-        public ICommandHelper Add(string name, string documentation, Action<string, string[]> callback, Func<string, string[]> autoCompleteHandler)
+        public ICommandHelper Add(string name, string documentation, Action<string, string[]> callback, Func<string, string, string[]> autoCompleteHandler)
         {
             this.CommandManager.Add(this.Mod, name, documentation, callback, autoCompleteHandler: autoCompleteHandler);
             return this;
