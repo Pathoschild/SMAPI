@@ -24,7 +24,7 @@ Manual install
 THIS IS NOT RECOMMENDED FOR MOST PLAYERS. See instructions above instead.
 If you really want to install SMAPI manually, here's how.
 
-1. Unzip "internal/windows-install.dat" (on Windows) or "internal/unix-install.dat" (on
+1. Unzip "internal/windows/install.dat" (on Windows) or "internal/unix/install.dat" (on
    Linux/macOS). You can change '.dat' to '.zip', it's just a normal zip file renamed to prevent
    confusion.
 2. Copy the files from the folder you just unzipped into your game folder. The

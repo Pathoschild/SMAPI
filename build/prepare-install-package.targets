@@ -36,11 +36,11 @@
     <Copy SourceFiles="$(TargetDir)\assets\unix-install.sh" DestinationFiles="$(PackagePath)\install on macOS.command" />
     <Copy SourceFiles="$(TargetDir)\assets\windows-install.bat" DestinationFiles="$(PackagePath)\install on Windows.bat" />
     <Copy SourceFiles="$(TargetDir)\assets\README.txt" DestinationFolder="$(PackagePath)" />
-    <Copy SourceFiles="$(TargetDir)\assets\windows-exe-config.xml" DestinationFiles="$(PackagePath)\internal\windows-install.exe.config" Condition="$(PlatformName) == 'windows'" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(PackagePath)\internal" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFiles="$(PackagePath)\internal\$(PlatformName)-install.exe" Condition="$(PlatformName) == 'windows'" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetName)" DestinationFiles="$(PackagePath)\internal\$(PlatformName)-install" Condition="$(PlatformName) != 'windows'" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetName).runtimeconfig.json" DestinationFolder="$(PackagePath)\internal" />
+    <Copy SourceFiles="$(TargetDir)\assets\windows-exe-config.xml" DestinationFiles="$(PackagePath)\internal\$(PlatformName)\install.exe.config" Condition="$(PlatformName) == 'windows'" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(PackagePath)\internal\$(PlatformName)" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFiles="$(PackagePath)\internal\$(PlatformName)\install.exe" Condition="$(PlatformName) == 'windows'" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName)" DestinationFiles="$(PackagePath)\internal\$(PlatformName)\install" Condition="$(PlatformName) != 'windows'" />
+    <Copy SourceFiles="$(TargetDir)\$(TargetName).runtimeconfig.json" DestinationFolder="$(PackagePath)\internal\$(PlatformName)" />
 
     <!--copy bundle files-->
     <Copy SourceFiles="$(TargetDir)\assets\runtimeconfig.$(PlatformName).json" DestinationFiles="$(PackagePath)\bundle\StardewModdingAPI.runtimeconfig.json" />
@@ -99,12 +99,12 @@
       <PackageFiles Include="$(PackagePath)\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(PackageDevPath)\%(RecursiveDir)" />
-    <ZipDirectory SourceDirectory="$(PackageDevPath)\bundle" DestinationFile="$(PackageDevPath)\internal\$(PlatformName)-install.dat" />
+    <ZipDirectory SourceDirectory="$(PackageDevPath)\bundle" DestinationFile="$(PackageDevPath)\internal\$(PlatformName)\install.dat" />
     <RemoveDir Directories="$(PackageDevPath)\bundle" />
 
     <!-- finalise normal installer -->
     <ReplaceFileText FilePath="$(PackagePath)\bundle\smapi-internal\config.json" Search="&quot;DeveloperMode&quot;: true" Replace="&quot;DeveloperMode&quot;: false" />
-    <ZipDirectory SourceDirectory="$(PackagePath)\bundle" DestinationFile="$(PackagePath)\internal\$(PlatformName)-install.dat" />
+    <ZipDirectory SourceDirectory="$(PackagePath)\bundle" DestinationFile="$(PackagePath)\internal\$(PlatformName)\install.dat" />
     <RemoveDir Directories="$(PackagePath)\bundle" />
   </Target>
 
