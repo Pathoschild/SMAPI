@@ -31,8 +31,7 @@ namespace StardewModdingApi.Installer
         public static void Main(string[] args)
         {
             // find install bundle
-            PlatformID platform = Environment.OSVersion.Platform;
-            FileInfo zipFile = new FileInfo(Path.Combine(Program.InstallerPath, $"{(platform == PlatformID.Win32NT ? "windows" : "unix")}-install.dat"));
+            FileInfo zipFile = new FileInfo(Path.Combine(Program.InstallerPath, "install.dat"));
             if (!zipFile.Exists)
             {
                 Console.WriteLine($"Oops! Some of the installer files are missing; try re-downloading the installer. (Missing file: {zipFile.FullName})");

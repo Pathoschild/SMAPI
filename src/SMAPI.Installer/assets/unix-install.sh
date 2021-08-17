@@ -7,4 +7,4 @@ cd "`dirname "$0"`"
 export TERM=xterm
 
 # run installer
-./internal/unix-install
+./internal/unix/install
