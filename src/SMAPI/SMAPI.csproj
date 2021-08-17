@@ -24,7 +24,7 @@
     <PackageReference Include="MonoMod.Common" Version="21.6.21.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Platonymous.TMXTile" Version="1.5.8" />
-    <PackageReference Include="spacechase0.ReadLine.SMAPI" Version="2.2.0" />
+    <PackageReference Include="spacechase0.ReadLine.SMAPI" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>

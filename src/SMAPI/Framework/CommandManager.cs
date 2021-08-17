@@ -177,7 +177,7 @@ namespace StardewModdingAPI.Framework
                 foreach (string key in this.Commands.Keys)
                 {
                     if (key.StartsWith(text))
-                        matches.Add(key.Substring(text.Length));
+                        matches.Add(key);
                 }
                 return matches.ToArray();
             }
