@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace StardewModdingAPI.Framework.Commands
@@ -71,6 +72,25 @@ namespace StardewModdingAPI.Framework.Commands
 
                 monitor.Log(message, LogLevel.Info);
             }
+        }
+
+        /// <inheritdoc/>
+        public string[] HandleAutoCompletion( string currInput )
+        {
+            // If this is true, then they already entered an argument.
+            // This command only accepts one argument, so we are done.
+            if ( currInput.Contains( ' ' ) )
+                return null;
+
+            var allCommandNames = this.CommandManager.GetAll().Select( ( cmd ) => cmd.Name );
+
+            List<string> ret = new List<string>();
+            foreach ( string cmdName in allCommandNames )
+            {
+                if ( cmdName.StartsWith( currInput ) )
+                    ret.Add( cmdName );
+            }
+            return ret.ToArray();
         }
     }
 }

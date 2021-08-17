@@ -64,6 +64,9 @@ namespace StardewModdingAPI.Framework.Logging
             )
         };
 
+        /// <summary>The original Console.Out</summary>
+        private readonly TextWriter OriginalConsoleOut;
+
 
         /*********
         ** Accessors
@@ -102,6 +105,7 @@ namespace StardewModdingAPI.Framework.Logging
             this.LogFile = new LogFileManager(logPath);
             this.Monitor = this.GetMonitor("SMAPI");
             this.MonitorForGame = this.GetMonitor("game");
+            this.OriginalConsoleOut = Console.Out;
 
             // redirect direct console output
             var output = new InterceptingTextWriter(Console.Out, this.IgnoreChar);
@@ -142,13 +146,16 @@ namespace StardewModdingAPI.Framework.Logging
                 .Add(new HarmonySummaryCommand(), this.Monitor)
                 .Add(new ReloadI18nCommand(reloadTranslations), this.Monitor);
 
+            ReadLine.ReadLine.Instance.AutoCompletionHandler = commandManager;
+            ReadLine.ReadLine.Instance.WriteFunction = ( str ) => this.OriginalConsoleOut.Write( str );
+
             // start handling command line input
             Thread inputThread = new Thread(() =>
             {
                 while (true)
                 {
                     // get input
-                    string input = Console.ReadLine();
+                    string input = ReadLine.ReadLine.Instance.Read();
                     if (string.IsNullOrWhiteSpace(input))
                         continue;
 

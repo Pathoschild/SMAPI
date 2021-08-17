@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ReadLine;
 using StardewModdingAPI.Framework.Commands;
 
 namespace StardewModdingAPI.Framework
 {
     /// <summary>Manages console commands.</summary>
-    internal class CommandManager
+    internal class CommandManager : IAutoCompleteHandler
     {
         /*********
         ** Fields
@@ -38,7 +39,7 @@ namespace StardewModdingAPI.Framework
         /// <exception cref="ArgumentNullException">The <paramref name="name"/> or <paramref name="callback"/> is null or empty.</exception>
         /// <exception cref="FormatException">The <paramref name="name"/> is not a valid format.</exception>
         /// <exception cref="ArgumentException">There's already a command with that name.</exception>
-        public CommandManager Add(IModMetadata mod, string name, string documentation, Action<string, string[]> callback, bool allowNullCallback = false)
+        public CommandManager Add(IModMetadata mod, string name, string documentation, Action<string, string[]> callback, bool allowNullCallback = false, Func<string, string[]> autoCompleteHandler = null)
         {
             name = this.GetNormalizedName(name);
 
@@ -55,7 +56,7 @@ namespace StardewModdingAPI.Framework
                 throw new ArgumentException(nameof(callback), $"Can't register the '{name}' command because there's already a command with that name.");
 
             // add command
-            this.Commands.Add(name, new Command(mod, name, documentation, callback));
+            this.Commands.Add(name, new Command(mod, name, documentation, callback, autoCompleteHandler));
             return this;
         }
 
@@ -65,7 +66,7 @@ namespace StardewModdingAPI.Framework
         /// <exception cref="ArgumentException">There's already a command with that name.</exception>
         public CommandManager Add(IInternalCommand command, IMonitor monitor)
         {
-            return this.Add(null, command.Name, command.Description, (name, args) => command.HandleCommand(args, monitor));
+            return this.Add(null, command.Name, command.Description, (name, args) => command.HandleCommand(args, monitor), autoCompleteHandler: command.HandleAutoCompletion);
         }
 
         /// <summary>Get a command by its unique name.</summary>
@@ -154,6 +155,43 @@ namespace StardewModdingAPI.Framework
             }
 
             return false;
+        }
+
+
+        /*********
+        ** IAutoCompleteHandler
+        *********/
+        /// <inheritdoc/>
+        public char[] Separators { get; set; } = new char[] { ' ' };
+
+        /// <inheritdoc/>
+        public string[] GetSuggestions(string text, int index)
+        {
+            // I have no idea what index is for, it's always 0 in my testing
+
+            int space = text.IndexOf(' ');
+            if (space == -1)
+            {
+                List<string> matches = new List<string>();
+                foreach (string key in this.Commands.Keys)
+                {
+                    if (key.StartsWith(text))
+                        matches.Add(key.Substring(text.Length));
+                }
+                return matches.ToArray();
+            }
+            else
+            {
+                string currCmdName = text.Substring(0, space);
+                Command cmd = this.Commands.ContainsKey(currCmdName) ? this.Commands[currCmdName] : null;
+                if (cmd == null || cmd.AutoCompleteHandler == null)
+                    return null;
+
+                // Take out the command name and space from what we pass to the command's auto-complete handler
+                text = text.Substring(space + 1);
+
+                return cmd.AutoCompleteHandler.Invoke(text);
+            }
         }
 
 

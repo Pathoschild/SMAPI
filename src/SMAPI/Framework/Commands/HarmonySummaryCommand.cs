@@ -62,6 +62,12 @@ namespace StardewModdingAPI.Framework.Commands
             monitor.Log(result.ToString().TrimEnd(), LogLevel.Info);
         }
 
+        /// <inheritdoc/>
+        public string[] HandleAutoCompletion( string currInput )
+        {
+            return null;
+        }
+
 
         /*********
         ** Private methods

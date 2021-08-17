@@ -40,5 +40,11 @@ namespace StardewModdingAPI.Framework.Commands
             this.ReloadTranslations();
             monitor.Log("Reloaded translation files for all mods. This only affects new translations the mods fetch; if they cached some text, it may not be updated.", LogLevel.Info);
         }
+
+        /// <inheritdoc/>
+        public string[] HandleAutoCompletion( string currInput )
+        {
+            return null;
+        }
     }
 }

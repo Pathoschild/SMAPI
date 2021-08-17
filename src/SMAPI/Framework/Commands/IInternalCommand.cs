@@ -20,5 +20,10 @@ namespace StardewModdingAPI.Framework.Commands
         /// <param name="args">The command arguments.</param>
         /// <param name="monitor">Writes messages to the console.</param>
         void HandleCommand(string[] args, IMonitor monitor);
+
+        /// <summary>Handle the auto-completion fir this command based on the current input.</summary>
+        /// <param name="currInput">The current input.</param>
+        /// <returns>Suggested auto-completions to cycle through.</returns>
+        string[] HandleAutoCompletion( string currInput );
     }
 }

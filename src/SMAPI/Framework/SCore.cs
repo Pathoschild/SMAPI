@@ -519,7 +519,7 @@ namespace StardewModdingAPI.Framework
                     {
                         if (!this.CommandManager.TryParse(rawInput, out name, out args, out command, out screenId))
                         {
-                            this.Monitor.Log("Unknown command; type 'help' for a list of available commands.", LogLevel.Error);
+                            this.Monitor.Log($"Unknown command '{name}'; type 'help' for a list of available commands.", LogLevel.Error);
                             continue;
                         }
                     }
