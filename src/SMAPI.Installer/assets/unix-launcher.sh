@@ -10,7 +10,15 @@ if [ ! -f "Stardew Valley.dll" ]; then
     exit 1
 fi
 
+# make sure .NET 5 is installed
+if ! command -v dotnet >/dev/null 2>&1; then
+    echo "Oops! You must have .NET 5 installed to use SMAPI: https://dotnet.microsoft.com/download";
+    read
+    exit 1
+fi
+
 # macOS
+UNAME=$(uname)
 if [ "$UNAME" == "Darwin" ]; then
     # fix "DllNotFoundException: libgdiplus.dylib" errors when loading images in SMAPI
     if [ -f libgdiplus.dylib ]; then
@@ -20,8 +28,32 @@ if [ "$UNAME" == "Darwin" ]; then
         ln -s /Library/Frameworks/Mono.framework/Versions/Current/lib/libgdiplus.dylib libgdiplus.dylib
     fi
 
-    # launch smapi
-    open -a Terminal ./StardewModdingAPI "$@"
+    # Make sure we're running in Terminal (so the user can see errors/warnings/update alerts).
+    if [ ! -t 1 ]; then # https://stackoverflow.com/q/911168/262123
+        # sanity check to make sure we don't have an infinite loop of opening windows
+        SKIP_TERMINAL=false
+        for argument in "$@"; do
+            if [ "$argument" == "--no-reopen-terminal" ]; then
+                SKIP_TERMINAL=true
+                break
+            fi
+        done
+
+        # reopen in Terminal if needed
+        # https://stackoverflow.com/a/29511052/262123
+        if [ "$SKIP_TERMINAL" == "false" ]; then
+            echo "Reopening in the Terminal app..."
+            echo "\"$0\" $@ --no-reopen-terminal" > /tmp/open-smapi-terminal.sh
+            chmod +x /tmp/open-smapi-terminal.sh
+            cat /tmp/open-smapi-terminal.sh
+            open -W -a Terminal /tmp/open-smapi-terminal.sh
+            rm /tmp/open-smapi-terminal.sh
+            exit 0
+        fi
+    fi
+
+    # launch SMAPI
+    dotnet StardewModdingAPI.dll "$@"
 
 # Linux
 else

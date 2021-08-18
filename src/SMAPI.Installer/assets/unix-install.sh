@@ -3,8 +3,12 @@
 # Move to script's directory
 cd "`dirname "$0"`"
 
-# if $TERM is not set to xterm, mono will bail out when attempting to write to the console.
-export TERM=xterm
+# make sure .NET 5 is installed
+if ! command -v dotnet >/dev/null 2>&1; then
+    echo "Oops! You must have .NET 5 installed to use SMAPI: https://dotnet.microsoft.com/download";
+    read
+    exit 1
+fi
 
 # run installer
-./internal/unix/install
+dotnet internal/unix/SMAPI.Installer.dll
