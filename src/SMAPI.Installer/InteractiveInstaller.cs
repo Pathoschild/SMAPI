@@ -39,7 +39,6 @@ namespace StardewModdingApi.Installer
             string GetInstallPath(string path) => Path.Combine(installDir.FullName, path);
 
             // current files
-            yield return GetInstallPath("libgdiplus.dylib");           // Linux/macOS only
             yield return GetInstallPath("StardewModdingAPI");          // Linux/macOS only
             yield return GetInstallPath("StardewModdingAPI.dll");
             yield return GetInstallPath("StardewModdingAPI.exe");
@@ -52,6 +51,7 @@ namespace StardewModdingApi.Installer
             yield return GetInstallPath("steam_appid.txt");
 
             // obsolete
+            yield return GetInstallPath("libgdiplus.dylib");                 // before 3.13 (macOS only)
             yield return GetInstallPath(Path.Combine("Mods", ".cache"));     // 1.3-1.4
             yield return GetInstallPath(Path.Combine("Mods", "TrainerMod")); // *–2.0 (renamed to ConsoleCommands)
             yield return GetInstallPath("Mono.Cecil.Rocks.dll");             // 1.3–1.8
@@ -71,7 +71,7 @@ namespace StardewModdingApi.Installer
             yield return GetInstallPath("StardewModdingAPI.Toolkit.CoreInterfaces.dll"); // moved in 2.8
             yield return GetInstallPath("StardewModdingAPI.Toolkit.CoreInterfaces.pdb"); // moved in 2.8
             yield return GetInstallPath("StardewModdingAPI.Toolkit.CoreInterfaces.xml"); // moved in 2.8
-            yield return GetInstallPath("StardewModdingAPI-x64.exe");         // 3.13
+            yield return GetInstallPath("StardewModdingAPI-x64.exe");         // before 3.13
 
             if (modsDir.Exists)
             {
