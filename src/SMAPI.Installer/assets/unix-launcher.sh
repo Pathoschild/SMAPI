@@ -1,34 +1,19 @@
 #!/usr/bin/env bash
 
-# Move to script's directory
+##########
+## Initial setup
+##########
+# move to script's directory
 cd "$(dirname "$0")" || exit $?
 
-# validate script is being run from the game folder
-if [ ! -f "Stardew Valley.dll" ]; then
-    echo "Oops! SMAPI must be placed in the Stardew Valley game folder.\nSee instructions: https://stardewvalleywiki.com/Modding:Player_Guide";
-    read
-    exit 1
-fi
 
-# make sure .NET 5 is installed
-if ! command -v dotnet >/dev/null 2>&1; then
-    echo "Oops! You must have .NET 5 installed to use SMAPI: https://dotnet.microsoft.com/download";
-    read
-    exit 1
-fi
-
-# macOS
-UNAME=$(uname)
-if [ "$UNAME" == "Darwin" ]; then
-    # fix "DllNotFoundException: libgdiplus.dylib" errors when loading images in SMAPI
-    if [ -f libgdiplus.dylib ]; then
-        rm libgdiplus.dylib
-    fi
-    if [ -f /Library/Frameworks/Mono.framework/Versions/Current/lib/libgdiplus.dylib ]; then
-        ln -s /Library/Frameworks/Mono.framework/Versions/Current/lib/libgdiplus.dylib libgdiplus.dylib
-    fi
-
-    # Make sure we're running in Terminal (so the user can see errors/warnings/update alerts).
+##########
+## Open terminal if needed
+##########
+# on macOS, make sure we're running in a Terminal
+# Besides letting the player see errors/warnings/alerts in the console, this is also needed because
+# Steam messes with the PATH.
+if [ "$(uname)" == "Darwin" ]; then
     if [ ! -t 1 ]; then # https://stackoverflow.com/q/911168/262123
         # sanity check to make sure we don't have an infinite loop of opening windows
         SKIP_TERMINAL=false
@@ -50,6 +35,39 @@ if [ "$UNAME" == "Darwin" ]; then
             rm /tmp/open-smapi-terminal.sh
             exit 0
         fi
+    fi
+fi
+
+
+##########
+## Validate assumptions
+##########
+# script must be run from the game folder
+if [ ! -f "Stardew Valley.dll" ]; then
+    echo "Oops! SMAPI must be placed in the Stardew Valley game folder.\nSee instructions: https://stardewvalleywiki.com/Modding:Player_Guide";
+    read
+    exit 1
+fi
+
+# .NET 5 must be installed
+if ! command -v dotnet >/dev/null 2>&1; then
+    echo "Oops! You must have .NET 5 installed to use SMAPI: https://dotnet.microsoft.com/download";
+    read
+    exit 1
+fi
+
+
+##########
+## Launch SMAPI
+##########
+# macOS
+if [ "$(uname)" == "Darwin" ]; then
+    # fix "DllNotFoundException: libgdiplus.dylib" errors when loading images in SMAPI
+    if [ -f libgdiplus.dylib ]; then
+        rm libgdiplus.dylib
+    fi
+    if [ -f /Library/Frameworks/Mono.framework/Versions/Current/lib/libgdiplus.dylib ]; then
+        ln -s /Library/Frameworks/Mono.framework/Versions/Current/lib/libgdiplus.dylib libgdiplus.dylib
     fi
 
     # launch SMAPI
