@@ -62,15 +62,6 @@ fi
 ##########
 # macOS
 if [ "$(uname)" == "Darwin" ]; then
-    # fix "DllNotFoundException: libgdiplus.dylib" errors when loading images in SMAPI
-    if [ -f libgdiplus.dylib ]; then
-        rm libgdiplus.dylib
-    fi
-    if [ -f /Library/Frameworks/Mono.framework/Versions/Current/lib/libgdiplus.dylib ]; then
-        ln -s /Library/Frameworks/Mono.framework/Versions/Current/lib/libgdiplus.dylib libgdiplus.dylib
-    fi
-
-    # launch SMAPI
     dotnet StardewModdingAPI.dll "$@"
 
 # Linux
