@@ -38,8 +38,6 @@
     <Copy SourceFiles="$(TargetDir)\assets\README.txt" DestinationFolder="$(PackagePath)" />
     <Copy SourceFiles="$(TargetDir)\assets\windows-exe-config.xml" DestinationFiles="$(PackagePath)\internal\$(PlatformName)\install.exe.config" Condition="$(PlatformName) == 'windows'" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(PackagePath)\internal\$(PlatformName)" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFiles="$(PackagePath)\internal\$(PlatformName)\install.exe" Condition="$(PlatformName) == 'windows'" />
-    <Copy SourceFiles="$(TargetDir)\$(TargetName)" DestinationFiles="$(PackagePath)\internal\$(PlatformName)\install" Condition="$(PlatformName) != 'windows'" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).runtimeconfig.json" DestinationFolder="$(PackagePath)\internal\$(PlatformName)" />
 
     <!--copy bundle files-->
