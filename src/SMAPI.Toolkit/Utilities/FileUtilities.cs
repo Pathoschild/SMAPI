@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading;
 
 namespace StardewModdingAPI.Toolkit.Utilities
@@ -41,6 +43,17 @@ namespace StardewModdingAPI.Toolkit.Utilities
             entry.Refresh();
             if (entry.Exists)
                 throw new IOException($"Timed out trying to delete {entry.FullName}");
+        }
+
+        /// <summary>Get the MD5 hash for a file.</summary>
+        /// <param name="absolutePath">The absolute file path.</param>
+        public static string GetFileHash(string absolutePath)
+        {
+            using FileStream stream = File.OpenRead(absolutePath);
+            using MD5 md5 = MD5.Create();
+
+            byte[] hash = md5.ComputeHash(stream);
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
     }
 }
