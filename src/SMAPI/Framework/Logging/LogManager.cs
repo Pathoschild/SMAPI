@@ -252,18 +252,6 @@ namespace StardewModdingAPI.Framework.Logging
         {
             switch (exception)
             {
-                // audio crash
-                //case InvalidOperationException ex when ex.Source == "Microsoft.Xna.Framework.Xact" && ex.StackTrace.Contains("Microsoft.Xna.Framework.Audio.AudioEngine..ctor"):
-                //    this.Monitor.Log("The game couldn't load audio. Do you have speakers or headphones plugged in?", LogLevel.Error);
-                //    this.Monitor.Log($"Technical details: {ex.GetLogSummary()}");
-                //    break;
-
-                // missing content folder exception
-                case FileNotFoundException ex when ex.Message == "Couldn't find file 'C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Stardew Valley\\Content\\XACT\\FarmerSounds.xgs'.": // path in error is hardcoded regardless of install path
-                    this.Monitor.Log("The game can't find its Content\\XACT\\FarmerSounds.xgs file. You can usually fix this by resetting your content files (see https://smapi.io/troubleshoot#reset-content ), or by uninstalling and reinstalling the game.", LogLevel.Error);
-                    this.Monitor.Log($"Technical details: {ex.GetLogSummary()}");
-                    break;
-
                 // path too long exception
                 case PathTooLongException _:
                     {
