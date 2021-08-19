@@ -259,17 +259,6 @@ namespace StardewModdingApi.Installer
                 Console.ReadLine();
                 return;
             }
-
-            // game folder doesn't contain paths beyond the max limit
-            {
-                string[] tooLongPaths = PathUtilities.GetTooLongPaths(Path.Combine(paths.GamePath, "Mods")).ToArray();
-                if (tooLongPaths.Any())
-                {
-                    this.PrintError($"SMAPI can't install to the detected game folder, because some of its files exceed the maximum {context.Platform} path length.\nIf you need help fixing this error, see https://smapi.io/help\n\nAffected paths:\n   {string.Join("\n   ", tooLongPaths)}");
-                    Console.ReadLine();
-                    return;
-                }
-            }
             Console.Clear();
 
 
