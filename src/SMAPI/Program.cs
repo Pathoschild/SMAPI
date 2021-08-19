@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using StardewModdingAPI.Framework;
 using StardewModdingAPI.Toolkit.Serialization.Models;
+using StardewModdingAPI.Toolkit.Utilities;
 
 namespace StardewModdingAPI
 {
@@ -33,6 +34,7 @@ namespace StardewModdingAPI
                 Program.AssertGamePresent();
                 Program.AssertGameVersion();
                 Program.AssertSmapiVersions();
+                Program.AssertDepsJson();
                 Program.Start(args);
             }
             catch (BadImageFormatException ex) when (ex.FileName == EarlyConstants.GameAssemblyName)
@@ -127,6 +129,20 @@ namespace StardewModdingAPI
                 ISemanticVersion assemblyVersion = new SemanticVersion(assemblyName.Version);
                 if (!assemblyVersion.Equals(smapiVersion))
                     Program.PrintErrorAndExit($"Oops! The 'smapi-internal/{assemblyName.Name}.dll' file is version {assemblyVersion} instead of the required {Constants.ApiVersion}. SMAPI doesn't seem to be installed correctly.");
+            }
+        }
+
+        /// <summary>Assert that SMAPI's <c>StardewModdingAPI.deps.json</c> matches <c>Stardew Valley.deps.json</c>, fixing it if necessary.</summary>
+        /// <remarks>This is needed to resolve native DLLs like libSkiaSharp.</remarks>
+        private static void AssertDepsJson()
+        {
+            string sourcePath = Path.Combine(Constants.ExecutionPath, "Stardew Valley.deps.json");
+            string targetPath = Path.Combine(Constants.ExecutionPath, "StardewModdingAPI.deps.json");
+
+            if (!File.Exists(targetPath) || FileUtilities.GetFileHash(sourcePath) != FileUtilities.GetFileHash(targetPath))
+            {
+                File.Copy(sourcePath, targetPath, overwrite: true);
+                Program.PrintErrorAndExit($"The '{Path.GetFileName(targetPath)}' file didn't match the game's version. SMAPI fixed it automatically, but you must restart SMAPI for the change to take effect.");
             }
         }
 

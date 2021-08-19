@@ -410,6 +410,14 @@ namespace StardewModdingApi.Installer
                         }
                     }
 
+                    // copy the game's deps.json file
+                    // (This is needed to resolve native DLLs like libSkiaSharp.)
+                    File.Copy(
+                        sourceFileName: Path.Combine(paths.GamePath, "Stardew Valley.deps.json"),
+                        destFileName: Path.Combine(paths.GamePath, "StardewModdingAPI.deps.json"),
+                        overwrite: true
+                    );
+
                     // create mods directory (if needed)
                     if (!paths.ModsDir.Exists)
                     {
