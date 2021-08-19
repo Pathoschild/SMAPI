@@ -250,24 +250,7 @@ namespace StardewModdingAPI.Framework.Logging
         /// <param name="exception">The exception details.</param>
         public void LogFatalLaunchError(Exception exception)
         {
-            switch (exception)
-            {
-                // path too long exception
-                case PathTooLongException _:
-                    {
-                        string[] affectedPaths = PathUtilities.GetTooLongPaths(Constants.ModsPath).ToArray();
-                        string message = affectedPaths.Any()
-                            ? $"SMAPI can't launch because some of your mod files exceed the maximum path length on {Constants.Platform}.\nIf you need help fixing this error, see https://smapi.io/help\n\nAffected paths:\n   {string.Join("\n   ", affectedPaths)}"
-                            : $"The game failed to launch: {exception.GetLogSummary()}";
-                        this.MonitorForGame.Log(message, LogLevel.Error);
-                    }
-                    break;
-
-                // generic exception
-                default:
-                    this.MonitorForGame.Log($"The game failed to launch: {exception.GetLogSummary()}", LogLevel.Error);
-                    break;
-            }
+            this.MonitorForGame.Log($"The game failed to launch: {exception.GetLogSummary()}", LogLevel.Error);
         }
 
         /****
