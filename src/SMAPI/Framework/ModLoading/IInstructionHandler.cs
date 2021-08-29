@@ -24,6 +24,11 @@ namespace StardewModdingAPI.Framework.ModLoading
         /*********
         ** Methods
         *********/
+        /// <summary>Rewrite a module definition if needed.</summary>
+        /// <param name="module">The assembly module.</param>
+        /// <returns>Returns whether the module was changed.</returns>
+        bool Handle(ModuleDefinition module);
+
         /// <summary>Rewrite a type reference if needed.</summary>
         /// <param name="module">The assembly module containing the instruction.</param>
         /// <param name="type">The type definition to handle.</param>

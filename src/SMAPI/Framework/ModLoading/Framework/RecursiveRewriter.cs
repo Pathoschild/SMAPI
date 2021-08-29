@@ -13,6 +13,11 @@ namespace StardewModdingAPI.Framework.ModLoading.Framework
         /*********
         ** Delegates
         *********/
+        /// <summary>Rewrite a module definition in the assembly code.</summary>
+        /// <param name="module">The current module definition.</param>
+        /// <returns>Returns whether the module was changed.</returns>
+        public delegate bool RewriteModuleDelegate(ModuleDefinition module);
+
         /// <summary>Rewrite a type reference in the assembly code.</summary>
         /// <param name="type">The current type reference.</param>
         /// <param name="replaceWith">Replaces the type reference with the given type.</param>
@@ -33,6 +38,9 @@ namespace StardewModdingAPI.Framework.ModLoading.Framework
         public ModuleDefinition Module { get; }
 
         /// <summary>Handle or rewrite a type reference if needed.</summary>
+        public RewriteModuleDelegate RewriteModuleImpl { get; }
+
+        /// <summary>Handle or rewrite a type reference if needed.</summary>
         public RewriteTypeDelegate RewriteTypeImpl { get; }
 
         /// <summary>Handle or rewrite a CIL instruction if needed.</summary>
@@ -46,9 +54,10 @@ namespace StardewModdingAPI.Framework.ModLoading.Framework
         /// <param name="module">The module to rewrite.</param>
         /// <param name="rewriteType">Handle or rewrite a type reference if needed.</param>
         /// <param name="rewriteInstruction">Handle or rewrite a CIL instruction if needed.</param>
-        public RecursiveRewriter(ModuleDefinition module, RewriteTypeDelegate rewriteType, RewriteInstructionDelegate rewriteInstruction)
+        public RecursiveRewriter(ModuleDefinition module, RewriteModuleDelegate rewriteModule, RewriteTypeDelegate rewriteType, RewriteInstructionDelegate rewriteInstruction)
         {
             this.Module = module;
+            this.RewriteModuleImpl = rewriteModule;
             this.RewriteTypeImpl = rewriteType;
             this.RewriteInstructionImpl = rewriteInstruction;
         }
@@ -63,6 +72,8 @@ namespace StardewModdingAPI.Framework.ModLoading.Framework
 
             try
             {
+                changed |= this.RewriteModuleImpl( this.Module );
+
                 foreach (var type in types)
                     changed |= this.RewriteTypeDefinition(type);
             }

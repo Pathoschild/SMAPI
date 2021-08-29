@@ -25,6 +25,12 @@ namespace StardewModdingAPI.Framework.ModLoading.Framework
         ** Public methods
         *********/
         /// <inheritdoc />
+        public virtual bool Handle(ModuleDefinition module)
+        {
+            return false;
+        }
+
+        /// <inheritdoc />
         public virtual bool Handle(ModuleDefinition module, TypeReference type, Action<TypeReference> replaceWith)
         {
             return false;
