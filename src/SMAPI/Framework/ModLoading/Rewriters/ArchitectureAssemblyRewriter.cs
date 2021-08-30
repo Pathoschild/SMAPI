@@ -1,13 +1,9 @@
-using System;
-using HarmonyLib;
 using Mono.Cecil;
-using Mono.Cecil.Cil;
 using StardewModdingAPI.Framework.ModLoading.Framework;
-using StardewModdingAPI.Framework.ModLoading.RewriteFacades;
 
 namespace StardewModdingAPI.Framework.ModLoading.Rewriters
 {
-    /// <summary>Rewrites Harmony 1.x assembly references to work with Harmony 2.x.</summary>
+    /// <summary>Removes the 32-bit-only from loaded assemblies.</summary>
     internal class ArchitectureAssemblyRewriter : BaseInstructionHandler
     {
         /*********
@@ -19,14 +15,15 @@ namespace StardewModdingAPI.Framework.ModLoading.Rewriters
 
 
         /// <inheritdoc />
-        public override bool Handle( ModuleDefinition module )
+        public override bool Handle(ModuleDefinition module)
         {
-            if ( module.Attributes.HasFlag( ModuleAttributes.Required32Bit ) )
+            if (module.Attributes.HasFlag(ModuleAttributes.Required32Bit))
             {
-                module.Attributes = module.Attributes & ~ModuleAttributes.Required32Bit;
+                module.Attributes &= ~ModuleAttributes.Required32Bit;
                 this.MarkRewritten();
                 return true;
             }
+
             return false;
         }
 

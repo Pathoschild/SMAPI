@@ -1713,7 +1713,7 @@ namespace StardewModdingAPI.Framework
                 catch (Exception ex)
                 {
                     errorReasonPhrase = "its DLL couldn't be loaded.";
-                    if (!EnvironmentUtility.Is64BitAssembly(assemblyPath))
+                    if (ex is BadImageFormatException && !EnvironmentUtility.Is64BitAssembly(assemblyPath))
                         errorReasonPhrase = "it needs to be updated for 64-bit mode.";
                     errorDetails = $"Error: {ex.GetLogSummary()}";
                     failReason = ModFailReason.LoadFailed;

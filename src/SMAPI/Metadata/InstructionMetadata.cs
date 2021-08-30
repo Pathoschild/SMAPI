@@ -51,8 +51,6 @@ namespace StardewModdingAPI.Metadata
                 // rewrite for Stardew Valley 1.5.5
                 if (platformChanged)
                     yield return new MethodParentRewriter(typeof(SpriteBatch), typeof(SpriteBatchFacade));
-
-                // rewrite for 64-bit mode
                 yield return new ArchitectureAssemblyRewriter();
             }
 
