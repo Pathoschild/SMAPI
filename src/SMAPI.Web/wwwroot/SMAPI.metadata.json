@@ -168,6 +168,60 @@
         },
 
         /*********
+        ** Broke in SDV 1.5.5
+        *********/
+        "Animated Portrait Framework": {
+            "ID": "akai.AnimatedPortrait",
+            "~1.0.0 | Status": "AssumeBroken",
+            "~1.0.0 | StatusReasonDetails": "requires the 'System.Windows.Forms' API, which isn't available in .NET 5"
+        },
+        "Audio Devices": {
+            "ID": "maxvollmer.audiodevices",
+            "~3.0.1 | Status": "AssumeBroken",
+            "~3.0.1 | StatusReasonDetails": "fails to load due to an outdated implementation of the game's 'IAudioEngine' interface"
+        },
+        "Battery Warning": {
+            "ID": "Husky110.BatteryWarningMod",
+            "~1.0.4 | Status": "AssumeBroken",
+            "~1.0.4 | StatusReasonDetails": "requires the 'System.Management' API, which is a different DLL in .NET 5"
+        },
+        "Junimo Studio": {
+            "ID": "Becks723.JunimoStudio",
+            "~2.0.1 | Status": "AssumeBroken",
+            "~2.0.1 | StatusReasonDetails": "requires 'Microsoft.Xna.Framework.Audio.AudioCategory' which doesn't exist in MonoGame"
+        },
+        "Skip Intro": {
+            "ID": "Pathoschild.SkipIntro",
+            "~1.9.1 | Status": "AssumeBroken",
+            "~1.9.1 | StatusReasonDetails": "causes freeze during game launch"
+        },
+        "Stardew Hack": {
+            "ID": "bcmpinc.StardewHack",
+            "~5.1.0 | Status": "AssumeBroken",
+            "~5.1.0 | StatusReasonDetails": "runtime error when initializing due to an API change between .NET Framework and .NET 5"
+        },
+        "Stardew Valley Expanded": {
+            "ID": "FlashShifter.SVECode",
+            "~1.13.11 | Status": "AssumeBroken",
+            "~1.13.11 | StatusReasonDetails": "fails to load due to an outdated implementation of the game's 'ICue' interface"
+        },
+        "Stardew Web": {
+            "ID": "prism99.stardewweb",
+            "~0.7.2 | Status": "AssumeBroken",
+            "~0.7.2 | StatusReasonDetails": "requires the 'System.Drawing' API, which isn't available in .NET 5"
+        },
+        "Sundrop City": {
+            "ID": "SundropTeam.SundropCity",
+            "~0.4.1 | Status": "AssumeBroken",
+            "~0.4.1 | StatusReasonDetails": "causes freeze during game launch"
+        },
+        "Video Player": {
+            "ID": "aedenthorn.VideoPlayer",
+            "~0.2.5 | Status": "AssumeBroken",
+            "~0.2.5 | StatusReasonDetails": "requires an XNA Framework API that's not available in MonoGame and causes a crash to desktop"
+        },
+
+        /*********
         ** Broke in SMAPI 3.12.0
         *********/
         "Always Scroll Map": {
@@ -205,11 +259,6 @@
             "~1.9.3 | Status": "AssumeBroken",
             "~1.9.3 | StatusReasonDetails": "fails to load with 'ReflectionTypeLoadException' error"
         },
-        "Stardew Hack": {
-            "ID": "bcmpinc.StardewHack",
-            "~5.0.0 | Status": "AssumeBroken",
-            "~5.0.0 | StatusReasonDetails": "causes Harmony patching errors for other mods"
-        },
         "Tilled Soil Decay": {
             "ID": "bcmpinc.TilledSoilDecay",
             "~4.1.0 | Status": "AssumeBroken",
@@ -238,12 +287,6 @@
         /*********
         ** Broke in SDV 1.5 (SMAPI mods)
         *********/
-        "Audio Devices": {
-            "ID": "maxvollmer.audiodevices",
-            "~2.0.0 | Status": "AssumeBroken",
-            "~2.0.0 | StatusReasonDetails": "causes crash to desktop when starting the game"
-        },
-
         "ChestEx": {
             "ID": "berkayylmao.ChestEx",
             "~1.3.4 | Status": "AssumeBroken",

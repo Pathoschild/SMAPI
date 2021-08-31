@@ -5,6 +5,7 @@
 * For players:
   * Updated for Stardew Valley 1.5.5.
   * Fixed mod edits to the farmhouse shifting the player down one tile in some cases.
+  * Updated compatibility list.
 
 * For mod authors:
   * Migrated to 64-bit MonoGame and .NET 5 on all platforms (see [migration guide for mod authors](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5.5)).
