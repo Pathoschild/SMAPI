@@ -277,30 +277,10 @@ namespace StardewModdingApi.Installer
             /*********
             ** Step 4: validate assumptions
             *********/
-            // not 64-bit on Windows
-            if (context.Platform == Platform.Windows)
-            {
-                FileInfo linuxExecutable = new FileInfo(Path.Combine(paths.GamePath, "StardewValley.exe"));
-                if (linuxExecutable.Exists && this.Is64Bit(linuxExecutable.FullName))
-                {
-                    this.PrintError("Oops! The detected game install path seems to be unofficial 64-bit mode, which is no longer supported. You can update to Stardew Valley 1.5.5 or later instead. See https://stardewvalleywiki.com/Modding:Migrate_to_64-bit_on_Windows for more info.");
-                    Console.ReadLine();
-                    return;
-                }
-            }
-
             // executable exists
             if (!File.Exists(paths.ExecutablePath))
             {
                 this.PrintError("The detected game install path doesn't contain a Stardew Valley executable.");
-                Console.ReadLine();
-                return;
-            }
-
-            // not Stardew Valley 1.5.5+
-            if (File.Exists(Path.Combine(paths.GamePath, "Stardew Valley.dll")))
-            {
-                this.PrintError("Oops! The detected game install path seems to be Stardew Valley 1.5.5 or later, but this version of SMAPI is only compatible up to Stardew Valley 1.5.4. Please check for a newer version of SMAPI: https://smapi.io.");
                 Console.ReadLine();
                 return;
             }
