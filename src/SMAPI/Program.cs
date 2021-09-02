@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using StardewModdingAPI.Framework;
-using StardewModdingAPI.Toolkit.Framework;
 using StardewModdingAPI.Toolkit.Serialization.Models;
 
 namespace StardewModdingAPI
@@ -84,21 +83,9 @@ namespace StardewModdingAPI
             }
             catch (Exception ex)
             {
-                // unofficial 64-bit
-                if (EarlyConstants.Platform == GamePlatform.Windows)
-                {
-                    FileInfo linuxExecutable = new FileInfo(Path.Combine(EarlyConstants.ExecutionPath, "StardewValley.exe"));
-                    if (linuxExecutable.Exists && LowLevelEnvironmentUtility.Is64BitAssembly(linuxExecutable.FullName))
-                        Program.PrintErrorAndExit("Oops! You're running Stardew Valley in unofficial 64-bit mode, which is no longer supported. You can update to Stardew Valley 1.5.5 or later instead. See https://stardewvalleywiki.com/Modding:Migrate_to_64-bit_on_Windows for more info.");
-                }
-
                 // file doesn't exist
                 if (!File.Exists(Path.Combine(EarlyConstants.ExecutionPath, $"{EarlyConstants.GameAssemblyName}.exe")))
                     Program.PrintErrorAndExit("Oops! SMAPI can't find the game. Make sure you're running StardewModdingAPI.exe in your game folder.");
-
-                // Stardew Valley 1.5.5+
-                if (File.Exists(Path.Combine(EarlyConstants.ExecutionPath, "Stardew Valley.dll")))
-                    Program.PrintErrorAndExit("Oops! You're running Stardew Valley 1.5.5 or later, but this version of SMAPI is only compatible up to Stardew Valley 1.5.4. Please check for a newer version of SMAPI: https://smapi.io.");
 
                 // can't load file
                 Program.PrintErrorAndExit(
