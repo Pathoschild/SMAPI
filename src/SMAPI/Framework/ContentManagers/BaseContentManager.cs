@@ -38,9 +38,6 @@ namespace StardewModdingAPI.Framework.ContentManagers
         /// <summary>A callback to invoke when the content manager is being disposed.</summary>
         private readonly Action<BaseContentManager> OnDisposing;
 
-        /// <summary>The language enum values indexed by locale code.</summary>
-        protected IDictionary<string, LanguageCode> LanguageCodes { get; }
-
         /// <summary>A list of disposable assets.</summary>
         private readonly List<WeakReference<IDisposable>> Disposables = new List<WeakReference<IDisposable>>();
 
@@ -92,7 +89,6 @@ namespace StardewModdingAPI.Framework.ContentManagers
             this.AggressiveMemoryOptimizations = aggressiveMemoryOptimizations;
 
             // get asset data
-            this.LanguageCodes = this.GetKeyLocales().ToDictionary(p => p.Value, p => p.Key, StringComparer.OrdinalIgnoreCase);
             this.BaseDisposableReferences = reflection.GetField<List<IDisposable>>(this, "disposableAssets").GetValue();
         }
 
@@ -292,7 +288,7 @@ namespace StardewModdingAPI.Framework.ContentManagers
                 if (lastSepIndex >= 0)
                 {
                     string suffix = cacheKey.Substring(lastSepIndex + 1, cacheKey.Length - lastSepIndex - 1);
-                    if (this.LanguageCodes.ContainsKey(suffix))
+                    if (this.Coordinator.TryGetLanguageEnum(suffix, out _))
                     {
                         assetName = cacheKey.Substring(0, lastSepIndex);
                         localeCode = cacheKey.Substring(lastSepIndex + 1, cacheKey.Length - lastSepIndex - 1);
@@ -310,17 +306,6 @@ namespace StardewModdingAPI.Framework.ContentManagers
         /// <param name="normalizedAssetName">The normalized asset name.</param>
         /// <param name="language">The language to check.</param>
         protected abstract bool IsNormalizedKeyLoaded(string normalizedAssetName, LanguageCode language);
-
-        /// <summary>Get the locale codes (like <c>ja-JP</c>) used in asset keys.</summary>
-        private IDictionary<LanguageCode, string> GetKeyLocales()
-        {
-            // create locale => code map
-            IDictionary<LanguageCode, string> map = new Dictionary<LanguageCode, string>();
-            foreach (LanguageCode code in Enum.GetValues(typeof(LanguageCode)))
-                map[code] = this.GetLocale(code);
-
-            return map;
-        }
 
         /// <summary>Get the asset name from a cache key.</summary>
         /// <param name="cacheKey">The input cache key.</param>

@@ -249,7 +249,7 @@ namespace StardewModdingAPI.Framework.ContentManagers
 
             // extract language code
             int splitIndex = rawAsset.LastIndexOf('.');
-            if (splitIndex != -1 && this.LanguageCodes.TryGetValue(rawAsset.Substring(splitIndex + 1), out language))
+            if (splitIndex != -1 && this.Coordinator.TryGetLanguageEnum(rawAsset.Substring(splitIndex + 1), out language))
             {
                 assetName = rawAsset.Substring(0, splitIndex);
                 return true;
