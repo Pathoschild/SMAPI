@@ -64,6 +64,9 @@ namespace StardewModdingAPI.Framework
         /// <summary>An unmodified content manager which doesn't intercept assets, used to compare asset data.</summary>
         private readonly LocalizedContentManager VanillaContentManager;
 
+        /// <summary>The language enum values indexed by locale code.</summary>
+        private Lazy<IDictionary<string, LocalizedContentManager.LanguageCode>> LocaleCodes;
+
 
         /*********
         ** Accessors
@@ -133,6 +136,7 @@ namespace StardewModdingAPI.Framework
             this.ContentManagers.Add(contentManagerForAssetPropagation);
             this.VanillaContentManager = new LocalizedContentManager(serviceProvider, rootDirectory);
             this.CoreAssets = new CoreAssetPropagator(this.MainContentManager, contentManagerForAssetPropagation, this.Monitor, reflection, aggressiveMemoryOptimizations);
+            this.LocaleCodes = new Lazy<IDictionary<string, LocalizedContentManager.LanguageCode>>(this.GetLocaleCodes);
         }
 
         /// <summary>Get a new content manager which handles reading files from the game content folder with support for interception.</summary>
@@ -195,6 +199,10 @@ namespace StardewModdingAPI.Framework
         /// <summary>Perform any cleanup needed when the locale changes.</summary>
         public void OnLocaleChanged()
         {
+            // rebuild locale cache (which may change due to custom mod languages)
+            this.LocaleCodes = new Lazy<IDictionary<string, LocalizedContentManager.LanguageCode>>(this.GetLocaleCodes);
+
+            // reload affected content
             this.ContentManagerLock.InReadLock(() =>
             {
                 foreach (IContentManager contentManager in this.ContentManagers)
@@ -408,6 +416,25 @@ namespace StardewModdingAPI.Framework
             return tilesheets ?? new TilesheetReference[0];
         }
 
+        /// <summary>Get the language enum which corresponds to a locale code (e.g. <see cref="LocalizedContentManager.LanguageCode.fr"/> given <c>fr-FR</c>).</summary>
+        /// <param name="locale">The locale code to search. This must exactly match the language; no fallback is performed.</param>
+        /// <param name="language">The matched language enum, if any.</param>
+        /// <returns>Returns whether a valid language was found.</returns>
+        public bool TryGetLanguageEnum(string locale, out LocalizedContentManager.LanguageCode language)
+        {
+            return this.LocaleCodes.Value.TryGetValue(locale, out language);
+        }
+
+        /// <summary>Get the locale code which corresponds to a language enum (e.g. <c>fr-FR</c> given <see cref="LocalizedContentManager.LanguageCode.fr"/>).</summary>
+        /// <param name="language">The language enum to search.</param>
+        public string GetLocaleCode(LocalizedContentManager.LanguageCode language)
+        {
+            if (language == LocalizedContentManager.LanguageCode.mod && LocalizedContentManager.CurrentModLanguage == null)
+                return null;
+
+            return Game1.content.LanguageCodeString(language);
+        }
+
         /// <summary>Dispose held resources.</summary>
         public void Dispose()
         {
@@ -456,6 +483,20 @@ namespace StardewModdingAPI.Framework
                 asset = default;
                 return false;
             }
+        }
+
+        /// <summary>Get the language enums (like <see cref="LocalizedContentManager.LanguageCode.ja"/>) indexed by locale code (like <c>ja-JP</c>).</summary>
+        private IDictionary<string, LocalizedContentManager.LanguageCode> GetLocaleCodes()
+        {
+            IDictionary<string, LocalizedContentManager.LanguageCode> map = new Dictionary<string, LocalizedContentManager.LanguageCode>();
+            foreach (LocalizedContentManager.LanguageCode code in Enum.GetValues(typeof(LocalizedContentManager.LanguageCode)))
+            {
+                string locale = this.GetLocaleCode(code);
+                if (locale != null)
+                    map[locale] = code;
+            }
+
+            return map;
         }
     }
 }

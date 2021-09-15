@@ -751,7 +751,7 @@ namespace StardewModdingAPI.Framework
                     ** Locale changed events
                     *********/
                     if (state.Locale.IsChanged)
-                        this.Monitor.Log($"Context: locale set to {state.Locale.New}.");
+                        this.Monitor.Log($"Context: locale set to {state.Locale.New} ({this.ContentCore.GetLocaleCode(state.Locale.New)}).");
 
                     /*********
                     ** Load / return-to-title events
@@ -761,7 +761,7 @@ namespace StardewModdingAPI.Framework
                     else if (Context.IsWorldReady && Context.LoadStage != LoadStage.Ready)
                     {
                         // print context
-                        string context = $"Context: loaded save '{Constants.SaveFolderName}', starting {Game1.currentSeason} {Game1.dayOfMonth} Y{Game1.year}, locale set to {this.ContentCore.Language}.";
+                        string context = $"Context: loaded save '{Constants.SaveFolderName}', starting {Game1.currentSeason} {Game1.dayOfMonth} Y{Game1.year}, locale set to {this.ContentCore.GetLocale()}.";
                         if (Context.IsMultiplayer)
                         {
                             int onlineCount = Game1.getOnlineFarmers().Count();
