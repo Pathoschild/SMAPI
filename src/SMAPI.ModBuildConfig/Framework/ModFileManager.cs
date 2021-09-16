@@ -152,22 +152,22 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
         /// <param name="ignoreFilePatterns">Custom regex patterns matching files to ignore when deploying or zipping the mod.</param>
         private bool ShouldIgnore(FileInfo file, string relativePath, Regex[] ignoreFilePatterns)
         {
+            bool IsAssemblyFile(string baseName)
+            {
+                return
+                    this.EqualsInvariant(file.Name, $"{baseName}.dll")
+                    || this.EqualsInvariant(file.Name, $"{baseName}.pdb")
+                    || this.EqualsInvariant(file.Name, $"{baseName}.xnb");
+            }
+
             return
                 // release zips
                 this.EqualsInvariant(file.Extension, ".zip")
 
-                // Harmony (bundled into SMAPI)
-                || this.EqualsInvariant(file.Name, "0Harmony.dll")
-
-                // Json.NET (bundled into SMAPI)
-                || this.EqualsInvariant(file.Name, "Newtonsoft.Json.dll")
-                || this.EqualsInvariant(file.Name, "Newtonsoft.Json.pdb")
-                || this.EqualsInvariant(file.Name, "Newtonsoft.Json.xml")
-
-                // mod translation class builder (not used at runtime)
-                || this.EqualsInvariant(file.Name, "Pathoschild.Stardew.ModTranslationClassBuilder.dll")
-                || this.EqualsInvariant(file.Name, "Pathoschild.Stardew.ModTranslationClassBuilder.pdb")
-                || this.EqualsInvariant(file.Name, "Pathoschild.Stardew.ModTranslationClassBuilder.xml")
+                // dependencies bundled with SMAPI
+                || IsAssemblyFile("0Harmony")
+                || IsAssemblyFile("Newtonsoft.Json")
+                || IsAssemblyFile("Pathoschild.Stardew.ModTranslationClassBuilder") // not used at runtime
 
                 // code analysis files
                 || file.Name.EndsWith(".CodeAnalysisLog.xml", StringComparison.OrdinalIgnoreCase)
