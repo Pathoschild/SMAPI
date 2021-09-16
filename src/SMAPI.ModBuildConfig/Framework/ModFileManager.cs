@@ -164,6 +164,9 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
                 // release zips
                 this.EqualsInvariant(file.Extension, ".zip")
 
+                // unneeded *.deps.json (only SMAPI's top-level one is used)
+                || file.Name.EndsWith(".deps.json")
+
                 // dependencies bundled with SMAPI
                 || IsAssemblyFile("0Harmony")
                 || IsAssemblyFile("Newtonsoft.Json")

@@ -15,6 +15,9 @@
     <!-- recognise XNA Framework DLLs in the GAC (only affects mods using new csproj format) -->
     <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
 
+    <!-- don't create the 'refs' folder (which isn't useful for mods) -->
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+
     <!-- suppress processor architecture mismatch warning (mods should be compiled in 'Any CPU' so they work in both 32-bit and 64-bit mode) -->
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
 
