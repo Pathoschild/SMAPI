@@ -41,9 +41,4 @@
       </PropertyGroup>
     </When>
   </Choose>
-
-  <!-- set game metadata -->
-  <PropertyGroup>
-    <GameExecutableName>Stardew Valley</GameExecutableName>
-  </PropertyGroup>
 </Project>

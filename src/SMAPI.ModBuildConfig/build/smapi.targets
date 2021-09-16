@@ -48,7 +48,7 @@
   **********************************************-->
   <ItemGroup>
     <!-- game -->
-    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).dll" Private="$(CopyModReferencesToBuildOutput)" />
+    <Reference Include="Stardew Valley" HintPath="$(GamePath)\Stardew Valley.dll" Private="$(CopyModReferencesToBuildOutput)" />
     <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="$(CopyModReferencesToBuildOutput)" />
     <Reference Include="MonoGame.Framework" HintPath="$(GamePath)\MonoGame.Framework.dll" Private="$(CopyModReferencesToBuildOutput)" />
     <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="$(CopyModReferencesToBuildOutput)" />
@@ -71,7 +71,7 @@
 
     <!-- invalid game path -->
     <Error Condition="!Exists('$(GamePath)')" Text="The mod build package can't find your game folder. You can specify where to find it; see https://smapi.io/package/custom-game-path." ContinueOnError="false" />
-    <Error Condition="!Exists('$(GamePath)\$(GameExecutableName).dll')" Text="The mod build package found a game folder at $(GamePath), but it doesn't contain the $(GameExecutableName) file. If this folder is invalid, delete it and the package will autodetect another game install path." ContinueOnError="false" />
+    <Error Condition="!Exists('$(GamePath)\Stardew Valley.dll')" Text="The mod build package found a game folder at $(GamePath), but it doesn't contain the Stardew Valley file. If this folder is invalid, delete it and the package will autodetect another game install path." ContinueOnError="false" />
     <Error Condition="!Exists('$(GamePath)\StardewModdingAPI.dll')" Text="The mod build package found a game folder at $(GamePath), but it doesn't contain SMAPI. You need to install SMAPI before building the mod." ContinueOnError="false" />
 
     <!-- invalid target architecture (note: internal value is 'AnyCPU', value shown in Visual Studio is 'Any CPU') -->

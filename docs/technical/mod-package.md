@@ -29,7 +29,7 @@ change how these work):
 * **Detect game path:**  
   The package automatically finds your game folder by scanning the default install paths and
   Windows registry. It adds two MSBuild properties for use in your `.csproj` file if needed:
-  `$(GamePath)` and `$(GameExecutableName)`.
+  `$(GamePath)` and `$(GameModsPath)`.
 
 * **Add assembly references:**  
   The package adds assembly references to SMAPI, Stardew Valley, xTile, and the game framework
@@ -125,15 +125,6 @@ change it.
 
 The absolute path to the folder containing the game's installed mods (defaults to
 `$(GamePath)/Mods`), used when deploying the mod files.
-
-</td>
-</tr>
-<tr>
-<td><code>GameExecutableName</code></td>
-<td>
-
-The filename for the game's executable (i.e. `StardewValley.exe` on Linux/macOS or
-`Stardew Valley.exe` on Windows). This is auto-detected, and you should almost never change this.
 
 </td>
 </tr>
@@ -382,13 +373,21 @@ when you compile it.
 ## Upcoming release
 * Updated for Stardew Valley 1.5.5 and SMAPI 3.13.0. **Older versions are no longer supported.**
 * Added `IgnoreModFilePaths` option to ignore literal paths.
+* Removed the `GameExecutableName` build property (since it now has the same value on all platforms).
 * Improved analyzer performance by enabling parallel execution.
+
+**Migration guide for mod authors:**
+1. See [_migrate to 64-bit_](https://stardewvalleywiki.com/Modding:Migrate_to_64-bit_on_Windows) and
+   [_migrate to Stardew Valley 1.5.5_](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5.5).
+2. Possible changes in your `.csproj` or `.targets` files:
+   * If you use `$(GameExecutableName)`, replace it with `Stardew Valley`.
 
 ## 3.3.0
 Released 30 March 2021.
 
 * Added a build warning when the mod isn't compiled for `Any CPU`.
-* Added a `GameFramework` build property set to `MonoGame` or `Xna` based on the platform. This can be overridden to change which framework it references.
+* Added a `GameFramework` build property set to `MonoGame` or `Xna` based on the platform. This can
+  be overridden to change which framework it references.
 * Added support for building mods against the 64-bit Linux version of the game on Windows.
 * The package now suppresses the misleading 'processor architecture mismatch' warnings.
 
@@ -396,7 +395,8 @@ Released 30 March 2021.
 Released 23 September 2020.
 
 * Reworked and streamlined how the package is compiled.
-* Added [SMAPI-ModTranslationClassBuilder](https://github.com/Pathoschild/SMAPI-ModTranslationClassBuilder) files to the ignore list.
+* Added [SMAPI-ModTranslationClassBuilder](https://github.com/Pathoschild/SMAPI-ModTranslationClassBuilder)
+  files to the ignore list.
 
 ### 3.2.1
 Released 11 September 2020.

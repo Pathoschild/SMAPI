@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <Reference Include="..\..\build\0Harmony.dll" Private="True" />
-    <Reference Include="$(GameExecutableName)" HintPath="$(GamePath)\$(GameExecutableName).dll" Private="False" />
+    <Reference Include="Stardew Valley" HintPath="$(GamePath)\Stardew Valley.dll" Private="False" />
     <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="False" />
     <Reference Include="GalaxyCSharp" HintPath="$(GamePath)\GalaxyCSharp.dll" Private="False" />
     <Reference Include="Lidgren.Network" HintPath="$(GamePath)\Lidgren.Network.dll" Private="False" />

@@ -23,10 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(GameExecutableName)">
-      <HintPath>$(GamePath)\$(GameExecutableName).dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="Stardew Valley" HintPath="$(GamePath)\Stardew Valley.dll" Private="True" />
   </ItemGroup>
 
   <ItemGroup>
