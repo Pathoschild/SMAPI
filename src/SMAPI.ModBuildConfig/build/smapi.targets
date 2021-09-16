@@ -30,9 +30,6 @@
     <EnableHarmony Condition="'$(EnableHarmony)' == ''">false</EnableHarmony>
     <EnableGameDebugging Condition="'$(EnableGameDebugging)' == ''">true</EnableGameDebugging>
     <CopyModReferencesToBuildOutput Condition="'$(CopyModReferencesToBuildOutput)' == '' OR ('$(CopyModReferencesToBuildOutput)' != 'true' AND '$(CopyModReferencesToBuildOutput)' != 'false')">false</CopyModReferencesToBuildOutput>
-
-    <GameFramework Condition="'$(GameFramework)' == '' AND '$(OS)' == 'Windows_NT'">Xna</GameFramework>
-    <GameFramework Condition="'$(GameFramework)' == ''">MonoGame</GameFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT' AND '$(EnableGameDebugging)' == 'true'">

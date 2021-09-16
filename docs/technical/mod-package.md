@@ -32,10 +32,10 @@ change how these work):
   `$(GamePath)` and `$(GameModsPath)`.
 
 * **Add assembly references:**  
-  The package adds assembly references to SMAPI, Stardew Valley, xTile, and the game framework
-  (MonoGame on Linux/macOS, XNA Framework on Windows). It automatically adjusts depending on which OS
-  you're compiling it on. If you use [Harmony](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Harmony),
-  it can optionally add a reference to that too.
+  The package adds assembly references to MonoGame, SMAPI, Stardew Valley, and xTile. It
+  automatically adjusts depending on which OS you're compiling it on. If you use
+  [Harmony](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Harmony), it can optionally add
+  a reference to that too.
 
 * **Copy files into the `Mods` folder:**  
   The package automatically copies your mod's DLL and PDB files, `manifest.json`, [`i18n`
@@ -129,14 +129,6 @@ The absolute path to the folder containing the game's installed mods (defaults t
 </td>
 </tr>
 <tr>
-<td><code>GameFramework</code></td>
-<td>
-
-The game framework for which the mod is being compiled (one of `Xna` or `MonoGame`). This is
-auto-detected based on the platform, and you should almost never change this.
-
-</td>
-</tr>
 </table>
 </li>
 
@@ -373,7 +365,8 @@ when you compile it.
 ## Upcoming release
 * Updated for Stardew Valley 1.5.5 and SMAPI 3.13.0. **Older versions are no longer supported.**
 * Added `IgnoreModFilePaths` option to ignore literal paths.
-* Removed the `GameExecutableName` build property (since it now has the same value on all platforms).
+* Removed the `GameExecutableName` and `GameFramework` build properties (since they now have the
+  same value on all platforms).
 * Improved analyzer performance by enabling parallel execution.
 
 **Migration guide for mod authors:**
@@ -381,6 +374,7 @@ when you compile it.
    [_migrate to Stardew Valley 1.5.5_](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5.5).
 2. Possible changes in your `.csproj` or `.targets` files:
    * If you use `$(GameExecutableName)`, replace it with `Stardew Valley`.
+   * If you use `$(GameFramework)`, replace it with `MonoGame` and remove any XNA-specific logic.
 
 ## 3.3.0
 Released 30 March 2021.

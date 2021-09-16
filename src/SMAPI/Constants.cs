@@ -241,8 +241,7 @@ namespace StardewModdingAPI
 
         /// <summary>Get metadata for mapping assemblies to the current platform.</summary>
         /// <param name="targetPlatform">The target game platform.</param>
-        /// <param name="framework">The game framework running the game.</param>
-        internal static PlatformAssemblyMap GetAssemblyMap(Platform targetPlatform, GameFramework framework)
+        internal static PlatformAssemblyMap GetAssemblyMap(Platform targetPlatform)
         {
             var removeAssemblyReferences = new List<string>();
             var targetAssemblies = new List<Assembly>();

@@ -53,16 +53,15 @@ namespace StardewModdingAPI.Framework.ModLoading
         *********/
         /// <summary>Construct an instance.</summary>
         /// <param name="targetPlatform">The current game platform.</param>
-        /// <param name="framework">The game framework running the game.</param>
         /// <param name="monitor">Encapsulates monitoring and logging.</param>
         /// <param name="paranoidMode">Whether to detect paranoid mode issues.</param>
         /// <param name="rewriteMods">Whether to rewrite mods for compatibility.</param>
-        public AssemblyLoader(Platform targetPlatform, GameFramework framework, IMonitor monitor, bool paranoidMode, bool rewriteMods)
+        public AssemblyLoader(Platform targetPlatform, IMonitor monitor, bool paranoidMode, bool rewriteMods)
         {
             this.Monitor = monitor;
             this.ParanoidMode = paranoidMode;
             this.RewriteMods = rewriteMods;
-            this.AssemblyMap = this.TrackForDisposal(Constants.GetAssemblyMap(targetPlatform, framework));
+            this.AssemblyMap = this.TrackForDisposal(Constants.GetAssemblyMap(targetPlatform));
 
             // init resolver
             this.AssemblyDefinitionResolver = this.TrackForDisposal(new AssemblyDefinitionResolver());
