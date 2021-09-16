@@ -225,6 +225,20 @@ project.
 </td>
 </tr>
 <tr>
+<td><code>IgnoreModFilePaths</code></td>
+<td>
+
+A comma-delimited list of literal file paths to ignore, relative to the mod's `bin` folder. Paths
+are case-sensitive, but path delimiters are normalized automatically. For example, this ignores a
+set of tilesheets:
+
+```xml
+<IgnoreModFilePaths>assets/paths.png, assets/springobjects.png</IgnoreModFilePaths>
+```
+
+</td>
+</tr>
+<tr>
 <td><code>IgnoreModFilePatterns</code></td>
 <td>
 
@@ -366,7 +380,8 @@ when you compile it.
 
 ## Release notes
 ## Upcoming release
-* Updated for Stardew Valley 1.5.5 and SMAPI 3.13.0. **The older versions are no longer supported.**
+* Updated for Stardew Valley 1.5.5 and SMAPI 3.13.0. **Older versions are no longer supported.**
+* Added `IgnoreModFilePaths` option to ignore literal paths.
 * Improved analyzer performance by enabling parallel execution.
 
 ## 3.3.0

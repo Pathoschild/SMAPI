@@ -94,6 +94,7 @@
       TargetDir="$(TargetDir)"
       GameModsDir="$(GameModsPath)"
       IgnoreModFilePatterns="$(IgnoreModFilePatterns)"
+      IgnoreModFilePaths="$(IgnoreModFilePaths)"
     />
   </Target>
 </Project>

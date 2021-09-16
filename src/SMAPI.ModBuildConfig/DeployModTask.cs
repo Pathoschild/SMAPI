@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using StardewModdingAPI.ModBuildConfig.Framework;
+using StardewModdingAPI.Toolkit.Utilities;
 
 namespace StardewModdingAPI.ModBuildConfig
 {
@@ -45,8 +46,11 @@ namespace StardewModdingAPI.ModBuildConfig
         [Required]
         public bool EnableModZip { get; set; }
 
-        /// <summary>Custom comma-separated regex patterns matching files to ignore when deploying or zipping the mod.</summary>
+        /// <summary>A comma-separated list of regex patterns matching files to ignore when deploying or zipping the mod.</summary>
         public string IgnoreModFilePatterns { get; set; }
+
+        /// <summary>A comma-separated list of relative file paths to ignore when deploying or zipping the mod.</summary>
+        public string IgnoreModFilePaths { get; set; }
 
 
         /*********
@@ -70,10 +74,11 @@ namespace StardewModdingAPI.ModBuildConfig
             try
             {
                 // parse ignore patterns
+                string[] ignoreFilePaths = this.GetCustomIgnoreFilePaths().ToArray();
                 Regex[] ignoreFilePatterns = this.GetCustomIgnorePatterns().ToArray();
 
                 // get mod info
-                ModFileManager package = new ModFileManager(this.ProjectDir, this.TargetDir, ignoreFilePatterns, validateRequiredModFiles: this.EnableModDeploy || this.EnableModZip);
+                ModFileManager package = new ModFileManager(this.ProjectDir, this.TargetDir, ignoreFilePaths, ignoreFilePatterns, validateRequiredModFiles: this.EnableModDeploy || this.EnableModZip);
 
                 // deploy mod files
                 if (this.EnableModDeploy)
@@ -154,6 +159,29 @@ namespace StardewModdingAPI.ModBuildConfig
                 }
 
                 yield return regex;
+            }
+        }
+
+        /// <summary>Get the custom relative file paths provided by the user to ignore.</summary>
+        private IEnumerable<string> GetCustomIgnoreFilePaths()
+        {
+            if (string.IsNullOrWhiteSpace(this.IgnoreModFilePaths))
+                yield break;
+
+            foreach (string raw in this.IgnoreModFilePaths.Split(','))
+            {
+                string path;
+                try
+                {
+                    path = PathUtilities.NormalizePath(raw);
+                }
+                catch (Exception ex)
+                {
+                    this.Log.LogWarning($"[mod build package] Ignored invalid <{nameof(this.IgnoreModFilePaths)}> path {raw}:\n{ex}");
+                    continue;
+                }
+
+                yield return path;
             }
         }
 

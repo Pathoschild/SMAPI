@@ -28,10 +28,11 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
         /// <summary>Construct an instance.</summary>
         /// <param name="projectDir">The folder containing the project files.</param>
         /// <param name="targetDir">The folder containing the build output.</param>
+        /// <param name="ignoreFilePaths">The custom relative file paths provided by the user to ignore.</param>
         /// <param name="ignoreFilePatterns">Custom regex patterns matching files to ignore when deploying or zipping the mod.</param>
         /// <param name="validateRequiredModFiles">Whether to validate that required mod files like the manifest are present.</param>
         /// <exception cref="UserErrorException">The mod package isn't valid.</exception>
-        public ModFileManager(string projectDir, string targetDir, Regex[] ignoreFilePatterns, bool validateRequiredModFiles)
+        public ModFileManager(string projectDir, string targetDir, string[] ignoreFilePaths, Regex[] ignoreFilePatterns, bool validateRequiredModFiles)
         {
             this.Files = new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase);
 
@@ -47,7 +48,7 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
                 string relativePath = entry.Item1;
                 FileInfo file = entry.Item2;
 
-                if (!this.ShouldIgnore(file, relativePath, ignoreFilePatterns))
+                if (!this.ShouldIgnore(file, relativePath, ignoreFilePaths, ignoreFilePatterns))
                     this.Files[relativePath] = file;
             }
 
@@ -149,8 +150,9 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
         /// <summary>Get whether a build output file should be ignored.</summary>
         /// <param name="file">The file to check.</param>
         /// <param name="relativePath">The file's relative path in the package.</param>
+        /// <param name="ignoreFilePaths">The custom relative file paths provided by the user to ignore.</param>
         /// <param name="ignoreFilePatterns">Custom regex patterns matching files to ignore when deploying or zipping the mod.</param>
-        private bool ShouldIgnore(FileInfo file, string relativePath, Regex[] ignoreFilePatterns)
+        private bool ShouldIgnore(FileInfo file, string relativePath, string[] ignoreFilePaths, Regex[] ignoreFilePatterns)
         {
             bool IsAssemblyFile(string baseName)
             {
@@ -181,6 +183,7 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
                 || this.EqualsInvariant(file.Name, "Thumbs.db")
 
                 // custom ignore patterns
+                || ignoreFilePaths.Any(p => p == relativePath)
                 || ignoreFilePatterns.Any(p => p.IsMatch(relativePath));
         }
 
