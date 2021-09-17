@@ -29,7 +29,10 @@
     <EnableModZip Condition="'$(EnableModZip)' == ''">true</EnableModZip>
     <EnableHarmony Condition="'$(EnableHarmony)' == ''">false</EnableHarmony>
     <EnableGameDebugging Condition="'$(EnableGameDebugging)' == ''">true</EnableGameDebugging>
-    <CopyModReferencesToBuildOutput Condition="'$(CopyModReferencesToBuildOutput)' == '' OR ('$(CopyModReferencesToBuildOutput)' != 'true' AND '$(CopyModReferencesToBuildOutput)' != 'false')">false</CopyModReferencesToBuildOutput>
+    <BundleExtraAssemblies Condition="'$(BundleExtraAssemblies)' == ''"></BundleExtraAssemblies>
+
+    <!-- coppy referenced DLLs into build output -->
+    <CopyLocalLockFileAssemblies Condition="$(BundleExtraAssemblies.Contains('ThirdParty')) OR $(BundleExtraAssemblies.Contains('Game')) OR $(BundleExtraAssemblies.Contains('System')) OR $(BundleExtraAssemblies.Contains('All'))">true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT' AND '$(EnableGameDebugging)' == 'true'">
@@ -45,17 +48,17 @@
   **********************************************-->
   <ItemGroup>
     <!-- game -->
-    <Reference Include="Stardew Valley" HintPath="$(GamePath)\Stardew Valley.dll" Private="$(CopyModReferencesToBuildOutput)" />
-    <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="$(CopyModReferencesToBuildOutput)" />
-    <Reference Include="MonoGame.Framework" HintPath="$(GamePath)\MonoGame.Framework.dll" Private="$(CopyModReferencesToBuildOutput)" />
-    <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="$(CopyModReferencesToBuildOutput)" />
+    <Reference Include="Stardew Valley" HintPath="$(GamePath)\Stardew Valley.dll" Private="$(BundleExtraAssemblies.Contains('Game'))" />
+    <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="$(BundleExtraAssemblies.Contains('Game'))" />
+    <Reference Include="MonoGame.Framework" HintPath="$(GamePath)\MonoGame.Framework.dll" Private="$(BundleExtraAssemblies.Contains('Game'))" />
+    <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="$(BundleExtraAssemblies.Contains('Game'))" />
 
     <!-- SMAPI -->
-    <Reference Include="StardewModdingAPI" HintPath="$(GamePath)\StardewModdingAPI.dll" Private="$(CopyModReferencesToBuildOutput)" />
-    <Reference Include="SMAPI.Toolkit.CoreInterfaces" HintPath="$(GamePath)\smapi-internal\SMAPI.Toolkit.CoreInterfaces.dll" Private="$(CopyModReferencesToBuildOutput)" />
+    <Reference Include="StardewModdingAPI" HintPath="$(GamePath)\StardewModdingAPI.dll" Private="$(BundleExtraAssemblies.Contains('Game'))" />
+    <Reference Include="SMAPI.Toolkit.CoreInterfaces" HintPath="$(GamePath)\smapi-internal\SMAPI.Toolkit.CoreInterfaces.dll" Private="$(BundleExtraAssemblies.Contains('Game'))" />
 
     <!-- Harmony -->
-    <Reference Include="0Harmony" Condition="'$(EnableHarmony)' == 'true'" HintPath="$(GamePath)\smapi-internal\0Harmony.dll" Private="$(CopyModReferencesToBuildOutput)" />
+    <Reference Include="0Harmony" Condition="'$(EnableHarmony)' == 'true'" HintPath="$(GamePath)\smapi-internal\0Harmony.dll" Private="$(BundleExtraAssemblies.Contains('Game'))" />
   </ItemGroup>
 
 
@@ -81,6 +84,7 @@
   **********************************************-->
   <Target Name="AfterBuild">
     <DeployModTask
+      ModDllName="$(TargetName)"
       ModFolderName="$(ModFolderName)"
       ModZipPath="$(ModZipPath)"
 
@@ -92,6 +96,8 @@
       GameModsDir="$(GameModsPath)"
       IgnoreModFilePatterns="$(IgnoreModFilePatterns)"
       IgnoreModFilePaths="$(IgnoreModFilePaths)"
+
+      BundleExtraAssemblies="$(BundleExtraAssemblies)"
     />
   </Target>
 </Project>

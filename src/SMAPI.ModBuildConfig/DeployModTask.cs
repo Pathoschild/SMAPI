@@ -18,6 +18,10 @@ namespace StardewModdingAPI.ModBuildConfig
         /*********
         ** Accessors
         *********/
+        /// <summary>The name (without extension or path) of the current mod's DLL.</summary>
+        [Required]
+        public string ModDllName { get; set; }
+
         /// <summary>The name of the mod folder.</summary>
         [Required]
         public string ModFolderName { get; set; }
@@ -52,6 +56,9 @@ namespace StardewModdingAPI.ModBuildConfig
         /// <summary>A comma-separated list of relative file paths to ignore when deploying or zipping the mod.</summary>
         public string IgnoreModFilePaths { get; set; }
 
+        /// <summary>A comma-separated list of <see cref="ExtraAssemblyTypes"/> values which indicate which extra DLLs to bundle.</summary>
+        public string BundleExtraAssemblies { get; set; }
+
 
         /*********
         ** Public methods
@@ -73,12 +80,15 @@ namespace StardewModdingAPI.ModBuildConfig
 
             try
             {
+                // parse extra DLLs to bundle
+                ExtraAssemblyTypes bundleAssemblyTypes = this.GetExtraAssembliesToBundleOption();
+
                 // parse ignore patterns
                 string[] ignoreFilePaths = this.GetCustomIgnoreFilePaths().ToArray();
                 Regex[] ignoreFilePatterns = this.GetCustomIgnorePatterns().ToArray();
 
                 // get mod info
-                ModFileManager package = new ModFileManager(this.ProjectDir, this.TargetDir, ignoreFilePaths, ignoreFilePatterns, validateRequiredModFiles: this.EnableModDeploy || this.EnableModZip);
+                ModFileManager package = new ModFileManager(this.ProjectDir, this.TargetDir, ignoreFilePaths, ignoreFilePatterns, bundleAssemblyTypes, this.ModDllName, validateRequiredModFiles: this.EnableModDeploy || this.EnableModZip);
 
                 // deploy mod files
                 if (this.EnableModDeploy)
@@ -137,6 +147,28 @@ namespace StardewModdingAPI.ModBuildConfig
 
                 yield return new KeyValuePair<string, string>(name, value);
             }
+        }
+
+        /// <summary>Parse the extra assembly types which should be bundled with the mod.</summary>
+        private ExtraAssemblyTypes GetExtraAssembliesToBundleOption()
+        {
+            ExtraAssemblyTypes flags = ExtraAssemblyTypes.None;
+
+            if (!string.IsNullOrWhiteSpace(this.BundleExtraAssemblies))
+            {
+                foreach (string raw in this.BundleExtraAssemblies.Split(','))
+                {
+                    if (!Enum.TryParse(raw, out ExtraAssemblyTypes type))
+                    {
+                        this.Log.LogWarning($"[mod build package] Ignored invalid <{nameof(this.BundleExtraAssemblies)}> value '{raw}', expected one of '{string.Join("', '", Enum.GetNames(typeof(ExtraAssemblyTypes)))}'.");
+                        continue;
+                    }
+
+                    flags |= type;
+                }
+            }
+
+            return flags;
         }
 
         /// <summary>Get the custom ignore patterns provided by the user.</summary>
