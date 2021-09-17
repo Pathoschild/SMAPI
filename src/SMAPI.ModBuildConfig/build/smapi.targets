@@ -12,9 +12,6 @@
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
 
-    <!-- recognise XNA Framework DLLs in the GAC (only affects mods using new csproj format) -->
-    <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
-
     <!-- don't create the 'refs' folder (which isn't useful for mods) -->
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 
