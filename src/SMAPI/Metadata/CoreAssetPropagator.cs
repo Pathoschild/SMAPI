@@ -440,10 +440,6 @@ namespace StardewModdingAPI.Metadata
                     Game1.objectSpriteSheet = content.Load<Texture2D>(key);
                     return true;
 
-                case "maps\\walls_and_floors": // Wallpaper
-                    Wallpaper.wallpaperTexture = content.Load<Texture2D>(key);
-                    return true;
-
                 /****
                 ** Content\Minigames
                 ****/
