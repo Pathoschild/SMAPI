@@ -76,8 +76,6 @@ copy all the settings, or you may cause bugs due to overridden changes in future
 
     /**
      * The base URL for SMAPI's web API, used to perform update checks.
-     * Note: the protocol will be changed to http:// on Linux/macOS due to OpenSSL issues with the
-     * game's bundled Mono.
      */
     "WebApiBaseUrl": "https://smapi.io/api/",
 
