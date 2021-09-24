@@ -19,6 +19,13 @@ if %ERRORLEVEL% NEQ 0 (
     pause
     exit
 )
+dotnet --info | findstr /C:"Microsoft.WindowsDesktop.App 5." 1>nul
+if %ERRORLEVEL% NEQ 0 (
+    echo Oops! You must have .NET 5 ^(desktop x64^) installed to use SMAPI: https://dotnet.microsoft.com/download/dotnet/5.0/runtime
+    echo.
+    pause
+    exit
+)
 
 REM make sure an antivirus hasn't deleted the installer DLL
 if not exist "%installerDir%internal\windows\SMAPI.Installer.dll" (
