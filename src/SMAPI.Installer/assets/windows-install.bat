@@ -38,3 +38,12 @@ if not exist "%installerDir%internal\windows\SMAPI.Installer.dll" (
 
 REM start installer
 dotnet internal\windows\SMAPI.Installer.dll
+
+REM keep window open if it failed
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Oops! The SMAPI installer seems to have failed. The error details may be shown above.
+    echo.
+    pause
+    exit
+)
