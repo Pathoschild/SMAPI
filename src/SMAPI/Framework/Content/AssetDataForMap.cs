@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI.Toolkit.Utilities;
+using StardewValley;
 using xTile;
 using xTile.Layers;
 using xTile.Tiles;
@@ -25,18 +26,17 @@ namespace StardewModdingAPI.Framework.Content
             : base(locale, assetName, data, getNormalizedPath, onDataReplaced) { }
 
         /// <inheritdoc />
-        /// <remarks>Derived from <see cref="StardewValley.GameLocation.ApplyMapOverride"/> with a few changes:
+        /// <remarks>Derived from <see cref="GameLocation.ApplyMapOverride(Map,string,Rectangle?,Rectangle?)"/> with a few changes:
         /// - can be applied directly to the maps when loading, before the location is created;
-        /// - added support for source/target areas;
+        /// - added support for patch modes (overlay, replace by layer, or fully replace);
         /// - added disambiguation if source has a modified version of the same tilesheet, instead of copying tiles into the target tilesheet;
-        /// - changed to always overwrite tiles within the target area (to avoid edge cases where some tiles are only partly applied);
         /// - fixed copying tilesheets (avoid "The specified TileSheet was not created for use with this map" error);
         /// - fixed tilesheets not added at the end (via z_ prefix), which can cause crashes in game code which depends on hardcoded tilesheet indexes;
         /// - fixed issue where different tilesheets are linked by ID.
         /// </remarks>
-        public void PatchMap(Map source, Rectangle? sourceArea = null, Rectangle? targetArea = null)
+        public void PatchMap(Map source, Rectangle? sourceArea = null, Rectangle? targetArea = null, PatchMapMode patchMode = PatchMapMode.Overlay)
         {
-            var target = this.Data;
+            Map target = this.Data;
 
             // get areas
             {
@@ -84,10 +84,13 @@ namespace StardewModdingAPI.Framework.Content
                 tilesheetMap[sourceSheet] = targetSheet;
             }
 
-            // get layer map
-            IDictionary<Layer, Layer> layerMap = source.Layers.ToDictionary(p => p, p => target.GetLayer(p.Id));
+            // get target layers
+            IDictionary<Layer, Layer> sourceToTargetLayers = source.Layers.ToDictionary(p => p, p => target.GetLayer(p.Id));
+            HashSet<Layer> orphanedTargetLayers = new HashSet<Layer>(target.Layers.Except(sourceToTargetLayers.Values));
 
             // apply tiles
+            bool replaceAll = patchMode == PatchMapMode.Replace;
+            bool replaceByLayer = patchMode == PatchMapMode.ReplaceByLayer;
             for (int x = 0; x < sourceArea.Value.Width; x++)
             {
                 for (int y = 0; y < sourceArea.Value.Height; y++)
@@ -96,47 +99,37 @@ namespace StardewModdingAPI.Framework.Content
                     Point sourcePos = new Point(sourceArea.Value.X + x, sourceArea.Value.Y + y);
                     Point targetPos = new Point(targetArea.Value.X + x, targetArea.Value.Y + y);
 
+                    // replace tiles on target-only layers
+                    if (replaceAll)
+                    {
+                        foreach (Layer targetLayer in orphanedTargetLayers)
+                            targetLayer.Tiles[targetPos.X, targetPos.Y] = null;
+                    }
+
                     // merge layers
                     foreach (Layer sourceLayer in source.Layers)
                     {
                         // get layer
-                        Layer targetLayer = layerMap[sourceLayer];
+                        Layer targetLayer = sourceToTargetLayers[sourceLayer];
                         if (targetLayer == null)
                         {
                             target.AddLayer(targetLayer = new Layer(sourceLayer.Id, target, target.Layers[0].LayerSize, Layer.m_tileSize));
-                            layerMap[sourceLayer] = target.GetLayer(sourceLayer.Id);
+                            sourceToTargetLayers[sourceLayer] = target.GetLayer(sourceLayer.Id);
                         }
 
                         // copy layer properties
                         targetLayer.Properties.CopyFrom(sourceLayer.Properties);
 
-                        // copy tiles
+                        // create new tile
                         Tile sourceTile = sourceLayer.Tiles[sourcePos.X, sourcePos.Y];
-                        Tile targetTile;
-                        switch (sourceTile)
-                        {
-                            case StaticTile _:
-                                targetTile = new StaticTile(targetLayer, tilesheetMap[sourceTile.TileSheet], sourceTile.BlendMode, sourceTile.TileIndex);
-                                break;
+                        Tile newTile = sourceTile != null
+                            ? this.CreateTile(sourceTile, targetLayer, tilesheetMap[sourceTile.TileSheet])
+                            : null;
+                        newTile?.Properties.CopyFrom(sourceTile.Properties);
 
-                            case AnimatedTile animatedTile:
-                                {
-                                    StaticTile[] tileFrames = new StaticTile[animatedTile.TileFrames.Length];
-                                    for (int frame = 0; frame < animatedTile.TileFrames.Length; ++frame)
-                                    {
-                                        StaticTile frameTile = animatedTile.TileFrames[frame];
-                                        tileFrames[frame] = new StaticTile(targetLayer, tilesheetMap[frameTile.TileSheet], frameTile.BlendMode, frameTile.TileIndex);
-                                    }
-                                    targetTile = new AnimatedTile(targetLayer, tileFrames, animatedTile.FrameInterval);
-                                }
-                                break;
-
-                            default: // null or unhandled type
-                                targetTile = null;
-                                break;
-                        }
-                        targetTile?.Properties.CopyFrom(sourceTile.Properties);
-                        targetLayer.Tiles[targetPos.X, targetPos.Y] = targetTile;
+                        // replace tile
+                        if (newTile != null || replaceByLayer || replaceAll)
+                            targetLayer.Tiles[targetPos.X, targetPos.Y] = newTile;
                     }
                 }
             }
@@ -146,6 +139,33 @@ namespace StardewModdingAPI.Framework.Content
         /*********
         ** Private methods
         *********/
+        /// <summary>Create a new tile for the target map.</summary>
+        /// <param name="sourceTile">The source tile to copy.</param>
+        /// <param name="targetLayer">The target layer.</param>
+        /// <param name="targetSheet">The target tilesheet.</param>
+        private Tile CreateTile(Tile sourceTile, Layer targetLayer, TileSheet targetSheet)
+        {
+            switch (sourceTile)
+            {
+                case StaticTile _:
+                    return new StaticTile(targetLayer, targetSheet, sourceTile.BlendMode, sourceTile.TileIndex);
+
+                case AnimatedTile animatedTile:
+                    {
+                        StaticTile[] tileFrames = new StaticTile[animatedTile.TileFrames.Length];
+                        for (int frame = 0; frame < animatedTile.TileFrames.Length; ++frame)
+                        {
+                            StaticTile frameTile = animatedTile.TileFrames[frame];
+                            tileFrames[frame] = new StaticTile(targetLayer, targetSheet, frameTile.BlendMode, frameTile.TileIndex);
+                        }
+
+                        return new AnimatedTile(targetLayer, tileFrames, animatedTile.FrameInterval);
+                    }
+
+                default: // null or unhandled type
+                    return null;
+            }
+        }
         /// <summary>Normalize a map tilesheet path for comparison. This value should *not* be used as the actual tilesheet path.</summary>
         /// <param name="path">The path to normalize.</param>
         private string NormalizeTilesheetPathForComparison(string path)

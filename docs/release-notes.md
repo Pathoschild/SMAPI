@@ -10,6 +10,7 @@
 
 * For mod authors:
   * Migrated to 64-bit MonoGame and .NET 5 on all platforms (see [migration guide for mod authors](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5.5)).
+  * Added support for [map overlays via `asset.AsMap().PatchMap`](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Content#Edit_a_map).
   * Fixed map tile rotations/flips not working for farmhands in split-screen mode.
 
 **Update note for players with older systems:**  
