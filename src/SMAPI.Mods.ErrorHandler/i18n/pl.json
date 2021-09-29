@@ -1,0 +1,4 @@
+{
+    // warning messages
+    "warn.invalid-content-removed": "Nieprawidłowa zawartość została usunięta, aby zapobiec awarii (zobacz konsolę SMAPI po więcej informacji)."
+}
