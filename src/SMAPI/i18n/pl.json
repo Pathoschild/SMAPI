@@ -1,0 +1,6 @@
+{
+    // short date format for SDate
+    // tokens: {{day}} (like 15), {{season}} (like Spring), {{seasonLowercase}} (like spring), {{year}} (like 2)
+    "generic.date": "{{day}} {{seasonLowercase}}",
+    "generic.date-with-year": "{{day}} {{seasonLowercase}} w roku {{year}}"
+}
