@@ -1,6 +1,7 @@
 {
     "runtimeOptions": {
         "tfm": "net5.0",
+        "rollForward": "LatestMajor",
         "includedFrameworks": [
             {
                 "name": "Microsoft.NETCore.App",
