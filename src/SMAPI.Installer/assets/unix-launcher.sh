@@ -90,6 +90,12 @@ else
     LAUNCH_FILE="./StardewModdingAPI"
     export LAUNCH_FILE
 
+    isDeck="` cat /etc/os-release | sed -n '1p' | awk '{print substr($1,7,7)}' `"
+
+    if [[ $isDeck == "SteamOS" ]]; then
+    SKIP_TERMINAL=true
+    fi
+
     # run in terminal
     if [ "$USE_CURRENT_SHELL" == "false" ]; then
         # select terminal (prefer xterm for best compatibility, then known supported terminals)
