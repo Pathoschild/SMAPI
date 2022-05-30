@@ -429,7 +429,7 @@ namespace StardewModdingAPI.Framework.ContentManagers
             FileInfo file = this.FileLookup.GetFile(path);
 
             // try with default image extensions
-            if (file.Exists || !typeof(Texture2D).IsAssignableFrom(typeof(T)) || ModContentManager.LocalTilesheetExtensions.Contains(file.Extension))
+            if (file.Exists || !typeof(Texture2D).IsAssignableFrom(typeof(T)) || ModContentManager.LocalTilesheetExtensions.Contains(file.Extension, StringComparer.OrdinalIgnoreCase))
                 return file;
 
             foreach (string extension in ModContentManager.LocalTilesheetExtensions)
