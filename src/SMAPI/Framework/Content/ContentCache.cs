@@ -106,23 +106,19 @@ namespace StardewModdingAPI.Framework.Content
         /// <returns>Returns any removed keys.</returns>
         public IEnumerable<string> Remove(Func<string, object, bool> predicate, bool dispose)
         {
-            List<string> removed = new List<string>();
+            List<string> removed = new();
             foreach ((string key, object value) in this.Cache)
             {
                 if (predicate(key, value))
-                {
                     removed.Add(key);
-                }
             }
 
             foreach (string key in removed)
-            {
                 this.Remove(key, dispose);
-            }
 
-            // If `removed` is empty, return an empty `Enumerable` instead so that `removed`
-            // can be quickly collected in Gen0 instead of potentially living longer.
-            return removed.Count == 0 ? Enumerable.Empty<string>() : removed;
+            return removed.Count == 0
+                ? Enumerable.Empty<string>() // let GC collect the list in gen0 instead of potentially living longer
+                : removed;
         }
     }
 }
