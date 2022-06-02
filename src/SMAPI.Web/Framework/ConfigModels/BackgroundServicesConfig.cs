@@ -1,12 +1,11 @@
-namespace StardewModdingAPI.Web.Framework.ConfigModels
+namespace StardewModdingAPI.Web.Framework.ConfigModels;
+
+/// <summary>The config settings for background services.</summary>
+internal class BackgroundServicesConfig
 {
-    /// <summary>The config settings for background services.</summary>
-    internal class BackgroundServicesConfig
-    {
-        /*********
-        ** Accessors
-        *********/
-        /// <summary>Whether to enable background update services.</summary>
-        public bool Enabled { get; set; }
-    }
+    /*********
+    ** Accessors
+    *********/
+    /// <summary>Whether to enable background update services.</summary>
+    public bool Enabled { get; set; }
 }

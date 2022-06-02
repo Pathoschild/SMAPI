@@ -9,8 +9,8 @@ using System.Management;
 using System.Runtime.InteropServices;
 using StardewModdingAPI.Toolkit.Utilities;
 
-namespace StardewModdingAPI.Toolkit.Framework
-{
+namespace StardewModdingAPI.Toolkit.Framework;
+
     /// <summary>Provides low-level methods for fetching environment information.</summary>
     /// <remarks>This is used by the SMAPI core before the toolkit DLL is available; most code should use <see cref="EnvironmentUtility"/> instead.</remarks>
     internal static class LowLevelEnvironmentUtility
@@ -153,4 +153,3 @@ namespace StardewModdingAPI.Toolkit.Framework
             }
         }
     }
-}
