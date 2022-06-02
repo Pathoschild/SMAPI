@@ -14,7 +14,7 @@ namespace StardewModdingAPI.Framework.Content
         ** Fields
         *********/
         /// <summary>The underlying asset cache.</summary>
-        private readonly IDictionary<string, object> Cache;
+        private readonly Dictionary<string, object> Cache;
 
 
         /*********
@@ -29,7 +29,7 @@ namespace StardewModdingAPI.Framework.Content
         }
 
         /// <summary>The current cache keys.</summary>
-        public IEnumerable<string> Keys => this.Cache.Keys;
+        public Dictionary<string, object>.KeyCollection Keys => this.Cache.Keys;
 
 
         /*********
@@ -89,33 +89,40 @@ namespace StardewModdingAPI.Framework.Content
         /// <returns>Returns the removed key (if any).</returns>
         public bool Remove(string key, bool dispose)
         {
-            // get entry
-            if (!this.Cache.TryGetValue(key, out object? value))
+            // remove and get entry
+            if (!this.Cache.Remove(key, out object? value))
                 return false;
 
             // dispose & remove entry
             if (dispose && value is IDisposable disposable)
                 disposable.Dispose();
 
-            return this.Cache.Remove(key);
+            return true;
         }
 
-        /// <summary>Purge matched assets from the cache.</summary>
+        /// <summary>Purge assets matching <paramref name="predicate"/> from the cache.</summary>
         /// <param name="predicate">Matches the asset keys to invalidate.</param>
-        /// <param name="dispose">Whether to dispose invalidated assets. This should only be <c>true</c> when they're being invalidated as part of a dispose, to avoid crashing the game.</param>
-        /// <returns>Returns the removed keys (if any).</returns>
+        /// <param name="dispose">Whether to dispose invalidated assets. This should only be <see langword="true"/> when they're being invalidated as part of a <see cref="IDisposable.Dispose"/>, to avoid crashing the game.</param>
+        /// <returns>Returns any removed keys.</returns>
         public IEnumerable<string> Remove(Func<string, object, bool> predicate, bool dispose)
         {
             List<string> removed = new List<string>();
-            foreach (string key in this.Cache.Keys.ToArray())
+            foreach ((string key, object value) in this.Cache)
             {
-                if (predicate(key, this.Cache[key]))
+                if (predicate(key, value))
                 {
-                    this.Remove(key, dispose);
                     removed.Add(key);
                 }
             }
-            return removed;
+
+            foreach (string key in removed)
+            {
+                this.Remove(key, dispose);
+            }
+
+            // If `removed` is empty, return an empty `Enumerable` instead so that `removed`
+            // can be quickly collected in Gen0 instead of potentially living longer.
+            return removed.Count == 0 ? Enumerable.Empty<string>() : removed;
         }
     }
 }
