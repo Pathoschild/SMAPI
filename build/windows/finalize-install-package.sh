@@ -7,14 +7,14 @@
 version="$1"
 if [ $# -eq 0 ]; then
     echo "SMAPI release version (like '4.0.0'):"
-    read version
+    read -r version
 fi
 
 # get Windows bin path
 windowsBinPath="$2"
 if [ $# -le 1 ]; then
     echo "Windows compiled bin path:"
-    read windowsBinPath
+    read -r windowsBinPath
 fi
 
 # installer internal folders
@@ -41,12 +41,12 @@ for folderName in "SMAPI $version installer" "SMAPI $version installer for devel
     find "$folderName" -name "StardewModdingAPI" -exec chmod 755 {} \;
 
     # convert bundle folder into final 'install.dat' files
-    for build in ${buildFolders[@]}; do
+    for build in "${buildFolders[@]}"; do
         echo "packaging $folderName/internal/$build/install.dat..."
-        pushd "$folderName/internal/$build/bundle" > /dev/null
-        zip "install.dat" * --recurse-paths --quiet
+        pushd "$folderName/internal/$build/bundle" > /dev/null || exit
+        zip "install.dat" ./* --recurse-paths --quiet
         mv install.dat ../
-        popd > /dev/null
+        popd > /dev/null || exit
 
         rm -rf "$folderName/internal/$build/bundle"
     done

@@ -25,14 +25,14 @@ declare -A msBuildPlatformNames=(["linux"]="Unix" ["macOS"]="OSX" ["windows"]="W
 version="$1"
 if [ $# -eq 0 ]; then
     echo "SMAPI release version (like '4.0.0'):"
-    read version
+    read -r version
 fi
 
 
 ##########
 ## Move to SMAPI root
 ##########
-cd "`dirname "$0"`/../.."
+cd "$(dirname "$0")/../.." || exit
 
 
 ##########
@@ -42,15 +42,15 @@ echo "Clearing old builds..."
 echo "-------------------------------------------------"
 for path in bin */**/bin */**/obj; do
     echo "$path"
-    rm -rf $path
+    rm -rf "$path"
 done
 echo ""
 
 ##########
 ## Compile files
 ##########
-. ${0%/*}/set-smapi-version.sh "$version"
-for folder in ${folders[@]}; do
+. "${0%/*}"/set-smapi-version.sh "$version"
+for folder in "${folders[@]}"; do
     runtime=${runtimes[$folder]}
     msbuildPlatformName=${msBuildPlatformNames[$folder]}
 
@@ -66,10 +66,10 @@ for folder in ${folders[@]}; do
     echo ""
     echo ""
 
-    for modName in ${bundleModNames[@]}; do
+    for modName in "${bundleModNames[@]}"; do
         echo "Compiling $modName for $folder..."
         echo "-------------------------------------------------"
-        dotnet publish src/SMAPI.Mods.$modName --configuration $buildConfig -v minimal --runtime "$runtime" -p:OS="$msbuildPlatformName" -p:GamePath="$gamePath" -p:CopyToGameFolder="false"
+        dotnet publish src/SMAPI.Mods."$modName" --configuration $buildConfig -v minimal --runtime "$runtime" -p:OS="$msbuildPlatformName" -p:GamePath="$gamePath" -p:CopyToGameFolder="false"
         echo ""
         echo ""
     done
@@ -88,7 +88,7 @@ packagePath="bin/SMAPI installer"
 packageDevPath="bin/SMAPI installer for developers"
 
 # init structure
-for folder in ${folders[@]}; do
+for folder in "${folders[@]}"; do
     mkdir "$packagePath/internal/$folder/bundle/smapi-internal" --parents
 done
 
@@ -98,7 +98,7 @@ for name in "install on Linux.sh" "install on macOS.command" "install on Windows
 done
 
 # copy per-platform files
-for folder in ${folders[@]}; do
+for folder in "${folders[@]}"; do
     runtime=${runtimes[$folder]}
 
     # get paths
@@ -117,13 +117,13 @@ for folder in ${folders[@]}; do
     cp "$installAssets/runtimeconfig.json" "$bundlePath/StardewModdingAPI.runtimeconfig.json"
 
     # installer DLL config
-    if [ $folder == "windows" ]; then
+    if [ "$folder" == "windows" ]; then
         cp "$installAssets/windows-exe-config.xml" "$packagePath/internal/windows/install.exe.config"
     fi
 
     # bundle root files
     for name in "StardewModdingAPI" "StardewModdingAPI.dll" "StardewModdingAPI.pdb" "StardewModdingAPI.xml" "steam_appid.txt"; do
-        if [ $name == "StardewModdingAPI" ] && [ $folder == "windows" ]; then
+        if [ $name == "StardewModdingAPI" ] && [ "$folder" == "windows" ]; then
             name="$name.exe"
         fi
 
@@ -140,14 +140,14 @@ for folder in ${folders[@]}; do
 
     cp "$smapiBin/SMAPI.config.json" "$bundlePath/smapi-internal/config.json"
     cp "$smapiBin/SMAPI.metadata.json" "$bundlePath/smapi-internal/metadata.json"
-    if [ $folder == "linux" ] || [ $folder == "macOS" ]; then
+    if [ "$folder" == "linux" ] || [ "$folder" == "macOS" ]; then
         cp "$installAssets/unix-launcher.sh" "$bundlePath"
     else
         cp "$installAssets/windows-exe-config.xml" "$bundlePath/StardewModdingAPI.exe.config"
     fi
 
     # copy .NET dependencies
-    if [ $folder == "windows" ]; then
+    if [ "$folder" == "windows" ]; then
         cp "$smapiBin/System.Management.dll" "$bundlePath/smapi-internal"
     fi
 
@@ -157,7 +157,7 @@ for folder in ${folders[@]}; do
     cp "$smapiBin/System.Security.Permissions.dll" "$bundlePath/smapi-internal"
 
     # copy bundled mods
-    for modName in ${bundleModNames[@]}; do
+    for modName in "${bundleModNames[@]}"; do
         fromPath="src/SMAPI.Mods.$modName/bin/$buildConfig/$runtime/publish"
         targetPath="$bundlePath/Mods/$modName"
 
@@ -181,15 +181,16 @@ done
 
 # split into main + for-dev folders
 cp -r "$packagePath" "$packageDevPath"
-for folder in ${folders[@]}; do
+for folder in "${folders[@]}"; do
     # disable developer mode in main package
     sed --in-place --expression="s/\"DeveloperMode\": true/\"DeveloperMode\": false/" "$packagePath/internal/$folder/bundle/smapi-internal/config.json"
 
     # convert bundle folder into final 'install.dat' files
     for path in "$packagePath/internal/$folder" "$packageDevPath/internal/$folder"; do
-        pushd "$path/bundle" > /dev/null
-        zip "install.dat" * --recurse-paths --quiet
-        popd > /dev/null
+        pushd "$path/bundle" > /dev/null || exit
+        #https://github.com/koalaman/shellcheck/wiki/SC2035 this should be either ./* or -- *
+        zip "install.dat" ./* --recurse-paths --quiet
+        popd > /dev/null || exit
         mv "$path/bundle/install.dat" "$path/install.dat"
         rm -rf "$path/bundle"
     done
@@ -204,10 +205,10 @@ mv "$packagePath" "bin/SMAPI $version installer"
 mv "$packageDevPath" "bin/SMAPI $version installer for developers"
 
 # package files
-pushd bin > /dev/null
+pushd bin > /dev/null || exit
 zip -9 "SMAPI $version installer.zip" "SMAPI $version installer" --recurse-paths --quiet
 zip -9 "SMAPI $version installer for developers.zip" "SMAPI $version installer for developers" --recurse-paths --quiet
-popd > /dev/null
+popd > /dev/null || exit
 
 echo ""
 echo "Done! Package created in $(pwd)/bin"

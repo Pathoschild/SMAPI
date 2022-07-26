@@ -12,11 +12,11 @@
 version="$1"
 if [ $# -eq 0 ]; then
     echo "SMAPI release version (like '4.0.0'):"
-    read version
+    read -r version
 fi
 
 # move to SMAPI root
-cd "`dirname "$0"`/../.."
+cd "$(dirname "$0")/../.." || exit
 
 # apply changes
 sed "s/<Version>.+<\/Version>/<Version>$version<\/Version>/" "build/common.targets" --in-place --regexp-extended
