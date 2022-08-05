@@ -123,7 +123,7 @@ for folder in "${folders[@]}"; do
 
     # bundle root files
     for name in "StardewModdingAPI" "StardewModdingAPI.dll" "StardewModdingAPI.pdb" "StardewModdingAPI.xml" "steam_appid.txt"; do
-        if [ $name == "StardewModdingAPI" ] && [ "$folder" == "windows" ]; then
+        if [ "$name" == "StardewModdingAPI" ] && [ "$folder" == "windows" ]; then
             name="$name.exe"
         fi
 
