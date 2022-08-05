@@ -188,7 +188,6 @@ for folder in "${folders[@]}"; do
     # convert bundle folder into final 'install.dat' files
     for path in "$packagePath/internal/$folder" "$packageDevPath/internal/$folder"; do
         pushd "$path/bundle" > /dev/null || exit
-        #https://github.com/koalaman/shellcheck/wiki/SC2035 this should be either ./* or -- *
         zip "install.dat" ./* --recurse-paths --quiet
         popd > /dev/null || exit
         mv "$path/bundle/install.dat" "$path/install.dat"
