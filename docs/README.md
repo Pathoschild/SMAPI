@@ -1,78 +1,66 @@
-**SMAPI** is an open-source modding framework and API for [Stardew Valley](https://stardewvalley.net/)
-that lets you play the game with mods. It's safely installed alongside the game's executable, and
-doesn't change any of your game files. It serves seven main purposes:
+**SMAPI**: An Open-Source Modding Framework and API for [Stardew Valley](https://stardewvalley.net/)
+---
 
-1. **Load mods into the game.**  
-   _SMAPI loads mods when the game is starting up so they can interact with it. (Code mods aren't
-   possible without SMAPI to load them.)_
+SMAPI allows you to play Stardew Valley with mods. It's safely installed alongside the game's executable without altering any game files. SMAPI serves seven main purposes:
 
-2. **Provide APIs and events for mods.**  
-   _SMAPI provides APIs and events which let mods interact with the game in ways they otherwise
-   couldn't._
+1. **Load mods into the game**
+   - SMAPI loads mods during the game startup, enabling them to interact with the game. (Code mods require SMAPI for loading.)
 
-3. **Rewrite mods for compatibility.**  
-   _SMAPI rewrites mods' compiled code before loading them so they work on Linux/macOS/Windows
-   without the mods needing to handle differences between the Linux/macOS and Windows versions of
-   the game. In some cases it also rewrites code broken by a game update so the mod doesn't break._
+2. **Provide APIs and events for mods**
+   - SMAPI offers APIs and events that allow mods to interact with the game in ways otherwise not possible.
 
-5. **Intercept errors and automatically fix saves.**  
-   _SMAPI intercepts errors, shows the error info in the SMAPI console, and in most cases
-   automatically recovers the game. That prevents mods from crashing the game, and makes it
-   possible to troubleshoot errors in the game itself that would otherwise show a generic 'program
-   has stopped working' type of message._
+3. **Rewrite mods for compatibility**
+   - SMAPI rewrites mods' compiled code before loading, ensuring compatibility with Linux, macOS, and Windows without mods needing to handle platform-specific differences. It also rewrites code broken by game updates, preventing mod breakage.
 
-   _SMAPI also automatically fixes save data in some cases when a load would crash, e.g. due to a
-   custom location or NPC mod that was removed._
+4. **Intercept errors and automatically fix saves**
+   - SMAPI intercepts errors, displays error info in the SMAPI console, and recovers the game in most cases. This prevents mods from crashing the game and enables troubleshooting for errors in the game itself that would typically show a generic 'program has stopped working' message.
+   - SMAPI also automatically fixes save data in certain cases when a load would crash, e.g., due to a removed custom location or NPC mod.
 
-6. **Provide update checks.**  
-   _SMAPI automatically checks for new versions of your installed mods, and notifies you when any
-   are available._
+5. **Provide update checks**
+   - SMAPI checks for new versions of your installed mods and notifies you when updates are available.
 
-7. **Provide compatibility checks.**  
-   _SMAPI automatically detects outdated or broken code in mods, and safely disables them before
-   they cause problems._
+6. **Provide compatibility checks**
+   - SMAPI detects outdated or broken code in mods and safely disables them before causing problems.
 
-8. **Back up your save files.**  
-   _SMAPI automatically creates a daily backup of your saves and keeps ten backups (via the bundled
-   Save Backup mod), in case something goes wrong._
+7. **Back up your save files**
+   - SMAPI creates daily save backups and keeps ten backups (through the bundled Save Backup mod) in case of issues.
 
-## Documentation
-Have questions? Come [ask the community](https://smapi.io/community) to get help from SMAPI
-developers and other modders!
+Documentation
+---
+Need help? Join the [SMAPI community](https://smapi.io/community) to get assistance from SMAPI developers and fellow modders!
 
-### For players
-* [Player guide](https://stardewvalleywiki.com/Modding:Player_Guide)
+### For Players
+- [Player Guide](https://stardewvalleywiki.com/Modding:Player_Guide)
 
-### For modders
-* [Modding documentation](https://smapi.io/docs)
-* [Mod build configuration](technical/mod-package.md)
-* [Release notes](release-notes.md)
+### For Modders
+- [Modding Documentation](https://smapi.io/docs)
+- [Mod Build Configuration](technical/mod-package.md)
+- [Release Notes](release-notes.md)
 
-### For SMAPI developers
-* [Technical docs](technical/smapi.md)
+### For SMAPI Developers
+- [Technical Docs](technical/smapi.md)
 
-## Translating SMAPI
-SMAPI rarely shows text in-game, so it only has a few translations. Contributions are welcome! See
-[Modding:Translations](https://stardewvalleywiki.com/Modding:Translations) on the wiki for help
-contributing translations.
+Translating SMAPI
+---
+SMAPI rarely displays in-game text, so it only requires a few translations. Contributions are welcome! Visit [Modding:Translations](https://stardewvalleywiki.com/Modding:Translations) on the wiki for help contributing translations.
 
-locale      | status
------------ | :----------------
-default     | ✓ [fully translated](../src/SMAPI/i18n/default.json)
-Chinese     | ✓ [fully translated](../src/SMAPI/i18n/zh.json)
-French      | ✓ [fully translated](../src/SMAPI/i18n/fr.json)
-German      | ✓ [fully translated](../src/SMAPI/i18n/de.json)
-Hungarian   | ✓ [fully translated](../src/SMAPI/i18n/hu.json)
-Italian     | ✓ [fully translated](../src/SMAPI/i18n/it.json)
-Japanese    | ✓ [fully translated](../src/SMAPI/i18n/ja.json)
-Korean      | ✓ [fully translated](../src/SMAPI/i18n/ko.json)
-[Polish]    | ✓ [fully translated](../src/SMAPI/i18n/pl.json)
-Portuguese  | ✓ [fully translated](../src/SMAPI/i18n/pt.json)
-Russian     | ✓ [fully translated](../src/SMAPI/i18n/ru.json)
-Spanish     | ✓ [fully translated](../src/SMAPI/i18n/es.json)
-[Thai]      | ✓ [fully translated](../src/SMAPI/i18n/th.json)
-Turkish     | ✓ [fully translated](../src/SMAPI/i18n/tr.json)
-[Ukrainian] | ✓ [fully translated](../src/SMAPI/i18n/uk.json)
+| Locale     | Status                                         |
+| ---------- | ---------------------------------------------- |
+| Default    | ✓ [Fully Translated](../src/SMAPI/i18n/default.json) |
+| Chinese    | ✓ [Fully Translated](../src/SMAPI/i18n/zh.json)     |
+| French     | ✓ [Fully Translated](../src/SMAPI/i18n/fr.json)     |
+| German     | ✓ [Fully Translated](../src/SMAPI/i18n/de.json)     |
+| Hungarian  | ✓ [Fully Translated](../src/SMAPI/i18n/hu.json)     |
+| Italian    | ✓ [Fully Translated](../src/SMAPI/i18n/it.json)     |
+| Japanese   | ✓ [Fully Translated](../src/SMAPI/i18n/ja.json)     |
+| Korean     | ✓ [Fully Translated](../src/SMAPI/i18n/ko.json)     |
+| [Polish]   | ✓ [Fully Translated](../src/SMAPI/i18n/pl.json)     |
+| Portuguese | ✓ [Fully Translated](../src/SMAPI/i18n/pt.json)     |
+| Russian    | ✓ [Fully Translated](../src/SMAPI/i18n/ru.json)     |
+| Spanish    | ✓ [Fully Translated](../src/SMAPI/i18n/es.json)     |
+| [Thai]     | ✓ [Fully Translated](../src/SMAPI/i18n/th.json)     |
+| Turkish    | ✓ [Fully Translated](../src/SMAPI/i18n/tr.json)     |
+| [Ukrainian]| ✓ [Fully Translated](../src/SMAPI/i18n/uk.json)     |
 
 [Polish]: https://www.nexusmods.com/stardewvalley/mods/3616
 [Thai]: https://www.nexusmods.com/stardewvalley/mods/7052
