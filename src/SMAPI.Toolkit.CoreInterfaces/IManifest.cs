@@ -35,6 +35,9 @@ namespace StardewModdingAPI
         /// <summary>The other mods that must be loaded before this mod.</summary>
         IManifestDependency[] Dependencies { get; }
 
+        /// <summary>The names of assemblies that should be private to this mod. These assemblies will not be directly accessible by other mods and will be ignored when a mod tries to use an assembly with the same name in a public manner.</summary>
+        string[] PrivateAssemblies { get; }
+
         /// <summary>The namespaced mod IDs to query for updates (like <c>Nexus:541</c>).</summary>
         string[] UpdateKeys { get; }
 

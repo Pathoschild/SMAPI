@@ -39,6 +39,9 @@ namespace StardewModdingAPI.Toolkit.Serialization.Models
         [JsonConverter(typeof(ManifestDependencyArrayConverter))]
         public IManifestDependency[] Dependencies { get; }
 
+        /// <summary>The names of assemblies that should be private to this mod. These assemblies will not be directly accessible by other mods and will be ignored when a mod tries to use an assembly with the same name in a public manner.</summary>
+        public string[] PrivateAssemblies { get; private set; }
+
         /// <summary>The namespaced mod IDs to query for updates (like <c>Nexus:541</c>).</summary>
         public string[] UpdateKeys { get; private set; }
 
@@ -72,6 +75,7 @@ namespace StardewModdingAPI.Toolkit.Serialization.Models
                 contentPackFor: contentPackFor != null
                     ? new ManifestContentPackFor(contentPackFor, null)
                     : null,
+                privateAssemblies: null,
                 dependencies: null,
                 updateKeys: null
             )
@@ -87,9 +91,10 @@ namespace StardewModdingAPI.Toolkit.Serialization.Models
         /// <param name="entryDll">The name of the DLL in the directory that has the <c>Entry</c> method. Mutually exclusive with <see cref="ContentPackFor"/>.</param>
         /// <param name="contentPackFor">The modID which will read this as a content pack.</param>
         /// <param name="dependencies">The other mods that must be loaded before this mod.</param>
+        /// <param name="privateAssemblies">The names of assemblies that should be private to this mod. These assemblies will not be directly accessible by other mods and will be ignored when a mod tries to use an assembly with the same name in a public manner.</param>
         /// <param name="updateKeys">The namespaced mod IDs to query for updates (like <c>Nexus:541</c>).</param>
         [JsonConstructor]
-        public Manifest(string uniqueId, string name, string author, string description, ISemanticVersion version, ISemanticVersion? minimumApiVersion, string? entryDll, IManifestContentPackFor? contentPackFor, IManifestDependency[]? dependencies, string[]? updateKeys)
+        public Manifest(string uniqueId, string name, string author, string description, ISemanticVersion version, ISemanticVersion? minimumApiVersion, string? entryDll, IManifestContentPackFor? contentPackFor, IManifestDependency[]? dependencies, string[]? privateAssemblies, string[]? updateKeys)
         {
             this.UniqueID = this.NormalizeField(uniqueId);
             this.Name = this.NormalizeField(name, replaceSquareBrackets: true);
@@ -100,6 +105,7 @@ namespace StardewModdingAPI.Toolkit.Serialization.Models
             this.EntryDll = this.NormalizeField(entryDll);
             this.ContentPackFor = contentPackFor;
             this.Dependencies = dependencies ?? Array.Empty<IManifestDependency>();
+            this.PrivateAssemblies = privateAssemblies ?? Array.Empty<string>();
             this.UpdateKeys = updateKeys ?? Array.Empty<string>();
         }
 

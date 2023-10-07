@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using StardewModdingAPI.Framework.Exceptions;
@@ -94,9 +95,10 @@ namespace StardewModdingAPI.Framework.ModLoading
         /// <param name="mod">The mod for which the assembly is being loaded.</param>
         /// <param name="assemblyFile">The assembly file.</param>
         /// <param name="assumeCompatible">Assume the mod is compatible, even if incompatible code is detected.</param>
+        /// <param name="assemblyLoadContext">The <see cref="AssemblyLoadContext"/> for the currently being loaded mod.</param>
         /// <returns>Returns the rewrite metadata for the preprocessed assembly.</returns>
         /// <exception cref="IncompatibleInstructionException">An incompatible CIL instruction was found while rewriting the assembly.</exception>
-        public Assembly Load(IModMetadata mod, FileInfo assemblyFile, bool assumeCompatible)
+        public Assembly Load(IModMetadata mod, FileInfo assemblyFile, bool assumeCompatible, ModAssemblyLoadContext assemblyLoadContext)
         {
             // get referenced local assemblies
             AssemblyParseResult[] assemblies;
@@ -105,9 +107,32 @@ namespace StardewModdingAPI.Framework.ModLoading
                     from assembly in AppDomain.CurrentDomain.GetAssemblies()
                     let name = assembly.GetName().Name
                     where name != null
+                    where !assemblyLoadContext.PrivateAssemblyNames.Contains(name)
+                    let visitedAssemblyLoadContext = AssemblyLoadContext.GetLoadContext(assembly) as ModAssemblyLoadContext
+                    where visitedAssemblyLoadContext != null
+                    where !visitedAssemblyLoadContext.PrivateAssemblyNames.Contains(name)
                     select name
                 );
                 assemblies = this.GetReferencedLocalAssemblies(assemblyFile, visitedAssemblyNames, this.AssemblyDefinitionResolver).ToArray();
+            }
+
+            // validate private assembly names
+            for (int i = 0; i < mod.Manifest.PrivateAssemblies.Length; i++)
+            {
+                bool isPrivateAssemblyUsed = false;
+                string privateAssemblyName = mod.Manifest.PrivateAssemblies[i];
+
+                // a mod author can mark a private assembly with a trailing "!" - this will treat the assembly as used no matter what. useful for types loaded via reflection
+                if (privateAssemblyName.EndsWith("!"))
+                {
+                    isPrivateAssemblyUsed = true;
+                    privateAssemblyName = privateAssemblyName[..^1];
+                }
+
+                if (!isPrivateAssemblyUsed && assemblies.Any(a => a.Definition?.Name.Name == privateAssemblyName))
+                    isPrivateAssemblyUsed = true;
+                if (!isPrivateAssemblyUsed)
+                    this.Monitor.Log($"      Mod {mod.DisplayName} specifies a private assembly {privateAssemblyName}, but it does not use it.", LogLevel.Warn);
             }
 
             // validate load
@@ -147,23 +172,25 @@ namespace StardewModdingAPI.Framework.ModLoading
                 }
 
                 // load assembly
+                bool loadAsPrivate = assemblyLoadContext.PrivateAssemblyNames.Contains(assembly.Definition.Name.Name);
                 if (changed)
                 {
                     if (!oneAssembly)
-                        this.Monitor.Log($"      Loading {assembly.File.Name} (rewritten)...");
+                        this.Monitor.Log($"      Loading{(loadAsPrivate ? " (private)" : "")} {assembly.File.Name} (rewritten)...");
 
                     // load assembly
                     using MemoryStream outAssemblyStream = new();
                     using MemoryStream outSymbolStream = new();
                     assembly.Definition.Write(outAssemblyStream, new WriterParameters { WriteSymbols = true, SymbolStream = outSymbolStream, SymbolWriterProvider = this.SymbolWriterProvider });
-                    byte[] bytes = outAssemblyStream.ToArray();
-                    lastAssembly = Assembly.Load(bytes, outSymbolStream.ToArray());
+                    outAssemblyStream.Position = 0;
+                    outSymbolStream.Position = 0;
+                    lastAssembly = assemblyLoadContext.LoadFromStream(outAssemblyStream, outSymbolStream);
                 }
                 else
                 {
                     if (!oneAssembly)
-                        this.Monitor.Log($"      Loading {assembly.File.Name}...");
-                    lastAssembly = Assembly.UnsafeLoadFrom(assembly.File.FullName);
+                        this.Monitor.Log($"      Loading{(loadAsPrivate ? " (private)" : "")} {assembly.File.Name}...");
+                    lastAssembly = assemblyLoadContext.LoadFromAssemblyPath(assembly.File.FullName);
                 }
 
                 // track loaded assembly for definition resolution
