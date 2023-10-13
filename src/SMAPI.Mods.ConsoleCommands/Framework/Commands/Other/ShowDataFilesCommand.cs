@@ -20,7 +20,12 @@ namespace StardewModdingAPI.Mods.ConsoleCommands.Framework.Commands.Other
         /// <param name="args">The command arguments.</param>
         public override void Handle(IMonitor monitor, string command, ArgumentParser args)
         {
-            Process.Start(Constants.DataPath);
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = Constants.DataPath,
+                UseShellExecute = true
+            });
+
             monitor.Log($"OK, opening {Constants.DataPath}.", LogLevel.Info);
         }
     }
