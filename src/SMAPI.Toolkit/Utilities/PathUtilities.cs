@@ -71,9 +71,12 @@ namespace StardewModdingAPI.Toolkit.Utilities
 #endif
         public static string? NormalizePath(string? path)
         {
-            path = path?.Trim();
-            if (string.IsNullOrEmpty(path))
-                return path;
+            // safety check if directory is null or contains trailing spaces
+            string? trailingPath = path;
+
+            trailingPath = trailingPath?.Trim();
+            if (string.IsNullOrEmpty(trailingPath))
+                return trailingPath;
 
             // get basic path format (e.g. /some/asset\\path/ => some\asset\path)
             string[] segments = PathUtilities.GetSegments(path);
