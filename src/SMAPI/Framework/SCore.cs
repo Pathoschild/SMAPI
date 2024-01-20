@@ -52,6 +52,7 @@ using xTile.Display;
 using LanguageCode = StardewValley.LocalizedContentManager.LanguageCode;
 using MiniMonoModHotfix = MonoMod.Utils.MiniMonoModHotfix;
 using PathUtilities = StardewModdingAPI.Toolkit.Utilities.PathUtilities;
+using System.IO.Compression;
 
 namespace StardewModdingAPI.Framework
 {
@@ -421,7 +422,22 @@ namespace StardewModdingAPI.Framework
                             this.Monitor.Log($"Detected mod files directly inside the '{Path.GetFileName(this.ModsPath)}' folder. These will be ignored. Each mod must have its own subfolder instead.", LogLevel.Error);
                         }
 
-                        this.Monitor.Log($"  Ignored loose files: {string.Join(", ", looseFiles.OrderBy(p => p, StringComparer.OrdinalIgnoreCase))}");
+                        if (looseFiles.Any(name => name.EndsWith(".zip")))
+                        {
+                            this.Monitor.Log($"Detected zipped mods directly inside the '{Path.GetFileName(this.ModsPath)}' folder. These will be unzipped.");
+
+                            // filter files to only .zips
+                            var zips = looseFiles.Where(f => f.EndsWith(".zip"));
+
+                            foreach(string zip in zips)
+                            {
+                                this.Monitor.Log($"  Unzipped {zip} to the '{Path.GetFileName(this.ModsPath)}' folder.");
+                                ZipFile.ExtractToDirectory(
+                                    Path.Combine(this.ModsPath, zip), this.ModsPath);
+                            }
+                        }
+
+                        this.Monitor.Log($"  Ignored loose files: {string.Join(", ", looseFiles.Where(f => !f.EndsWith(".zip")).OrderBy(p => p, StringComparer.OrdinalIgnoreCase))}");
                     }
                 }
 
