@@ -433,22 +433,28 @@ namespace StardewModdingAPI.Framework
                             {
                                 bool alreadyExists = false;
                                 string fullpath = Path.Combine(this.ModsPath, zip);
+                                string unzippath = this.ModsPath;
 
                                 using (ZipArchive archive = ZipFile.OpenRead(fullpath))
                                 {
                                     foreach (ZipArchiveEntry entry in archive.Entries)
                                     {
-                                        // Check if file already exists in Mods folder
-                                        if (File.Exists(Path.Combine(this.ModsPath, entry.FullName))) {
+                                        if (File.Exists(Path.Combine(unzippath, entry.FullName))) {
                                             alreadyExists = true;
-                                            return;
+                                            break;
+                                        } else if (!entry.FullName.Contains('/') && !unzippath.Contains(Path.GetFileNameWithoutExtension(zip))) {
+                                            this.Monitor.Log($"Detected loose mod files in {zip}, adjusting unzip path to accomodate.");
+                                            unzippath += $"/{Path.GetFileNameWithoutExtension(zip)}";
                                         }
                                     }
                                 }
-                                if (alreadyExists) continue;
-                                ZipFile.ExtractToDirectory(fullpath, this.ModsPath);
+                                if (!alreadyExists)
+                                {
+                                    ZipFile.ExtractToDirectory(fullpath, unzippath);
 
-                                this.Monitor.Log($"  Unzipped {zip} to the '{Path.GetFileName(this.ModsPath)}' folder.");
+                                    this.Monitor.Log($"  Unzipped {zip} to the '{Path.GetFileName(this.ModsPath)}' folder.");
+                                }
+                                
                             }
                         }
 
