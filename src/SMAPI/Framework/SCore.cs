@@ -431,9 +431,24 @@ namespace StardewModdingAPI.Framework
 
                             foreach(string zip in zips)
                             {
+                                bool alreadyExists = false;
+                                string fullpath = Path.Combine(this.ModsPath, zip);
+
+                                using (ZipArchive archive = ZipFile.OpenRead(fullpath))
+                                {
+                                    foreach (ZipArchiveEntry entry in archive.Entries)
+                                    {
+                                        // Check if file already exists in Mods folder
+                                        if (File.Exists(Path.Combine(this.ModsPath, entry.FullName))) {
+                                            alreadyExists = true;
+                                            return;
+                                        }
+                                    }
+                                }
+                                if (alreadyExists) continue;
+                                ZipFile.ExtractToDirectory(fullpath, this.ModsPath);
+
                                 this.Monitor.Log($"  Unzipped {zip} to the '{Path.GetFileName(this.ModsPath)}' folder.");
-                                ZipFile.ExtractToDirectory(
-                                    Path.Combine(this.ModsPath, zip), this.ModsPath);
                             }
                         }
 
