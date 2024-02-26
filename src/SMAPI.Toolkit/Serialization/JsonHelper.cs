@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Schema.Generation;
 using StardewModdingAPI.Toolkit.Serialization.Converters;
 
 namespace StardewModdingAPI.Toolkit.Serialization
@@ -17,6 +19,13 @@ namespace StardewModdingAPI.Toolkit.Serialization
         /// <summary>The JSON settings to use when serializing and deserializing files.</summary>
         public JsonSerializerSettings JsonSettings { get; } = JsonHelper.CreateDefaultSettings();
 
+        private readonly JSchemaGenerator _schemaGenerator = new();
+
+        private readonly JSchemaWriterSettings _schemaWriterSettings = new()
+        {
+            Version = SchemaVersion.Draft2019_09,
+            ReferenceHandling = JSchemaWriterReferenceHandling.Never
+        };
 
         /*********
         ** Public methods
@@ -109,6 +118,30 @@ namespace StardewModdingAPI.Toolkit.Serialization
             // write file
             string json = this.Serialize(model);
             File.WriteAllText(fullPath, json);
+        }
+
+        /// <summary>Generate a schema and save to a JSON file.</summary>
+        /// <typeparam name="TModel">The model type.</typeparam>
+        /// <param name="fullPath">The absolute file path.</param>
+        /// <exception cref="InvalidOperationException">The given path is empty or invalid.</exception>
+        public void WriteJsonSchemaFile<TModel>(string fullPath)
+            where TModel : class
+        {
+            // validate
+            if (string.IsNullOrWhiteSpace(fullPath))
+                throw new ArgumentException("The file path is empty or invalid.", nameof(fullPath));
+
+            // create directory if needed
+            string dir = Path.GetDirectoryName(fullPath)!;
+            if (dir == null)
+                throw new ArgumentException("The file path is invalid.", nameof(fullPath));
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            JSchema schema = this._schemaGenerator.Generate(typeof(TModel));
+            string output = schema.ToString(this._schemaWriterSettings);
+
+            File.WriteAllText(fullPath, output);
         }
 
         /// <summary>Deserialize JSON text if possible.</summary>

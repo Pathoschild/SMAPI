@@ -9,6 +9,12 @@ namespace StardewModdingAPI.Framework.ModHelpers
     internal class ModHelper : BaseHelper, IModHelper, IDisposable
     {
         /*********
+        ** Fields
+        *********/
+        /// <summary>Whether to generate config.schema.json files.</summary>
+        private readonly bool _generateConfigSchemas;
+
+        /*********
         ** Accessors
         *********/
         /// <inheritdoc />
@@ -65,9 +71,10 @@ namespace StardewModdingAPI.Framework.ModHelpers
         /// <param name="reflectionHelper">An API for accessing private game code.</param>
         /// <param name="multiplayer">Provides multiplayer utilities.</param>
         /// <param name="translationHelper">An API for reading translations stored in the mod's <c>i18n</c> folder.</param>
+        /// <param name="generateConfigSchemas">Whether to generate config.schema.json files.</param>
         /// <exception cref="ArgumentNullException">An argument is null or empty.</exception>
         /// <exception cref="InvalidOperationException">The <paramref name="modDirectory"/> path does not exist on disk.</exception>
-        public ModHelper(IModMetadata mod, string modDirectory, Func<SInputState> currentInputState, IModEvents events, IGameContentHelper gameContentHelper, IModContentHelper modContentHelper, IContentPackHelper contentPackHelper, ICommandHelper commandHelper, IDataHelper dataHelper, IModRegistry modRegistry, IReflectionHelper reflectionHelper, IMultiplayerHelper multiplayer, ITranslationHelper translationHelper)
+        public ModHelper(IModMetadata mod, string modDirectory, Func<SInputState> currentInputState, IModEvents events, IGameContentHelper gameContentHelper, IModContentHelper modContentHelper, IContentPackHelper contentPackHelper, ICommandHelper commandHelper, IDataHelper dataHelper, IModRegistry modRegistry, IReflectionHelper reflectionHelper, IMultiplayerHelper multiplayer, ITranslationHelper translationHelper, bool generateConfigSchemas)
             : base(mod)
         {
             // validate directory
@@ -89,6 +96,7 @@ namespace StardewModdingAPI.Framework.ModHelpers
             this.Multiplayer = multiplayer ?? throw new ArgumentNullException(nameof(multiplayer));
             this.Translation = translationHelper ?? throw new ArgumentNullException(nameof(translationHelper));
             this.Events = events;
+            this._generateConfigSchemas = generateConfigSchemas;
         }
 
         /****
@@ -100,6 +108,12 @@ namespace StardewModdingAPI.Framework.ModHelpers
         {
             TConfig config = this.Data.ReadJsonFile<TConfig>("config.json") ?? new TConfig();
             this.WriteConfig(config); // create file or fill in missing fields
+
+            if (this._generateConfigSchemas)
+            {
+                this.WriteConfigSchema(config);
+            }
+
             return config;
         }
 
@@ -108,6 +122,12 @@ namespace StardewModdingAPI.Framework.ModHelpers
             where TConfig : class, new()
         {
             this.Data.WriteJsonFile("config.json", config);
+        }
+
+        private void WriteConfigSchema<TConfig>(TConfig config)
+            where TConfig : class, new()
+        {
+            this.Data.WriteJsonSchemaFile("config.schema.json", config);
         }
 
         /****
