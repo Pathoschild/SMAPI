@@ -67,9 +67,19 @@ namespace StardewModdingAPI.Framework.ModHelpers
                 File.Delete(path);
         }
 
+        /// <inheritdoc/>
+        public void WriteJsonSchemaFile<TModel>(string path, TModel data) where TModel : class
+        {
+            if (!PathUtilities.IsSafeRelativePath(path))
+                throw new InvalidOperationException($"You must call {nameof(IMod.Helper)}.{nameof(IModHelper.Data)}.{nameof(this.WriteJsonFile)} with a relative path (without directory climbing).");
+
+            path = Path.Combine(this.ModFolderPath, PathUtilities.NormalizePath(path));
+            this.JsonHelper.WriteJsonSchemaFile<TModel>(path);
+        }
+
         /****
-        ** Save file
-        ****/
+         ** Save file
+         ****/
         /// <inheritdoc />
         public TModel? ReadSaveData<TModel>(string key)
             where TModel : class

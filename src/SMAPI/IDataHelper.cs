@@ -27,6 +27,14 @@ namespace StardewModdingAPI
         void WriteJsonFile<TModel>(string path, TModel? data)
             where TModel : class;
 
+        /// <summary>Save the schema of the data to a JSON file in the mod's folder.</summary>
+        /// <typeparam name="TModel">The model type. This should be a plain class that has public properties for the data you want. The properties can be complex types.</typeparam>
+        /// <param name="path">The file path relative to the mod folder.</param>
+        /// <param name="data">The arbitrary data to save.</param>
+        /// <exception cref="InvalidOperationException">The <paramref name="path"/> is not relative or contains directory climbing (../).</exception>
+        void WriteJsonSchemaFile<TModel>(string path, TModel data)
+            where TModel : class;
+
         /****
         ** Save file
         ****/
