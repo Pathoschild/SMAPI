@@ -13,6 +13,8 @@ SKIP_TERMINAL=false
 # Whether to avoid opening a separate terminal, but still send the usual log output to the console.
 USE_CURRENT_SHELL=false
 
+# Specify terminal name to open and output logs
+PREFER_TERMINAL_NAME=""
 
 ##########
 ## Read environment variables
@@ -23,6 +25,9 @@ fi
 if [ "$SMAPI_USE_CURRENT_SHELL" == "true" ]; then
     USE_CURRENT_SHELL=true
 fi
+if [ "$SMAPI_PREFER_TERMINAL_NAME" != "" ]; then
+    PREFER_TERMINAL_NAME=$SMAPI_PREFER_TERMINAL_NAME
+fi
 
 
 ##########
@@ -32,6 +37,9 @@ while [ "$#" -gt 0 ]; do
     case "$1" in
         --skip-terminal ) SKIP_TERMINAL=true; shift ;;
         --use-current-shell ) USE_CURRENT_SHELL=true; shift ;;
+        # ${1#*=}, It removes everything before the equals sign (including the equals sign) from $1
+        # leaving only what comes after the equals sign
+        --prefer-terminal-name=* ) PREFER_TERMINAL_NAME="${1#*=}"; shift ;;
         -- ) shift; break ;;
         * ) shift ;;
     esac
@@ -92,13 +100,18 @@ else
 
     # run in terminal
     if [ "$USE_CURRENT_SHELL" == "false" ]; then
-        # select terminal (prefer xterm for best compatibility, then known supported terminals)
-        for terminal in xterm gnome-terminal kitty terminator xfce4-terminal konsole terminal termite alacritty mate-terminal x-terminal-emulator wezterm; do
-            if command -v "$terminal" 2>/dev/null; then
-                export TERMINAL_NAME=$terminal
-                break;
-            fi
-        done
+        # if user said preferred terminal
+        if [ "$PREFER_TERMINAL_NAME" != "" ]; then
+            export TERMINAL_NAME=$PREFER_TERMINAL_NAME
+        else
+            # select terminal (prefer xterm for best compatibility, then known supported terminals)
+            for terminal in xterm gnome-terminal kitty terminator xfce4-terminal konsole terminal termite alacritty mate-terminal x-terminal-emulator wezterm; do
+                if command -v "$terminal" 2>/dev/null; then
+                    export TERMINAL_NAME=$terminal
+                    break;
+                fi
+            done
+        fi
 
         # find the true shell behind x-terminal-emulator
         if [ "$TERMINAL_NAME" = "x-terminal-emulator" ]; then
