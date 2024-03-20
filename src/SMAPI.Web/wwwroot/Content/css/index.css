@@ -29,18 +29,18 @@ h1 {
     margin-bottom: 1em;
     padding: 6px 24px;
     text-decoration: none;
-    text-shadow: #aade7c 0 1px 0;
+    text-shadow: #98D760 0 1px 0;
 }
 
 #call-to-action a.main-cta {
     background: linear-gradient(#77d42a 5%, #5cb811 75%) #77d42a;
     font-size: 1.5em;
-    color: #306108;
+    color: #214205;
 }
 
 #call-to-action a.secondary-cta {
-    background: #768d87;
-    border: 1px solid #566963;
+    background: #5E706B;
+    border: 1px solid #3C4945;
     color: #eee;
     text-shadow: #2b665e 0 1px 0;
 }
