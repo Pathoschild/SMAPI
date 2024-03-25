@@ -134,15 +134,20 @@ namespace StardewModdingAPI.ModBuildConfig
                 {
                     foreach (ITaskItem item in this.ContentMods.Where(p => p.GetMetadata("Generator") == "ModBuildConfig"))
                     {
-                        string contentPath = item.GetMetadata("Include") ?? throw new UserErrorException("Content Mod does not have the 'Include' attribute.");
-                        string contentName = item.GetMetadata("Link") ?? Path.GetDirectoryName(contentPath);
+                        string contentPath = item.ItemSpec ?? throw new UserErrorException("Content Mod does not have the 'Include' attribute.");
+                        string contentName = item.GetMetadata("Link");
                         string contentVersion = item.GetMetadata("Version");
+
+                        this.Log.LogMessage(MessageImportance.High, $"[mod build package] Found content mod: {contentName} v{contentVersion} at {contentPath}.");
 
                         ignoreFilePaths = this.GetCustomIgnoreFilePaths(item.GetMetadata("IgnoreModFilePatterns")).ToArray();
                         ignoreFilePatterns = this.GetCustomIgnorePatterns(this.IgnoreModFilePaths).ToArray();
+
+                        string validateString = item.GetMetadata("Validate");
+                        bool validate = string.IsNullOrEmpty(validateString) || bool.Parse(validateString);
                         modPackages.Add(
                             contentName,
-                            new ContentPatcherModManager(contentPath, contentVersion, ignoreFilePaths, ignoreFilePatterns, bool.Parse(item.GetMetadata("Validate") ?? "true"))
+                            new ContentPatcherModManager(contentPath, contentVersion, ignoreFilePaths, ignoreFilePatterns, validate)
                         );
                     }
                 }
@@ -189,6 +194,9 @@ namespace StardewModdingAPI.ModBuildConfig
             foreach (PropertyInfo property in properties.OrderBy(p => p.Name))
             {
                 if (property.Name == nameof(this.IgnoreModFilePatterns) && string.IsNullOrWhiteSpace(this.IgnoreModFilePatterns))
+                    continue;
+
+                if (property.Name == nameof(this.ContentMods))
                     continue;
 
                 string name = property.Name;
@@ -281,7 +289,7 @@ namespace StardewModdingAPI.ModBuildConfig
         private void CreateModFolder(IDictionary<string, IModFileManager> modPackages, string outputPath)
         {
             foreach (var mod in modPackages) {
-                string modSpecificFolder = modPackages.Count == 1 ? outputPath : EscapeInvalidFilenameCharacters(Path.Combine(outputPath, mod.Key));
+                string modSpecificFolder = modPackages.Count == 1 ? outputPath : Path.Combine(outputPath, EscapeInvalidFilenameCharacters(mod.Key));
                 foreach (var file in mod.Value.GetFiles())
                 {
                     string fromPath = file.Value.FullName;
@@ -313,7 +321,7 @@ namespace StardewModdingAPI.ModBuildConfig
                     FileInfo fileInfo = file.Value;
 
                     using Stream fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read);
-                    using Stream fileStreamInZip = archive.CreateEntry(modFolder).Open();
+                    using Stream fileStreamInZip = archive.CreateEntry($"{modFolder}/{relativePath}").Open();
                     fileStream.CopyTo(fileStreamInZip);
                 }
             }

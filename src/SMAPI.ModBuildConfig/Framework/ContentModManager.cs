@@ -16,8 +16,6 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
     {
         private readonly string ManifestFileName = "manifest.json";
 
-        private readonly string ContentFileName = "content.json";
-
         /// <summary>The files that are part of the package.</summary>
         private readonly IDictionary<string, FileInfo> Files;
 
@@ -40,10 +38,10 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
             this.Files = new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase);
 
             // collect files
-            foreach (Tuple<string, FileInfo> entry in projectDirInfo.GetFiles("*", SearchOption.AllDirectories).Select(p => Tuple.Create(PathUtilities.GetRelativePath(projectDir, p.Name), p)))
+            foreach (FileInfo entry in projectDirInfo.GetFiles("*", SearchOption.AllDirectories))
             {
-                string relativePath = entry.Item1;
-                FileInfo file = entry.Item2;
+                string relativePath = PathUtilities.GetRelativePath(projectDirInfo.FullName, entry.FullName);
+                FileInfo file = entry;
 
                 if (!this.ShouldIgnore(file, relativePath, ignoreFilePaths, ignoreFilePatterns))
                     this.Files[relativePath] = file;
@@ -76,8 +74,6 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
                     throw new UserErrorException($"Could not add Content Mod '{projectDir}' because no version was provided");
                 if(manifest.Version.ToString().CompareTo(version) != 0)
                     throw new UserErrorException($"Could not add Content Mod '{projectDir}' because the version in the manifest.json file does not match the version {version} provided.");
-                if (!this.Files.ContainsKey(this.ContentFileName))
-                    throw new UserErrorException($"Could not add Content Mod because no {this.ContentFileName} was found in the project");
             }
         }
 
