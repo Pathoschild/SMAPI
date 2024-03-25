@@ -26,29 +26,35 @@ for SMAPI mods and related tools. The package is fully compatible with Linux, ma
 The package includes several features to simplify mod development (see [_configure_](#configure) to
 change how these work):
 
-* **Detect game path:**  
+* **Detect game path:**
   The package automatically finds your game folder by scanning the default install paths and
   Windows registry. It adds two MSBuild properties for use in your `.csproj` file if needed:
   `$(GamePath)` and `$(GameModsPath)`.
 
-* **Add assembly references:**  
+* **Add assembly references:**
   The package adds assembly references to MonoGame, SMAPI, Stardew Valley, and xTile. It
   automatically adjusts depending on which OS you're compiling it on. If you use
   [Harmony](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Harmony), it can optionally add
   a reference to that too.
 
-* **Copy files into the `Mods` folder:**  
+* **Copy files into the `Mods` folder:**
   The package automatically copies your mod's DLL and PDB files, `manifest.json`, [`i18n`
   files](https://stardewvalleywiki.com/Modding:Translations) (if any), and the `assets` folder (if
   any) into the `Mods` folder when you rebuild the code, with a subfolder matching the mod's project
   name. That lets you try the mod in-game right after building it.
 
-* **Create release zip:**  
+* **Create release zip:**
   The package adds a zip file in your project's `bin` folder when you rebuild the code, in the
   format recommended for uploading to mod sites like Nexus Mods. This includes the same files as
   the previous feature.
 
-* **Launch or debug mod:**  
+* **Copy non-built dependencies into the build output:**
+  Often, SMAPI mods have a component relying on other frameworks, such as Content Patcher, that
+  do not require a build. By declaring a list of dependents, the package will copy those files
+  into both the release zip and the `Mods` folder for testing. It creates a folder above them in the
+  hierarchy to avoid conflicts with other mod files and to group all related mods.
+
+* **Launch or debug mod:**
   On Windows only, the package configures Visual Studio so you can launch the game and attach a
   debugger using _Debug > Start Debugging_ or _Debug > Start Without Debugging_. This lets you [set
   breakpoints](https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2019)
@@ -56,11 +62,11 @@ change how these work):
   restart the game](https://docs.microsoft.com/en-us/visualstudio/debugger/edit-and-continue?view=vs-2019).
   This is disabled on Linux/macOS due to limitations with the Mono wrapper.
 
-* **Preconfigure common settings:**  
+* **Preconfigure common settings:**
   The package automatically enables `.pdb` files (so error logs show line numbers to simplify
   debugging), and enables support for the simplified SDK-style `.csproj` format.
 
-* **Add code warnings:**  
+* **Add code warnings:**
   The package runs code analysis on your mod and raises warnings for some common errors or
   pitfalls. See [_code warnings_](#code-warnings) for more info.
 
@@ -297,7 +303,7 @@ For example, this excludes all `.txt` and `.pdf` files, as well as the `assets/p
 
 ## Code warnings
 ### Overview
-The NuGet package adds code warnings in Visual Studio specific to Stardew Valley. For example:  
+The NuGet package adds code warnings in Visual Studio specific to Stardew Valley. For example:
 ![](screenshots/code-analyzer-example.png)
 
 You can [hide the warnings](https://visualstudiomagazine.com/articles/2017/09/01/hide-compiler-warnings.aspx)
@@ -416,6 +422,11 @@ The NuGet package is generated automatically in `StardewModdingAPI.ModBuildConfi
 when you compile it.
 
 ## Release notes
+## 4.2.0
+Released xx xxxx 2024 for SMAPI x.xx.x or later.
+
+* Added ability to include arbitrary content-based mods to output.
+
 ## 4.1.1
 Released 24 June 2023 for SMAPI 3.13.0 or later.
 

@@ -99,6 +99,7 @@
       IgnoreModFilePaths="$(IgnoreModFilePaths)"
 
       BundleExtraAssemblies="$(BundleExtraAssemblies)"
+      AdditionalModsToAdd="@(Content)"
     />
   </Target>
 </Project>
