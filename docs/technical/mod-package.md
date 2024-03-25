@@ -48,11 +48,10 @@ change how these work):
   format recommended for uploading to mod sites like Nexus Mods. This includes the same files as
   the previous feature.
 
-* **Copy non-built dependencies into the build output:**
+* **Copy Content-based dependencies into the build output:**
   Often, SMAPI mods have a component relying on other frameworks, such as Content Patcher, that
   do not require a build. By declaring a list of dependents, the package will copy those files
-  into both the release zip and the `Mods` folder for testing. It creates a folder above them in the
-  hierarchy to avoid conflicts with other mod files and to group all related mods.
+  into both the release zip and the `Mods` folder for testing.
 
 * **Launch or debug mod:**
   On Windows only, the package configures Visual Studio so you can launch the game and attach a
@@ -300,6 +299,82 @@ For example, this excludes all `.txt` and `.pdf` files, as well as the `assets/p
 </table>
 </li>
 </ul>
+
+### Adding Content-based mods
+
+Additional mods that don't require a build step, such as those modifying content via Content Patcher, can be added by specifying a `Content` resource in `ItemGroup`:
+
+```xml
+<ItemGroup>
+    <Content Include="..\path\to\[CP] My Cool Content" Generator="ModBuildConfig" Version="1.0.0"/>
+</ItemGroup>
+```
+
+This mod will automatically get included in both the release zip and the `Mods` folder for testing. The package will also automatically create a folder to group all the related mods together under one place, including the release zip.
+
+#### Available properties
+<table>
+<tr>
+  <th>property</th>
+  <th>effect</th>
+</tr>
+<tr>
+<td><code>Include</code></td>
+<td>
+
+The path to the included mod. This can be a relative path to the project or an absolute path. This is required.
+
+</td>
+</tr>
+<tr>
+<td><code>Generator</code></td>
+<td>
+
+This must be set to `ModBuildConfig` to be recognized by the package. This is required.
+
+</td>
+</tr>
+<tr>
+<td><code>Version</code></td>
+<td>
+
+Version of the mod. The package will validate that the included mod's manifest version matches. This is required.
+
+</td>
+</tr>
+<tr>
+<td><code>Link</code></td>
+<td>
+
+An optional name to rename the mod in the release zip and `Mods` folder. If not set, the directory from `Include` will be used.
+
+</td>
+</tr>
+<tr>
+<td><code>Validate</code></td>
+<td>
+
+Whether to validate that the included mod is a valid Content Patcher mod. This checks if `manifest.json` and `content.json` are present and validates the former. It also disables `Version` checks if `false`. This is optional and defaults to `true`.
+
+</td>
+</tr>
+<tr>
+<td><code>IgnoreModFilePaths</code></td>
+<td>
+
+A list of file paths to ignore. This is done relative to the Content Patcher mod's directory. By default, all files will be copied. This is optional. Same logic as the `IgnoreModFilePaths` in   `ProjItems`.
+
+</td>
+</tr>
+<tr>
+<td><code>IgnoreModFilePatterns</code></td>
+<td>
+
+A list of file regex patterns to ignore. This is done relative to the Content Patcher mod's directory. This is optional. Same logic as the `IgnoreModFilePaths` in   `ProjItems`.
+
+</td>
+</tr>
+</table>
 
 ## Code warnings
 ### Overview

@@ -64,7 +64,7 @@ namespace StardewModdingAPI.ModBuildConfig
         public string BundleExtraAssemblies { get; set; }
 
         /// <summary>A list of directories containing mods that do not need to built (such as Content Patcher) to bundle.</summary>
-        public ITaskItem[] ContentItems { get; set; }
+        public ITaskItem[] ContentMods { get; set; }
 
 
         /*********
@@ -130,18 +130,19 @@ namespace StardewModdingAPI.ModBuildConfig
                     { this.ModFolderName, new CSharpModManager(this.ProjectDir, this.TargetDir, ignoreFilePaths, ignoreFilePatterns, bundleAssemblyTypes, this.ModDllName, validateRequiredModFiles: this.EnableModDeploy || this.EnableModZip) }
                 };
 
-                if (this.ContentItems != null)
+                if (this.ContentMods != null)
                 {
-                    foreach (ITaskItem item in this.ContentItems.Where(p => p.GetMetadata("Generator") == "ModBuildConfig"))
+                    foreach (ITaskItem item in this.ContentMods.Where(p => p.GetMetadata("Generator") == "ModBuildConfig"))
                     {
                         string contentPath = item.GetMetadata("Include") ?? throw new UserErrorException("Content Mod does not have the 'Include' attribute.");
                         string contentName = item.GetMetadata("Link") ?? Path.GetDirectoryName(contentPath);
+                        string contentVersion = item.GetMetadata("Version");
 
                         ignoreFilePaths = this.GetCustomIgnoreFilePaths(item.GetMetadata("IgnoreModFilePatterns")).ToArray();
                         ignoreFilePatterns = this.GetCustomIgnorePatterns(this.IgnoreModFilePaths).ToArray();
                         modPackages.Add(
                             contentName,
-                            new ContentPatcherModManager(contentPath, ignoreFilePaths, ignoreFilePatterns, bool.Parse(item.GetMetadata("Validate") ?? "true"))
+                            new ContentPatcherModManager(contentPath, contentVersion, ignoreFilePaths, ignoreFilePatterns, bool.Parse(item.GetMetadata("Validate") ?? "true"))
                         );
                     }
                 }

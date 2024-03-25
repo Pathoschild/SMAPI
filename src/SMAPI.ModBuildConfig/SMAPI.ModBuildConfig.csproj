@@ -10,7 +10,7 @@
     <!--NuGet package-->
     <PackageId>Pathoschild.Stardew.ModBuildConfig</PackageId>
     <Title>Build package for SMAPI mods</Title>
-    <Version>4.1.1</Version>
+    <Version>4.2.0</Version>
     <Authors>Pathoschild</Authors>
     <Description>Automates the build configuration for crossplatform Stardew Valley SMAPI mods. For SMAPI 3.13.0 or later.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -26,11 +26,12 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
         *********/
         /// <summary>Construct an instance.</summary>
         /// <param name="projectDir">The folder containing the project files.</param>
+        /// <param name="version">The mod version.</param>
         /// <param name="ignoreFilePaths">The custom relative file paths provided by the user to ignore.</param>
         /// <param name="ignoreFilePatterns">Custom regex patterns matching files to ignore when deploying or zipping the mod.</param>
         /// <param name="validateRequiredModFiles">Whether to validate that required mod files like the manifest are present.</param>
         /// <exception cref="UserErrorException">The mod package isn't valid.</exception>
-        public ContentPatcherModManager(string projectDir, string[] ignoreFilePaths, Regex[] ignoreFilePatterns, bool validateRequiredModFiles)
+        public ContentPatcherModManager(string projectDir, string version, string[] ignoreFilePaths, Regex[] ignoreFilePatterns, bool validateRequiredModFiles)
         {
             DirectoryInfo projectDirInfo = new DirectoryInfo(projectDir);
             if(!projectDirInfo.Exists)
@@ -71,6 +72,10 @@ namespace StardewModdingAPI.ModBuildConfig.Framework
                 {
                     throw new UserErrorException($"Could not add Content Mod '{projectDir}' because mod's {this.ManifestFileName} did not validate: {error}");
                 }
+                if (version == null)
+                    throw new UserErrorException($"Could not add Content Mod '{projectDir}' because no version was provided");
+                if(manifest.Version.ToString().CompareTo(version) != 0)
+                    throw new UserErrorException($"Could not add Content Mod '{projectDir}' because the version in the manifest.json file does not match the version {version} provided.");
                 if (!this.Files.ContainsKey(this.ContentFileName))
                     throw new UserErrorException($"Could not add Content Mod because no {this.ContentFileName} was found in the project");
             }
