@@ -1,0 +1,6 @@
+{
+    // short date format for SDate
+    // tokens: {{day}} (like 15), {{season}} (like Spring), {{seasonLowercase}} (like spring), {{year}} (like 2)
+    "generic.date": "Tanggal {{day}} di {{season}}",
+    "generic.date-with-year": "Tanggal {{day}} di {{season}} tahun ke-{{year}}"
+}
