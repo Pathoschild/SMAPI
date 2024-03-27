@@ -58,8 +58,18 @@ if [ "$(uname)" == "Darwin" ]; then
             echo "\"$0\" $@ --use-current-shell" >> /tmp/open-smapi-terminal.command
             chmod +x /tmp/open-smapi-terminal.command
             cat /tmp/open-smapi-terminal.command
-            open -W /tmp/open-smapi-terminal.command
-            rm /tmp/open-smapi-terminal.command
+            # Check if iTerm2 is installed by attempting to locate the iTerm application
+            if [ -d "/Applications/iTerm.app" ]; then
+                echo "Opening in iTerm2..."
+                # Open the script in iTerm2
+                open -a "/Applications/iTerm.app" /tmp/open-smapi-terminal.command
+            else
+                echo "iTerm2 not found. Opening in the default Terminal app..."
+                # Fall back to the default Terminal if iTerm2 is not found
+                open -W /tmp/open-smapi-terminal.command
+            fi
+            # Remove the temporary script after a delay
+            (sleep 10; rm /tmp/open-smapi-terminal.command)
             exit 0
         fi
     fi
