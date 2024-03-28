@@ -50,6 +50,7 @@ using xTile.Display;
 using LanguageCode = StardewValley.LocalizedContentManager.LanguageCode;
 using MiniMonoModHotfix = MonoMod.Utils.MiniMonoModHotfix;
 using PathUtilities = StardewModdingAPI.Toolkit.Utilities.PathUtilities;
+using System.IO.Compression;
 
 namespace StardewModdingAPI.Framework
 {
@@ -416,7 +417,43 @@ namespace StardewModdingAPI.Framework
                             this.Monitor.Log($"Detected mod files directly inside the '{Path.GetFileName(this.ModsPath)}' folder. These will be ignored. Each mod must have its own subfolder instead.", LogLevel.Error);
                         }
 
-                        this.Monitor.Log($"  Ignored loose files: {string.Join(", ", looseFiles.OrderBy(p => p, StringComparer.OrdinalIgnoreCase))}");
+                        if (looseFiles.Any(name => name.EndsWith(".zip")))
+                        {
+                            this.Monitor.Log($"Detected zipped mods directly inside the '{Path.GetFileName(this.ModsPath)}' folder. These will be unzipped.");
+
+                            // filter files to only .zips
+                            var zips = looseFiles.Where(f => f.EndsWith(".zip"));
+
+                            foreach(string zip in zips)
+                            {
+                                bool alreadyExists = false;
+                                string fullpath = Path.Combine(this.ModsPath, zip);
+                                string unzippath = this.ModsPath;
+
+                                using (ZipArchive archive = ZipFile.OpenRead(fullpath))
+                                {
+                                    foreach (ZipArchiveEntry entry in archive.Entries)
+                                    {
+                                        if (File.Exists(Path.Combine(unzippath, entry.FullName))) {
+                                            alreadyExists = true;
+                                            break;
+                                        } else if (!entry.FullName.Contains('/') && !unzippath.Contains(Path.GetFileNameWithoutExtension(zip))) {
+                                            this.Monitor.Log($"Detected loose mod files in {zip}, adjusting unzip path to accomodate.");
+                                            unzippath += $"/{Path.GetFileNameWithoutExtension(zip)}";
+                                        }
+                                    }
+                                }
+                                if (!alreadyExists)
+                                {
+                                    ZipFile.ExtractToDirectory(fullpath, unzippath);
+
+                                    this.Monitor.Log($"  Unzipped {zip} to the '{Path.GetFileName(this.ModsPath)}' folder.");
+                                }
+                                
+                            }
+                        }
+
+                        this.Monitor.Log($"  Ignored loose files: {string.Join(", ", looseFiles.Where(f => !f.EndsWith(".zip")).OrderBy(p => p, StringComparer.OrdinalIgnoreCase))}");
                     }
                 }
 
