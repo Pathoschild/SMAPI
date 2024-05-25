@@ -226,7 +226,7 @@ namespace StardewModdingAPI.Framework.Logging
             // log basic info
             this.Monitor.Log($"Mods go here: {modsPath}", LogLevel.Info);
             if (modsPath != Constants.DefaultModsPath)
-                this.Monitor.Log($"(Using custom --mods-path argument. Game folder: {Constants.GamePath}.)");
+                this.Monitor.Log($"(Using custom --mods-path argument. Game folder: {PathUtilities.SanitisePath(Constants.GamePath)}.)");
             this.Monitor.Log($"Log started at {DateTime.UtcNow:s} UTC");
 
             // log custom settings

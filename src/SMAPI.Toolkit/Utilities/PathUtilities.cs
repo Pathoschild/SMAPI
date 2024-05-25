@@ -166,5 +166,20 @@ namespace StardewModdingAPI.Toolkit.Utilities
                 string.IsNullOrWhiteSpace(str)
                 || !Regex.IsMatch(str, "[^a-z0-9_.-]", RegexOptions.IgnoreCase);
         }
+
+        /// <summary>Replace home directory in a given path with <c>~</c>. (e.g. C:\\Users\\Admin\\Game -> ~\\Game)</summary>
+        /// <param name="path">The path to sanitise</param>
+        [Pure]
+        public static string SanitisePath(string path)
+        {
+            path = PathUtilities.NormalizePath(path);
+            string homePath = PathUtilities.NormalizePath(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE")!);
+
+            if (path.Equals(homePath, StringComparison.OrdinalIgnoreCase))
+                return "~";
+            if (path.StartsWith(homePath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                return "~" + path.Substring(homePath.Length);
+            return path;
+        }
     }
 }
