@@ -207,8 +207,10 @@ namespace StardewModdingAPI.Framework
             SCore.DeprecationManager = new DeprecationManager(this.Monitor, this.ModRegistry);
             SDate.Translations = this.Translator;
 
-            // log SMAPI/OS info
-            this.LogManager.LogIntro(modsPath, this.Settings.GetCustomSettings());
+            string sanitisedModPath = modsPath.Replace(Environment.UserName, new string('*', Environment.UserName.Length));
+
+            // log SMAPI/OS info, 
+            this.LogManager.LogIntro(sanitisedModPath, this.Settings.GetCustomSettings());
 
             // validate platform
 #if SMAPI_FOR_WINDOWS
