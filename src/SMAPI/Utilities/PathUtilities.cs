@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-using System.IO;
 using ToolkitPathUtilities = StardewModdingAPI.Toolkit.Utilities.PathUtilities;
 
 namespace StardewModdingAPI.Utilities
@@ -47,6 +45,14 @@ namespace StardewModdingAPI.Utilities
             return ToolkitPathUtilities.NormalizePath(path);
         }
 
+        /// <summary>Get a path with the home directory path replaced with <c>~</c> (like <c>C:\Users\Admin\Game</c> to <c>~\Game</c>), if applicable.</summary>
+        /// <param name="path">The path to anonymize.</param>
+        [Pure]
+        public static string AnonymizePathForDisplay(string path)
+        {
+            return ToolkitPathUtilities.AnonymizePathForDisplay(path);
+        }
+
         /// <summary>Get whether a path is relative and doesn't try to climb out of its containing folder (e.g. doesn't contain <c>../</c>).</summary>
         /// <param name="path">The path to check.</param>
         [Pure]
@@ -61,14 +67,6 @@ namespace StardewModdingAPI.Utilities
         public static bool IsSlug(string? str)
         {
             return ToolkitPathUtilities.IsSlug(str);
-        }
-
-        /// <summary>Replace home directory in a given path with <c>~</c>. (e.g. C:\\Users\\Admin\\Game -> ~\\Game)</summary>
-        /// <param name="path">The path to sanitise</param>
-        [Pure]
-        public static string SanitisePath(string path)
-        {
-            return ToolkitPathUtilities.SanitisePath(path);
         }
     }
 }

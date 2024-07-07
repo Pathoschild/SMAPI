@@ -224,9 +224,9 @@ namespace StardewModdingAPI.Framework.Logging
             this.Monitor.Log($"SMAPI {Constants.ApiVersion} with Stardew Valley {Game1.GetVersionString()} on {EnvironmentUtility.GetFriendlyPlatformName(Constants.Platform)}", LogLevel.Info);
 
             // log basic info
-            this.Monitor.Log($"Mods go here: {PathUtilities.SanitisePath(modsPath)}", LogLevel.Info);
+            this.Monitor.Log($"Mods go here: {PathUtilities.AnonymizePathForDisplay(modsPath)}", LogLevel.Info);
             if (modsPath != Constants.DefaultModsPath)
-                this.Monitor.Log($"(Using custom --mods-path argument. Game folder: {PathUtilities.SanitisePath(Constants.GamePath)}.)");
+                this.Monitor.Log($"(Using custom --mods-path argument. Game folder: {PathUtilities.AnonymizePathForDisplay(Constants.GamePath)}.)");
             this.Monitor.Log($"Log started at {DateTime.UtcNow:s} UTC");
 
             // log custom settings

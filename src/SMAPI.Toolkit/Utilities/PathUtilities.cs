@@ -99,6 +99,25 @@ namespace StardewModdingAPI.Toolkit.Utilities
             return newPath;
         }
 
+        /// <summary>Get a path with the home directory path replaced with <c>~</c> (like <c>C:\Users\Admin\Game</c> to <c>~\Game</c>), if applicable.</summary>
+        /// <param name="path">The path to anonymize.</param>
+        [Pure]
+        public static string AnonymizePathForDisplay(string path)
+        {
+            string? homePath = PathUtilities.NormalizePath(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE"));
+            path = PathUtilities.NormalizePath(path);
+
+            if (homePath != null)
+            {
+                if (path.Equals(homePath, StringComparison.OrdinalIgnoreCase))
+                    path = homePath;
+                else if (path.StartsWith(homePath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                    path = "~" + path.Substring(homePath.Length);
+            }
+
+            return path;
+        }
+
         /// <summary>Get a directory or file path relative to a given source path. If no relative path is possible (e.g. the paths are on different drives), an absolute path is returned.</summary>
         /// <param name="sourceDir">The source folder path.</param>
         /// <param name="targetPath">The target folder or file path.</param>
@@ -165,25 +184,6 @@ namespace StardewModdingAPI.Toolkit.Utilities
             return
                 string.IsNullOrWhiteSpace(str)
                 || !Regex.IsMatch(str, "[^a-z0-9_.-]", RegexOptions.IgnoreCase);
-        }
-
-        /// <summary>Replace home directory in a given path with <c>~</c>. (e.g. C:\\Users\\Admin\\Game -> ~\\Game)</summary>
-        /// <param name="path">The path to sanitise</param>
-        [Pure]
-        public static string SanitisePath(string path)
-        {
-            string? homePath = PathUtilities.NormalizePath(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE"));
-            path = PathUtilities.NormalizePath(path);
-
-            if (homePath != null)
-            {
-                if (path.Equals(homePath, StringComparison.OrdinalIgnoreCase))
-                    path = homePath;
-                else if (path.StartsWith(homePath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
-                    path = "~" + path.Substring(homePath.Length);
-            }
-
-            return path;
         }
     }
 }
