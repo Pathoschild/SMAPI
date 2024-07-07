@@ -172,13 +172,17 @@ namespace StardewModdingAPI.Toolkit.Utilities
         [Pure]
         public static string SanitisePath(string path)
         {
+            string? homePath = PathUtilities.NormalizePath(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE"));
             path = PathUtilities.NormalizePath(path);
-            string homePath = PathUtilities.NormalizePath(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE")!);
 
-            if (path.Equals(homePath, StringComparison.OrdinalIgnoreCase))
-                return "~";
-            if (path.StartsWith(homePath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
-                return "~" + path.Substring(homePath.Length);
+            if (homePath != null)
+            {
+                if (path.Equals(homePath, StringComparison.OrdinalIgnoreCase))
+                    path = homePath;
+                else if (path.StartsWith(homePath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                    path = "~" + path.Substring(homePath.Length);
+            }
+
             return path;
         }
     }
