@@ -1,19 +1,28 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+
 using xTile.Dimensions;
 using xTile.Display;
 using xTile.Layers;
 using xTile.Tiles;
+
 using Rectangle = xTile.Dimensions.Rectangle;
+
+// Remarks:
+// The vanilla game uses a dictionary to cache a tilesheet -> Texture2d lookup.
+// but SMAPI cannot reasonably keep track of lifetimes for tilesheets.
+// In particular, mods may add or remove tilesheets at any time.
 
 namespace StardewModdingAPI.Framework.Rendering
 {
     /// <summary>A map display device which reimplements the default logic.</summary>
-    /// <remarks>This is an exact copy of <see cref="XnaDisplayDevice"/>, except that private fields are protected and all methods are virtual.</remarks>
+    /// <remarks>This is an exact copy of <see cref="XnaDisplayDevice"/>, except that private fields are protected and all methods are virtual
+    /// and the tilesheet cache has been replaced with a conditional weak table</remarks>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = $"Field naming deliberately matches {nameof(XnaDisplayDevice)} to minimize differences.")]
     internal class SXnaDisplayDevice : IDisplayDevice
     {
@@ -24,7 +33,7 @@ namespace StardewModdingAPI.Framework.Rendering
         protected readonly GraphicsDevice m_graphicsDevice;
         protected SpriteBatch m_spriteBatchAlpha;
         protected SpriteBatch m_spriteBatchAdditive;
-        protected readonly Dictionary<TileSheet, Texture2D> m_tileSheetTextures;
+        protected readonly ConditionalWeakTable<TileSheet, Texture2D> m_tileSheetTextures;
         protected Vector2 m_tilePosition;
         protected Microsoft.Xna.Framework.Rectangle m_sourceRectangle;
         protected readonly Color m_modulationColour;
@@ -42,7 +51,7 @@ namespace StardewModdingAPI.Framework.Rendering
             this.m_graphicsDevice = graphicsDevice;
             this.m_spriteBatchAlpha = new SpriteBatch(graphicsDevice);
             this.m_spriteBatchAdditive = new SpriteBatch(graphicsDevice);
-            this.m_tileSheetTextures = new Dictionary<TileSheet, Texture2D>();
+            this.m_tileSheetTextures = new();
             this.m_tilePosition = new Vector2();
             this.m_sourceRectangle = new Microsoft.Xna.Framework.Rectangle();
             this.m_modulationColour = Color.White;
@@ -53,7 +62,8 @@ namespace StardewModdingAPI.Framework.Rendering
         public virtual void LoadTileSheet(TileSheet tileSheet)
         {
             Texture2D texture2D = this.m_contentManager.Load<Texture2D>(tileSheet.ImageSource);
-            this.m_tileSheetTextures[tileSheet] = texture2D;
+            if (!texture2D.IsDisposed)
+                this.m_tileSheetTextures.AddOrUpdate(tileSheet, texture2D); // change here.
         }
 
         /// <summary>Unload a tilesheet texture.</summary>
@@ -94,8 +104,9 @@ namespace StardewModdingAPI.Framework.Rendering
             if (tile == null)
                 return;
             Rectangle tileImageBounds = tile.TileSheet.GetTileImageBounds(tile.TileIndex);
-            Texture2D tileSheetTexture = this.m_tileSheetTextures[tile.TileSheet];
-            if (tileSheetTexture.IsDisposed)
+
+            // change here. 
+            if (!this.m_tileSheetTextures.TryGetValue(tile.TileSheet, out var tileSheetTexture) || tileSheetTexture.IsDisposed)
                 return;
             this.m_tilePosition.X = location.X;
             this.m_tilePosition.Y = location.Y;

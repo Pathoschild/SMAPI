@@ -2,6 +2,8 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+
+using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
@@ -12,6 +14,11 @@ namespace StardewModdingAPI.Framework.Rendering
     /// <summary>A map display device which overrides the draw logic to support tile rotation.</summary>
     internal class SDisplayDevice : SXnaDisplayDevice
     {
+        /// <summary>
+        /// Gets a value indicating whether the display device's cache needs to be refreshed.
+        /// </summary>
+        internal bool IsDirty { get; private set; } = false;
+
         /*********
         ** Public methods
         *********/
@@ -31,9 +38,16 @@ namespace StardewModdingAPI.Framework.Rendering
             if (tile == null)
                 return;
             xTile.Dimensions.Rectangle tileImageBounds = tile.TileSheet.GetTileImageBounds(tile.TileIndex);
-            Texture2D tileSheetTexture = this.m_tileSheetTextures[tile.TileSheet];
+
+            if (!this.m_tileSheetTextures.TryGetValue(tile.TileSheet, out var tileSheetTexture))
+            {
+                this.IsDirty = true;
+                return;
+            }
+
             if (tileSheetTexture.IsDisposed)
                 return;
+
             this.m_tilePosition.X = location.X;
             this.m_tilePosition.Y = location.Y;
             this.m_sourceRectangle.X = tileImageBounds.X;
@@ -50,6 +64,16 @@ namespace StardewModdingAPI.Framework.Rendering
 
             // apply
             this.m_spriteBatchAlpha.Draw(tileSheetTexture, this.m_tilePosition, this.m_sourceRectangle, this.m_modulationColour, rotation, origin, Layer.zoom, effects, layerDepth);
+        }
+
+        /// <summary>
+        /// Populates a map's tilesheets into the cache.
+        /// </summary>
+        /// <param name="map">Map to populate.</param>
+        internal void PopulateTilesheets(Map? map)
+        {
+            map?.LoadTileSheets(this);
+            this.IsDirty = false;
         }
 
         /// <summary>Get the sprite effects to apply for a tile.</summary>

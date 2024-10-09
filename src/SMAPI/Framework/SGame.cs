@@ -7,6 +7,7 @@ using StardewModdingAPI.Enums;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Framework.Input;
 using StardewModdingAPI.Framework.Reflection;
+using StardewModdingAPI.Framework.Rendering;
 using StardewModdingAPI.Framework.StateTracking.Snapshots;
 using StardewModdingAPI.Framework.Utilities;
 using StardewModdingAPI.Internal;
@@ -201,6 +202,13 @@ namespace StardewModdingAPI.Framework
             {
                 this.Input.TrueUpdate();
                 this.Watchers = new WatcherCore(this.Input, (ObservableCollection<GameLocation>)this._locations);
+            }
+
+            // crosscheck rendering device.
+            if (Game1.mapDisplayDevice is SDisplayDevice sDisplayDevice
+                && sDisplayDevice.IsDirty == true && Game1.currentLocation is { } loc)
+            {
+                sDisplayDevice.PopulateTilesheets(loc.Map);
             }
 
             // update
