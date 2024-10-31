@@ -203,7 +203,7 @@ namespace StardewModdingAPI.Framework
             }
 
             // init basics
-            this.LogManager = new LogManager(logPath: logPath, colorConfig: this.Settings.ConsoleColors, writeToConsole: writeToConsole, verboseLogging: this.Settings.VerboseLogging, isDeveloperMode: this.Settings.DeveloperMode, getScreenIdForLog: this.GetScreenIdForLog);
+            this.LogManager = new LogManager(logPath: logPath, colorConfig: this.Settings.ConsoleColors, writeToConsole: writeToConsole, verboseLogging: this.Settings.VerboseLogging, isDeveloperMode: this.Settings.DeveloperMode, legacyMode: this.Settings.LegacyConsoleMode, getScreenIdForLog: this.GetScreenIdForLog);
             this.CommandManager = new CommandManager(this.Monitor);
             this.EventManager = new EventManager(this.ModRegistry);
             SCore.DeprecationManager = new DeprecationManager(this.Monitor, this.ModRegistry);

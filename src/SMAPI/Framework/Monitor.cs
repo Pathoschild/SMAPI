@@ -63,10 +63,10 @@ namespace StardewModdingAPI.Framework
         /// <summary>Construct an instance.</summary>
         /// <param name="source">The name of the module which logs messages using this instance.</param>
         /// <param name="logFile">The log file to which to write messages.</param>
-        /// <param name="colorConfig">The colors to use for text written to the SMAPI console.</param>
+        /// <param name="consoleWriter">The console writer to use for console output.</param>
         /// <param name="isVerbose">Whether verbose logging is enabled. This enables more detailed diagnostic messages than are normally needed.</param>
         /// <param name="getScreenIdForLog">Get the screen ID that should be logged to distinguish between players in split-screen mode, if any.</param>
-        public Monitor(string source, LogFileManager logFile, ColorSchemeConfig colorConfig, bool isVerbose, Func<int?> getScreenIdForLog)
+        public Monitor(string source, LogFileManager logFile, IConsoleWriter consoleWriter, bool isVerbose, Func<int?> getScreenIdForLog)
         {
             // validate
             if (string.IsNullOrWhiteSpace(source))
@@ -75,7 +75,7 @@ namespace StardewModdingAPI.Framework
             // initialize
             this.Source = source;
             this.LogFile = logFile ?? throw new ArgumentNullException(nameof(logFile), "The log file manager cannot be null.");
-            this.ConsoleWriter = new ColorfulConsoleWriter(Constants.Platform, colorConfig);
+            this.ConsoleWriter = consoleWriter;
             this.IsVerbose = isVerbose;
             this.GetScreenIdForLog = getScreenIdForLog;
         }
@@ -126,9 +126,10 @@ namespace StardewModdingAPI.Framework
         /// <param name="input">The user input to log.</param>
         internal void LogUserInput(string input)
         {
-            // user input already appears in the console, so just need to write to file
             string prefix = this.GenerateMessagePrefix(this.Source, (ConsoleLogLevel)LogLevel.Info);
-            this.LogFile.WriteLine($"{prefix} $>{input}");
+            string output = $"{prefix} $>{input}";
+            Console.WriteLine(output);
+            this.LogFile.WriteLine(output);
         }
 
 

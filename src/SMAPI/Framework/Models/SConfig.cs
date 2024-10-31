@@ -17,6 +17,7 @@ namespace StardewModdingAPI.Framework.Models
         {
             [nameof(CheckForUpdates)] = true,
             [nameof(ListenForConsoleInput)] = true,
+            [nameof(LegacyConsoleMode)] = false,
             [nameof(ParanoidWarnings)] = Constants.IsDebugBuild,
             [nameof(UseBetaChannel)] = Constants.ApiVersion.IsPrerelease(),
             [nameof(GitHubProjectName)] = "Pathoschild/SMAPI",
@@ -52,6 +53,9 @@ namespace StardewModdingAPI.Framework.Models
 
         /// <summary>Whether SMAPI should listen for console input to support console commands.</summary>
         public bool ListenForConsoleInput { get; set; }
+
+        /// <summary>Whether SMAPI should use legacy console mode. This will prevent tab auto completion from working, and will not keep input at the bottom of the console.</summary>
+        public bool LegacyConsoleMode { get; set; }
 
         /// <summary>Whether to add a section to the 'mod issues' list for mods which which directly use potentially sensitive .NET APIs like file or shell access.</summary>
         public bool ParanoidWarnings { get; set; }
@@ -107,6 +111,7 @@ namespace StardewModdingAPI.Framework.Models
         /// <param name="developerMode"><inheritdoc cref="DeveloperMode" path="/summary" /></param>
         /// <param name="checkForUpdates"><inheritdoc cref="CheckForUpdates" path="/summary" /></param>
         /// <param name="listenForConsoleInput"><inheritdoc cref="ListenForConsoleInput" path="/summary" /></param>
+        /// <param name="legacyConsoleMode"><inheritdoc cref="LegacyConsoleMode" path="/summary" /></param>
         /// <param name="paranoidWarnings"><inheritdoc cref="ParanoidWarnings" path="/summary" /></param>
         /// <param name="useBetaChannel"><inheritdoc cref="UseBetaChannel" path="/summary" /></param>
         /// <param name="gitHubProjectName"><inheritdoc cref="GitHubProjectName" path="/summary" /></param>
@@ -122,11 +127,12 @@ namespace StardewModdingAPI.Framework.Models
         /// <param name="suppressUpdateChecks"><inheritdoc cref="SuppressUpdateChecks" path="/summary" /></param>
         /// <param name="modsToLoadEarly"><inheritdoc cref="ModsToLoadEarly" path="/summary" /></param>
         /// <param name="modsToLoadLate"><inheritdoc cref="ModsToLoadLate" path="/summary" /></param>
-        public SConfig(bool developerMode, bool? checkForUpdates, bool? listenForConsoleInput, bool? paranoidWarnings, bool? useBetaChannel, string gitHubProjectName, string webApiBaseUrl, string[]? verboseLogging, bool? rewriteMods, bool? fixHarmony, bool? useCaseInsensitivePaths, bool? logNetworkTraffic, bool? logTechnicalDetailsForBrokenMods, ColorSchemeConfig consoleColors, bool? suppressHarmonyDebugMode, string[]? suppressUpdateChecks, string[]? modsToLoadEarly, string[]? modsToLoadLate)
+        public SConfig(bool developerMode, bool? checkForUpdates, bool? listenForConsoleInput, bool? legacyConsoleMode, bool? paranoidWarnings, bool? useBetaChannel, string gitHubProjectName, string webApiBaseUrl, string[]? verboseLogging, bool? rewriteMods, bool? fixHarmony, bool? useCaseInsensitivePaths, bool? logNetworkTraffic, bool? logTechnicalDetailsForBrokenMods, ColorSchemeConfig consoleColors, bool? suppressHarmonyDebugMode, string[]? suppressUpdateChecks, string[]? modsToLoadEarly, string[]? modsToLoadLate)
         {
             this.DeveloperMode = developerMode;
             this.CheckForUpdates = checkForUpdates ?? (bool)SConfig.DefaultValues[nameof(this.CheckForUpdates)];
             this.ListenForConsoleInput = listenForConsoleInput ?? (bool)SConfig.DefaultValues[nameof(this.ListenForConsoleInput)];
+            this.LegacyConsoleMode = legacyConsoleMode ?? (bool)SConfig.DefaultValues[nameof(this.LegacyConsoleMode)];
             this.ParanoidWarnings = paranoidWarnings ?? (bool)SConfig.DefaultValues[nameof(this.ParanoidWarnings)];
             this.UseBetaChannel = useBetaChannel ?? (bool)SConfig.DefaultValues[nameof(this.UseBetaChannel)];
             this.GitHubProjectName = gitHubProjectName;

@@ -27,6 +27,7 @@
     <PackageReference Include="Pathoschild.Http.FluentClient" Version="4.4.0" />
     <PackageReference Include="Pintail" Version="2.4.2" />
     <PackageReference Include="Platonymous.TMXTile" Version="1.5.9" />
+    <PackageReference Include="spacechase0.ConsoleWrapperLib" Version="1.1.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 

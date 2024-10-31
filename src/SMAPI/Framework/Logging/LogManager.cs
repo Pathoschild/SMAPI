@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using ConsoleWrapperLib;
 using StardewModdingAPI.Framework.Commands;
 using StardewModdingAPI.Framework.Models;
 using StardewModdingAPI.Framework.ModLoading;
@@ -24,6 +25,16 @@ namespace StardewModdingAPI.Framework.Logging
         *********/
         /// <summary>The log file to which to write messages.</summary>
         private readonly LogFileManager LogFile;
+
+        /// <summary>If we're in legacy mode or not.</summary>
+        [MemberNotNullWhen(false, nameof(ConsoleWrapper))]
+        private bool LegacyMode { get; }
+
+        /// <summary>The console wrapper object.</summary>
+        private ConsoleWrapper? ConsoleWrapper;
+
+        /// <summary>The console writer object.</summary>
+        private IConsoleWriter ConsoleWriter;
 
         /// <summary>Create a monitor instance given the ID and name.</summary>
         private readonly Func<string, string, Monitor> GetMonitorImpl;
@@ -51,14 +62,28 @@ namespace StardewModdingAPI.Framework.Logging
         /// <param name="writeToConsole">Whether to output log messages to the console.</param>
         /// <param name="verboseLogging">The log contexts for which to enable verbose logging, which may show a lot more information to simplify troubleshooting.</param>
         /// <param name="isDeveloperMode">Whether to enable full console output for developers.</param>
+        /// <param name="legacyMode">Whether to use legacy mode or not, which enables auto completion and moves user input to always be at the bottom of the console.</param>
         /// <param name="getScreenIdForLog">Get the screen ID that should be logged to distinguish between players in split-screen mode, if any.</param>
-        public LogManager(string logPath, ColorSchemeConfig colorConfig, bool writeToConsole, HashSet<string> verboseLogging, bool isDeveloperMode, Func<int?> getScreenIdForLog)
+        public LogManager(string logPath, ColorSchemeConfig colorConfig, bool writeToConsole, HashSet<string> verboseLogging, bool isDeveloperMode, bool legacyMode, Func<int?> getScreenIdForLog)
         {
             // init log file
             this.LogFile = new LogFileManager(logPath);
 
+            // save legacy mode value
+            this.LegacyMode = legacyMode;
+
+            // init console
+            if (!this.LegacyMode)
+            {
+                this.ConsoleWriter = new ConsoleWrapperConsoleWriter(Constants.Platform, colorConfig);
+            }
+            else
+            {
+                this.ConsoleWriter = new ColorfulConsoleWriter(Constants.Platform, colorConfig);
+            }
+
             // init monitor
-            this.GetMonitorImpl = (id, name) => new Monitor(name, this.LogFile, colorConfig, verboseLogging.Contains("*") || verboseLogging.Contains(id), getScreenIdForLog)
+            this.GetMonitorImpl = (id, name) => new Monitor(name, this.LogFile, this.ConsoleWriter, verboseLogging.Contains("*") || verboseLogging.Contains(id), getScreenIdForLog)
             {
                 WriteToConsole = writeToConsole,
                 ShowTraceInConsole = isDeveloperMode,
@@ -104,13 +129,21 @@ namespace StardewModdingAPI.Framework.Logging
                 .Add(new HarmonySummaryCommand(), this.Monitor)
                 .Add(new ReloadI18nCommand(reloadTranslations), this.Monitor);
 
+            if (!this.LegacyMode)
+            {
+                this.ConsoleWrapper = new ConsoleWrapper();
+                this.ConsoleWrapper.AutoCompleteHandler = commandManager.HandleAutocomplete;
+                if (this.ConsoleWriter is ConsoleWrapperConsoleWriter consoleWrapperWriter)
+                    consoleWrapperWriter.ConsoleWrapper = this.ConsoleWrapper;
+            }
+
             // start handling command line input
             Thread inputThread = new(() =>
             {
                 while (true)
                 {
                     // get input
-                    string? input = Console.ReadLine();
+                    string? input = (this.ConsoleWrapper != null) ? this.ConsoleWrapper.ReadLine() : Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(input))
                         continue;
 

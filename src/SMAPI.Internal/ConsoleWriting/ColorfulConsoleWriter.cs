@@ -53,20 +53,15 @@ namespace StardewModdingAPI.Internal.ConsoleWriting
             {
                 if (level == ConsoleLogLevel.Critical)
                 {
-                    Console.BackgroundColor = ConsoleColor.Red;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine(message);
-                    Console.ResetColor();
+                    this.WriteLineImpl(message, ConsoleColor.White, ConsoleColor.Red);
                 }
                 else
                 {
-                    Console.ForegroundColor = this.Colors[level];
-                    Console.WriteLine(message);
-                    Console.ResetColor();
+                    this.WriteLineImpl(message, this.Colors[level], null);
                 }
             }
             else
-                Console.WriteLine(message);
+                this.WriteLineImpl(message, null, null);
         }
 
         /// <summary>Get the default color scheme config for cases where it's not configurable (e.g. the installer).</summary>
@@ -102,6 +97,25 @@ namespace StardewModdingAPI.Internal.ConsoleWriting
             );
         }
 
+
+        /*********
+        ** Private methods
+        *********/
+        /// <summary>
+        /// Implementation of writing a line to the console, virtual to allow for other console implementations.
+        /// </summary>
+        /// <param name="message">The message to log.</param>
+        /// <param name="foregroundColor">The foreground color to override the default with, if any.</param>
+        /// <param name="backgroundColor">The background color to override the default with, if any.</param>
+        protected virtual void WriteLineImpl(string message, ConsoleColor? foregroundColor, ConsoleColor? backgroundColor)
+        {
+            if (backgroundColor.HasValue)
+                Console.BackgroundColor = backgroundColor.Value;
+            if (foregroundColor.HasValue)
+                Console.ForegroundColor = foregroundColor.Value;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
 
         /*********
         ** Private methods

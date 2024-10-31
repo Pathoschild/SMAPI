@@ -48,6 +48,12 @@ in future SMAPI versions.
     "ListenForConsoleInput": true,
 
     /**
+     * Whether SMAPI should use legacy console mode. This will prevent tab auto completion from
+     * working, and will not keep input at the bottom of the console.
+     */
+    "LegacyConsoleMode": false,
+
+    /**
      * Whether SMAPI should rewrite mods for compatibility. This may prevent older mods from
      * loading, but bypasses a Visual Studio crash when debugging.
      */

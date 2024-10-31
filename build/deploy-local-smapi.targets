@@ -24,6 +24,7 @@ This assumes `find-game-folder.targets` has already been imported and validated.
     <Copy SourceFiles="$(TargetDir)\Newtonsoft.Json.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\TMXTile.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\Pintail.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\ConsoleWrapperLib.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="@(TranslationFiles)" DestinationFolder="$(GamePath)\smapi-internal\i18n" />
 
     <!-- Harmony + dependencies -->

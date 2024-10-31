@@ -20,6 +20,9 @@ namespace StardewModdingAPI.Framework
         /// <summary>The method to invoke when the command is triggered. This method is passed the command name and arguments submitted by the user.</summary>
         public Action<string, string[]> Callback { get; }
 
+        /// <summary>The method to invoke for auto-complete handling. This method is passed the command name and current input, and should return the potential matches.</summary>
+        public Func<string, string, string[]>? AutoCompleteHandler { get; }
+
 
         /*********
         ** Public methods
@@ -29,12 +32,14 @@ namespace StardewModdingAPI.Framework
         /// <param name="name">The command name, which the user must type to trigger it.</param>
         /// <param name="documentation">The human-readable documentation shown when the player runs the built-in 'help' command.</param>
         /// <param name="callback">The method to invoke when the command is triggered. This method is passed the command name and arguments submitted by the user.</param>
-        public Command(IModMetadata? mod, string name, string documentation, Action<string, string[]> callback)
+        /// <param name="autoCompleteHandler">The method to invoke for auto-complete handling. This method is passed the command name and current input, and should return the potential matches.</param>
+        public Command(IModMetadata? mod, string name, string documentation, Action<string, string[]> callback, Func<string, string, string[]>? autoCompleteHandler)
         {
             this.Mod = mod;
             this.Name = name;
             this.Documentation = documentation;
             this.Callback = callback;
+            this.AutoCompleteHandler = autoCompleteHandler;
         }
     }
 }

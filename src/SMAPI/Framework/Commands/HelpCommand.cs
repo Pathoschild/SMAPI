@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace StardewModdingAPI.Framework.Commands
@@ -71,6 +73,25 @@ namespace StardewModdingAPI.Framework.Commands
 
                 monitor.Log(message, LogLevel.Info);
             }
+        }
+
+        /// <summary>Handle the console command auto-complete when requested by the user..</summary>
+        /// <param name="input">The current input.</param>
+        /// <param name="monitor">Writes messages to the console.</param>
+        public string[] HandleAutocomplete(string input, IMonitor monitor)
+        {
+            if (input.Contains(' '))
+                return Array.Empty<string>();
+
+            var allCommandNames = this.CommandManager.GetAll().Select(cmd => cmd.Name);
+
+            List<string> ret = new();
+            foreach (string name in allCommandNames)
+            {
+                if (name.StartsWith(input))
+                    ret.Add(name);
+            }
+            return ret.ToArray();
         }
     }
 }
