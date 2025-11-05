@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -44,6 +45,8 @@ internal sealed class ModContentManager : BaseContentManager
 
     /// <summary>If a map tilesheet's image source has no file extensions, the file extensions to check for in the local mod folder.</summary>
     private static readonly string[] LocalTilesheetExtensions = [".png", ".xnb"];
+
+    private readonly Dictionary<string, RawTextureData> TextureCache = [];
 
 
     /*********
@@ -216,10 +219,18 @@ internal sealed class ModContentManager : BaseContentManager
     /// <param name="file">The file whose data to load.</param>
     /// <param name="forRawData">Whether the data is being loaded for an <see cref="IRawTextureData"/> (true) or <see cref="Texture2D"/> (false) instance.</param>
     /// <remarks>This is separate to let framework mods intercept the data before it's loaded, if needed.</remarks>
-    [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "The 'forRawData' parameter is only added for mods which may intercept this method.")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "The 'forRawData' parameter is only added for mods which may intercept this method.")]
     private IRawTextureData LoadRawImageData(FileInfo file, bool forRawData)
     {
+        if (this.TextureCache.TryGetValue(file.FullName, out var cacheResult))
+        {
+            var cacheColors = cacheResult.Data;
+            if (forRawData)
+            {
+                return new RawTextureData(cacheResult.Width, cacheResult.Height, (Color[])cacheColors.Clone());
+            }
+            return new RawTextureData(cacheResult.Width, cacheResult.Height, cacheColors);
+        }
+
         // load raw data
         int width;
         int height;
@@ -238,13 +249,27 @@ internal sealed class ModContentManager : BaseContentManager
 
         // convert to XNA pixel format
         var pixels = GC.AllocateUninitializedArray<Color>(rawPixels.Length);
+        Color[]? pixelCache = null;
+        if (forRawData)
+            pixelCache = GC.AllocateUninitializedArray<Color>(rawPixels.Length);
         for (int i = 0; i < pixels.Length; i++)
         {
             SKPMColor pixel = rawPixels[i];
             pixels[i] = pixel.Alpha == 0
                 ? Color.Transparent
                 : new Color(r: pixel.Red, g: pixel.Green, b: pixel.Blue, alpha: pixel.Alpha);
+
+            if (pixelCache != null)
+            {
+                pixelCache[i] = pixel.Alpha == 0
+                    ? Color.Transparent
+                    : new Color(r: pixel.Red, g: pixel.Green, b: pixel.Blue, alpha: pixel.Alpha);
+            }
         }
+        if (pixelCache != null)
+            this.TextureCache.Add(file.FullName, new RawTextureData(width, height, pixelCache));
+        else
+            this.TextureCache.Add(file.FullName, new RawTextureData(width, height, pixels));
 
         return new RawTextureData(width, height, pixels);
     }
