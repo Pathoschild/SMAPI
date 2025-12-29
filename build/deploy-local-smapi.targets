@@ -30,11 +30,16 @@ This assumes `find-game-folder.targets` has already been imported and validated.
 
     <!-- Harmony + dependencies -->
     <Copy SourceFiles="$(TargetDir)\0Harmony.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\0Harmony.pdb" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\0Harmony.xml" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\Mono.Cecil.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\Mono.Cecil.Mdb.dll" DestinationFolder="$(GamePath)\smapi-internal" />
     <Copy SourceFiles="$(TargetDir)\Mono.Cecil.Pdb.dll" DestinationFolder="$(GamePath)\smapi-internal" />
-    <Copy SourceFiles="$(TargetDir)\MonoMod.Common.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\MonoMod.Backports.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\MonoMod.Core.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\MonoMod.Iced.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\MonoMod.ILHelpers.dll" DestinationFolder="$(GamePath)\smapi-internal" />
+    <Copy SourceFiles="$(TargetDir)\MonoMod.Utils.dll" DestinationFolder="$(GamePath)\smapi-internal" />
 
     <!-- FluentHttpClient + dependencies -->
     <Copy SourceFiles="$(TargetDir)\Pathoschild.Http.Client.dll" DestinationFolder="$(GamePath)\smapi-internal" />

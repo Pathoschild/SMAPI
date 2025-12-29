@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" />
-    <PackageReference Include="MonoMod.Common" />
+    <PackageReference Include="MonoMod.Core" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Pathoschild.Http.FluentClient" />
     <PackageReference Include="Pintail" />

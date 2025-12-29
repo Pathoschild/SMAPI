@@ -16,6 +16,7 @@
   * Improved performance when propagating localized assets in some cases (thanks to SinZ!).
   * Improved error-handling during asset propagation.
   * Updated dependencies, including...
+    * [Harmony](https://harmony.pardeike.net) 2.2.2 → 2.4.2 (see [changes](https://github.com/pardeike/Harmony/releases)).
     * [Newtonsoft.Json](https://www.newtonsoft.com/json) 13.0.3 → 13.0.4 (see [changes](https://github.com/JamesNK/Newtonsoft.Json/releases/tag/13.0.4));
     * [Pintail](https://github.com/Nanoray-pl/Pintail) 2.8.1 → 2.9.1 (see [changes](https://github.com/Nanoray-pl/Pintail/blob/master/docs/release-notes.md#291)).
   * Removed `System.Management.dll`, which SMAPI no longer uses.
@@ -29,6 +30,10 @@
     * Fixed validation error if a warp field contains tokens or consecutive spaces (thanks to irocendar!).
     * Fixed validation error if a `Target` contains multiple targets (thanks to irocendar!).
     * Fixed `FromFile` errors like "_matches a schema that is not allowed_" (thanks to irocendar!).
+
+**Breaking changes for mod authors:**
+* Newer Harmony versions have stricter validation, which will break some patches which do unusual things (like
+  selecting instructions past the end).
 
 ## 4.3.2
 Released 14 July 2025 for Stardew Valley 1.6.14 or later. See [4.3 release highlights](https://www.patreon.com/posts/133992196).
