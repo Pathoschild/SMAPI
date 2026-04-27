@@ -28,14 +28,14 @@
     margin: 2px;
     display: inline-block;
     border-radius: 3px;
-    color: #000;
-    border-color: #880000;
-    background-color: #fcc;
+    color: var(--fg);
+    border-color: var(--error-fg);
+    background-color: var(--error-bg);
     font-size: 0.9em;
 }
 
 #options #filters span.active {
-    background: #cfc;
+    background: var(--ok-bg);
 }
 
 #mod-count {
@@ -45,7 +45,7 @@
 
 div.error {
     padding: 2em 0;
-    color: red;
+    color: var(--error-fg);
     font-weight: bold;
 }
 
@@ -53,23 +53,23 @@ div.error {
 ** Mod list
 *********/
 table.wikitable {
-    background-color:#f8f9fa;
-    color:#222;
-    border:1px solid #a2a9b1;
-    border-collapse:collapse
+    background-color: var(--surface);
+    color: var(--fg);
+    border: 1px solid var(--surface-border);
+    border-collapse: collapse;
 }
 
 table.wikitable > tr > th,
 table.wikitable > tr > td,
 table.wikitable > * > tr > th,
 table.wikitable > * > tr > td {
-    border:1px solid #a2a9b1;
-    padding:0.2em 0.4em
+    border: 1px solid var(--surface-border);
+    padding: 0.2em 0.4em;
 }
 
 table.wikitable > tr > th,
 table.wikitable > * > tr > th {
-    background-color:#eaecf0;
+    background-color: var(--surface-alt);
 }
 
 table.wikitable > caption {
@@ -118,21 +118,21 @@ table.wikitable > caption {
 
 #mod-list tr[data-status="ok"],
 #mod-list tr[data-status="optional"] {
-    background: #BFB;
+    background: var(--ok-bg);
 }
 
 #mod-list tr[data-status="workaround"],
 #mod-list tr[data-status="unofficial"] {
-    background: #FFFEC6;
+    background: var(--warn-bg);
 }
 
 #mod-list tr[data-status="broken"] {
-    background: #FBB;
+    background: var(--error-bg);
 }
 
 #mod-list tr[data-status="obsolete"],
 #mod-list tr[data-status="abandoned"] {
-    background: #BBB;
+    background: var(--neutral-bg);
     opacity: 0.7;
 }
 

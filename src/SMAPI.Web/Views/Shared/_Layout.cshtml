@@ -9,6 +9,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewData["Title"] - SMAPI.io</title>
+    <script>
+        (function () {
+            function applyTheme(mode) {
+                var actual = mode === 'system'
+                    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : mode;
+                document.documentElement.dataset.theme = actual;
+                document.documentElement.dataset.themeMode = mode;
+            }
+            applyTheme(localStorage.getItem('theme') || 'system');
+            window.setTheme = function (mode) {
+                applyTheme(mode);
+                if (mode === 'system') localStorage.removeItem('theme');
+                else localStorage.setItem('theme', mode);
+            };
+        })();
+    </script>
     <link rel="stylesheet" href="@Url.ContentWithCacheBust("~/Content/css/main.css")" />
     @RenderSection("Head", required: false)
 </head>
@@ -28,6 +45,15 @@
         </ul>
 
         @RenderSection("SidebarExtra", required: false)
+
+        <h4>Theme</h4>
+        <ul id="theme-picker">
+            <li>
+                <a href="#" data-theme-mode="system" onclick="setTheme('system'); return false;">System</a> |
+                <a href="#" data-theme-mode="light" onclick="setTheme('light'); return false;">Light</a> |
+                <a href="#" data-theme-mode="dark" onclick="setTheme('dark'); return false;">Dark</a>
+            </li>
+        </ul>
     </div>
     <div id="content-column">
         <div id="content">
