@@ -65,10 +65,10 @@ public static class Constants
     public static ISemanticVersion ApiVersion { get; } = new Toolkit.SemanticVersion(EarlyConstants.RawApiVersion);
 
     /// <summary>The minimum supported version of Stardew Valley.</summary>
-    public static ISemanticVersion MinimumGameVersion { get; } = new GameVersion("1.6.16");
+    public static ISemanticVersion MinimumGameVersion { get; } = new GameVersion("1.7.0");
 
     /// <summary>The minimum supported Stardew Valley build number, or <c>null</c> for any build of <see cref="MinimumGameVersion"/>.</summary>
-    public static int? MinimumGameBuild { get; } = 25256;
+    public static int? MinimumGameBuild { get; } = 25282;
 
     /// <summary>The maximum supported version of Stardew Valley, if any.</summary>
     public static ISemanticVersion? MaximumGameVersion { get; } = null;

@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.Audio;
 using StardewValley.Buildings;
 using StardewValley.Extensions;
+using StardewValley.GameData.Furniture;
 using StardewValley.Objects;
 using xTile;
 using xTile.Dimensions;
@@ -121,7 +122,7 @@ public class GameLocationFacade : GameLocation, IRewriteFacade
         Vector2 pixel = new((v.X * Game1.tileSize) + Game1.tileSize / 2, (v.Y * Game1.tileSize) + Game1.tileSize / 2);
         foreach (Furniture f in base.furniture)
         {
-            if (f.furniture_type.Value != Furniture.rug && !f.isPassable() && f.GetBoundingBox().Contains((int)pixel.X, (int)pixel.Y) && !f.AllowPlacementOnThisTile((int)v.X, (int)v.Y))
+            if (f.furniture_type.Value != FurnitureType.Rug && !f.isPassable() && f.GetBoundingBox().Contains((int)pixel.X, (int)pixel.Y) && !f.AllowPlacementOnThisTile((int)v.X, (int)v.Y))
                 return false;
         }
 

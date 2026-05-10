@@ -96,12 +96,6 @@ public class DataLoaderFacade : IRewriteFacade
         return DataLoader.BigCraftables(content);
     }
 
-    /// <inheritdoc cref="DataLoader.Boots" />
-    public static Dictionary<string, string> Boots(LocalizedContentManager content)
-    {
-        return DataLoader.Boots(content);
-    }
-
     /// <inheritdoc cref="DataLoader.Buffs" />
     public static Dictionary<string, BuffData> Buffs(LocalizedContentManager content)
     {
@@ -216,12 +210,6 @@ public class DataLoaderFacade : IRewriteFacade
         return DataLoader.FruitTrees(content);
     }
 
-    /// <inheritdoc cref="DataLoader.Furniture" />
-    public static Dictionary<string, string> Furniture(LocalizedContentManager content)
-    {
-        return DataLoader.Furniture(content);
-    }
-
     /// <inheritdoc cref="DataLoader.GarbageCans" />
     public static GarbageCanData GarbageCans(LocalizedContentManager content)
     {
@@ -238,12 +226,6 @@ public class DataLoaderFacade : IRewriteFacade
     public static Dictionary<int, string> HairData(LocalizedContentManager content)
     {
         return DataLoader.HairData(content);
-    }
-
-    /// <inheritdoc cref="DataLoader.Hats" />
-    public static Dictionary<string, string> Hats(LocalizedContentManager content)
-    {
-        return DataLoader.Hats(content);
     }
 
     /// <inheritdoc cref="DataLoader.HomeRenovations" />
@@ -304,12 +286,6 @@ public class DataLoaderFacade : IRewriteFacade
     public static Dictionary<string, MinecartNetworkData> Minecarts(LocalizedContentManager content)
     {
         return DataLoader.Minecarts(content);
-    }
-
-    /// <inheritdoc cref="DataLoader.Monsters" />
-    public static Dictionary<string, string> Monsters(LocalizedContentManager content)
-    {
-        return DataLoader.Monsters(content);
     }
 
     /// <inheritdoc cref="DataLoader.MonsterSlayerQuests" />

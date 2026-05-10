@@ -11,6 +11,7 @@ using StardewModdingAPI.Framework.ModLoading.Rewriters;
 using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_5;
 using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6;
 using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6_16;
+using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_7;
 using StardewValley;
 using StardewValley.Audio;
 using StardewValley.BellsAndWhistles;
@@ -18,6 +19,7 @@ using StardewValley.Buffs;
 using StardewValley.Buildings;
 using StardewValley.ContentManagement;
 using StardewValley.Enchantments;
+using StardewValley.Enchantments.Obsolete;
 using StardewValley.GameData;
 using StardewValley.GameData.FishPonds;
 using StardewValley.GameData.FloorsAndPaths;
@@ -106,36 +108,27 @@ internal class InstructionMetadata
                 .MapType("StardewValley.ArchaeologistEnchantment", typeof(ArchaeologistEnchantment))
                 .MapType("StardewValley.ArtfulEnchantment", typeof(ArtfulEnchantment))
                 .MapType("StardewValley.AutoHookEnchantment", typeof(AutoHookEnchantment))
-                .MapType("StardewValley.AxeEnchantment", typeof(AxeEnchantment))
-                .MapType("StardewValley.BaseEnchantment", typeof(BaseEnchantment))
-                .MapType("StardewValley.BaseWeaponEnchantment", typeof(BaseWeaponEnchantment))
+                .MapType("StardewValley.BaseEnchantment", typeof(Enchantment))
                 .MapType("StardewValley.BottomlessEnchantment", typeof(BottomlessEnchantment))
                 .MapType("StardewValley.BugKillerEnchantment", typeof(BugKillerEnchantment))
                 .MapType("StardewValley.CrusaderEnchantment", typeof(CrusaderEnchantment))
                 .MapType("StardewValley.DiamondEnchantment", typeof(DiamondEnchantment))
                 .MapType("StardewValley.EfficientToolEnchantment", typeof(EfficientToolEnchantment))
                 .MapType("StardewValley.EmeraldEnchantment", typeof(EmeraldEnchantment))
-                .MapType("StardewValley.FishingRodEnchantment", typeof(FishingRodEnchantment))
                 .MapType("StardewValley.GalaxySoulEnchantment", typeof(GalaxySoulEnchantment))
                 .MapType("StardewValley.GenerousEnchantment", typeof(GenerousEnchantment))
                 .MapType("StardewValley.HaymakerEnchantment", typeof(HaymakerEnchantment))
-                .MapType("StardewValley.HoeEnchantment", typeof(HoeEnchantment))
                 .MapType("StardewValley.JadeEnchantment", typeof(JadeEnchantment))
                 .MapType("StardewValley.MagicEnchantment", typeof(MagicEnchantment))
                 .MapType("StardewValley.MasterEnchantment", typeof(MasterEnchantment))
-                .MapType("StardewValley.MilkPailEnchantment", typeof(MilkPailEnchantment))
-                .MapType("StardewValley.PanEnchantment", typeof(PanEnchantment))
-                .MapType("StardewValley.PickaxeEnchantment", typeof(PickaxeEnchantment))
                 .MapType("StardewValley.PowerfulEnchantment", typeof(PowerfulEnchantment))
                 .MapType("StardewValley.PreservingEnchantment", typeof(PreservingEnchantment))
                 .MapType("StardewValley.ReachingToolEnchantment", typeof(ReachingToolEnchantment))
                 .MapType("StardewValley.RubyEnchantment", typeof(RubyEnchantment))
                 .MapType("StardewValley.ShavingEnchantment", typeof(ShavingEnchantment))
-                .MapType("StardewValley.ShearsEnchantment", typeof(ShearsEnchantment))
                 .MapType("StardewValley.SwiftToolEnchantment", typeof(SwiftToolEnchantment))
                 .MapType("StardewValley.TopazEnchantment", typeof(TopazEnchantment))
                 .MapType("StardewValley.VampiricEnchantment", typeof(VampiricEnchantment))
-                .MapType("StardewValley.WateringCanEnchantment", typeof(WateringCanEnchantment))
 
                 // moved types (special orders)
                 .MapType("StardewValley.SpecialOrder", typeof(SpecialOrder))
@@ -344,7 +337,40 @@ internal class InstructionMetadata
                 .MapFacade<Response, ResponseFacade>()
                 .MapFacade<TemporaryAnimatedSpriteList, TemporaryAnimatedSpriteListFacade>()
                 .MapFacade<TextBox, TextBoxFacade>()
-                .MapFacade<Utility, UtilityFacade_1_6_16>();
+                .MapFacade<Utility, UtilityFacade_1_6_16>()
+
+                /****
+                ** Stardew Valley 1.7
+                ****/
+                // moved types (enchantments)
+                .MapType("StardewValley.Enchantments.ArchaeologistEnchantment", typeof(ArchaeologistEnchantment))
+                .MapType("StardewValley.Enchantments.ArtfulEnchantment", typeof(ArtfulEnchantment))
+                .MapType("StardewValley.Enchantments.AttackEnchantment", typeof(AttackEnchantment))
+                .MapType("StardewValley.Enchantments.AutoHookEnchantment", typeof(AutoHookEnchantment))
+                .MapType("StardewValley.Enchantments.BaseEnchantment", typeof(Enchantment))
+                .MapType("StardewValley.Enchantments.CritEnchantment", typeof(CritEnchantment))
+                .MapType("StardewValley.Enchantments.DefenseEnchantment", typeof(DefenseEnchantment))
+                .MapType("StardewValley.Enchantments.DiamondEnchantment", typeof(DiamondEnchantment))
+                .MapType("StardewValley.Enchantments.FisherEnchantment", typeof(FisherEnchantment))
+                .MapType("StardewValley.Enchantments.GalaxySoulEnchantment", typeof(GalaxySoulEnchantment))
+                .MapType("StardewValley.Enchantments.GenerousEnchantment", typeof(GenerousEnchantment))
+                .MapType("StardewValley.Enchantments.LightweightEnchantment", typeof(LightweightEnchantment))
+                .MapType("StardewValley.Enchantments.MasterEnchantment", typeof(MasterEnchantment))
+                .MapType("StardewValley.Enchantments.PreservingEnchantment", typeof(PreservingEnchantment))
+                .MapType("StardewValley.Enchantments.ReachingToolEnchantment", typeof(ReachingToolEnchantment))
+                .MapType("StardewValley.Enchantments.ShavingEnchantment", typeof(ShavingEnchantment))
+                .MapType("StardewValley.Enchantments.WeaponSpeedEnchantment", typeof(WeaponSpeedEnchantment))
+
+                // general API changes
+                // note: types are mapped before members, regardless of the order listed here
+                .MapFacade<Enchantment, BaseEnchantmentFacade>()
+                .MapFacade<Dialogue, DialogueFacade_1_7>()
+                .MapFacade(typeof(ItemContextTagManager).FullName!, typeof(ItemContextTagManagerFacade))
+                .MapFacade<Tool, ToolFacade>()
+
+
+                // SMAPI changes
+                .MapFacade<Translation, SmapiTranslationFacade>();
 
             // heuristic rewrites
             yield return new HeuristicFieldRewriter(this.ValidateReferencesToAssemblies);
