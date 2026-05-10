@@ -14,6 +14,7 @@ using StardewValley.Buildings;
 using StardewValley.ContentManagement;
 using StardewValley.GameData.Characters;
 using StardewValley.Locations;
+using StardewValley.Monsters;
 using StardewValley.Pathfinding;
 using StardewValley.TerrainFeatures;
 using StardewValley.Triggers;
@@ -401,6 +402,10 @@ internal class CoreAssetPropagator
 
             case "data/locationcontexts": // Game1.LoadContent
                 Game1.locationContextData = DataLoader.LocationContexts(content);
+                return true;
+
+            case "data/monsters":
+                Monster.MonsterVariantBaseNameCache = null;
                 return true;
 
             case "data/movies": // MovieTheater.GetMovieData
