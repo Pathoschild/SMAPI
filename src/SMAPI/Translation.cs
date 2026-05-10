@@ -33,8 +33,8 @@ public class Translation
     /// <summary>Whether to show a placeholder if the <see cref="Text"/> and <see cref="CustomDefault"/> are both is <c>null</c> or empty.</summary>
     private bool ShouldUsePlaceholder { get; init; }
 
-    /// <summary>Whether to process gender-switch blocks in translation text, if any.</summary>
-    private bool ShouldApplyGenderSwitchBlocks { get; init; }
+    /// <summary>Whether to process switch blocks in translation text, if any.</summary>
+    private bool ShouldApplySwitchBlocks { get; init; }
 
     /// <summary>The tokens to apply to the translation text, if any.</summary>
     private Dictionary<string, string?>? TokenValues { get; init; }
@@ -66,7 +66,7 @@ public class Translation
         this.Key = key;
         this.Text = text;
         this.ShouldUsePlaceholder = true;
-        this.ShouldApplyGenderSwitchBlocks = true;
+        this.ShouldApplySwitchBlocks = true;
     }
 
     /// <summary>Construct an instance.</summary>
@@ -76,7 +76,7 @@ public class Translation
     {
         this.CustomDefault = other.CustomDefault;
         this.ShouldUsePlaceholder = other.ShouldUsePlaceholder;
-        this.ShouldApplyGenderSwitchBlocks = other.ShouldApplyGenderSwitchBlocks;
+        this.ShouldApplySwitchBlocks = other.ShouldApplySwitchBlocks;
         this.TokenValues = other.TokenValues;
         this.ForceGender = other.ForceGender;
     }
@@ -112,17 +112,17 @@ public class Translation
         };
     }
 
-    /// <summary>Whether to automatically process gender-switch blocks (i.e. <see cref="Dialogue.applyGenderSwitchBlocks"/>) before the text is returned.</summary>
-    /// <param name="apply">Whether to process gender-switch blocks.</param>
+    /// <summary>Whether to automatically process switch blocks (i.e. <see cref="Dialogue.ApplySwitchBlocks(string,string)"/>) before the text is returned.</summary>
+    /// <param name="apply">Whether to process switch blocks.</param>
     /// <remarks>Returns a new instance if this would change the result, else the current instance.</remarks>
-    public Translation ApplyGenderSwitchBlocks(bool apply)
+    public Translation ApplySwitchBlocks(bool apply)
     {
-        if (this.ShouldApplyGenderSwitchBlocks == apply)
+        if (this.ShouldApplySwitchBlocks == apply)
             return this;
 
         return new Translation(this)
         {
-            ShouldApplyGenderSwitchBlocks = apply
+            ShouldApplySwitchBlocks = apply
         };
     }
 
@@ -212,11 +212,11 @@ public class Translation
                 });
             }
 
-            // apply gender switches
-            if (this.ShouldApplyGenderSwitchBlocks)
+            // apply switch blocks
+            if (this.ShouldApplySwitchBlocks)
             {
                 Gender gender = this.ForceGender?.Invoke() ?? Game1.player?.Gender ?? default;
-                text = Dialogue.applyGenderSwitchBlocks(gender, text);
+                text = Dialogue.ApplySwitchBlocks(gender, text, this.Key);
             }
         }
 
