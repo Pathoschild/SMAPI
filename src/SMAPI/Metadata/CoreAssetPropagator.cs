@@ -17,6 +17,7 @@ using StardewValley.Locations;
 using StardewValley.Pathfinding;
 using StardewValley.TerrainFeatures;
 using StardewValley.Triggers;
+using StardewValley.Util;
 using StardewValley.WorldMaps;
 using xTile;
 
@@ -107,6 +108,9 @@ internal class CoreAssetPropagator
                     // any other type
                     else
                         changed = this.PropagateOther(assetName, ignoreWorld);
+
+                    if (DataCache.AssetIncrementers.TryGetValue(assetName.BaseName, out DataCache.IncrementGenerationCounterDelegate? incrementGeneration))
+                        incrementGeneration?.Invoke();
                 }
                 catch (Exception ex)
                 {
