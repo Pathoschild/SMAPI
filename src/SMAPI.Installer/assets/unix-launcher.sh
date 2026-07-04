@@ -64,8 +64,11 @@ if [ "$(uname)" == "Darwin" ]; then
             chmod +x /tmp/open-smapi-terminal.command
             cat /tmp/open-smapi-terminal.command
 
-            # open in ITerm2 if installed, else the default Terminal
-            if [ -d "/Applications/iTerm.app" ]; then
+            # open in Ghostty or iTerm2 if installed, else the default Terminal
+            if [ -d "/Applications/Ghostty.app" ]; then
+                echo "Reopening in Ghostty..."
+                open -a "/Applications/Ghostty.app" /tmp/open-smapi-terminal.command
+            elif [ -d "/Applications/iTerm.app" ]; then
                 echo "Reopening in iTerm2..."
                 open -a "/Applications/iTerm.app" /tmp/open-smapi-terminal.command
             else
