@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://smapi.io/schemas/content-patcher-include.json",
+    "title": "Content Patcher include file",
+    "description": "A secondary Content Patcher file loaded by an Include patch.",
+    "@documentationUrl": "https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-include.md",
+
+    "allowComments": true,
+    "allowTrailingCommas": true,
+
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "title": "Schema",
+            "description": "A reference to this JSON schema. Not part of the actual format, but useful for validation tools.",
+            "type": "string"
+        },
+        "Changes": {
+            "$ref": "content-patcher.json#/properties/Changes"
+        }
+    },
+
+    "required": ["Changes"],
+
+    "additionalProperties": false,
+    "@errorMessages": {
+        "additionalProperties": "Invalid field. An included file can only contain a Changes field."
+    }
+}
