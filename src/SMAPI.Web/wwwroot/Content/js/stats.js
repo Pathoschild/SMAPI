@@ -92,7 +92,8 @@ smapi.statsPage = function (options) {
                 "azure hosting": "#db4437",  // muted rose
                 "amazon hosting": "#332288", // dark indigo
                 "amazon ssl": "#44aa99",     // turquoise
-                "amazon domains": "#117733"   // dark green
+                "amazon domains": "#117733", // dark green
+                "malware scan": "#88ccee"    // azure
             },
 
             // notable events which may affect costs, indexed by their date in smapi-costs.jsonl
