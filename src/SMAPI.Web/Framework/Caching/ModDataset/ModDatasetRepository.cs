@@ -48,11 +48,11 @@ internal class ModDatasetRepository : IModDatasetRepository
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(Action<string>? log = null)
+    public async Task<DatasetDownload> UpdateAsync(Action<string>? log = null)
     {
         // check for new archive
         log?.Invoke("  Checking for newer dataset...");
-        LastDownload? cached = await this.GetCacheInfoAsync();
+        DatasetDownload? cached = await this.GetCacheInfoAsync();
         using HttpRequestMessage request = this.BuildDownloadRequest(cached?.ETag);
         using HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
@@ -88,7 +88,7 @@ internal class ModDatasetRepository : IModDatasetRepository
                 throw new InvalidOperationException("No 'dataset' folder found in the downloaded archive.");
 
             // save cache info
-            cached = new LastDownload(newFolderName, newDatasetPath, newEtag);
+            cached = new DatasetDownload(newFolderName, newDatasetPath, newEtag);
             await this.SaveCacheInfoAsync(cached);
             log?.Invoke($"  Dataset saved to {newRootPath} with {(newEtag != null ? $"ETag header {newEtag}" : "no ETag header")}.");
         }
@@ -112,6 +112,8 @@ internal class ModDatasetRepository : IModDatasetRepository
                 log?.Invoke($"    Deletion failed: {ex}");
             }
         }
+
+        return cached;
     }
 
     /// <inheritdoc />
@@ -146,19 +148,19 @@ internal class ModDatasetRepository : IModDatasetRepository
     }
 
     /// <summary>Get the cached info about the last dataset download, if it was previously downloaded.</summary>
-    private async Task<LastDownload?> GetCacheInfoAsync()
+    private async Task<DatasetDownload?> GetCacheInfoAsync()
     {
         string path = Path.Combine(this.LocalRootPath, CacheFileName);
         if (!File.Exists(path))
             return null;
 
         await using FileStream stream = File.OpenRead(path);
-        return await JsonSerializer.DeserializeAsync<LastDownload>(stream);
+        return await JsonSerializer.DeserializeAsync<DatasetDownload>(stream);
     }
 
     /// <summary>Save the cache info about a dataset download.</summary>
     /// <param name="cacheInfo">The cache info to save.</param>
-    private async Task SaveCacheInfoAsync(LastDownload cacheInfo)
+    private async Task SaveCacheInfoAsync(DatasetDownload cacheInfo)
     {
         string path = Path.Combine(this.LocalRootPath, CacheFileName);
 
@@ -176,10 +178,4 @@ internal class ModDatasetRepository : IModDatasetRepository
 
         return Environment.ExpandEnvironmentVariables(path);
     }
-
-    /// <summary>The cached metadata about the last dataset download.</summary>
-    /// <param name="FolderName">The folder name within the root folder.</param>
-    /// <param name="RelativePathToDataset">The relative path to the 'dataset' folder within the <see cref="FolderName"/>.</param>
-    /// <param name="ETag">The ETag value for the downloaded archive, if available.</param>
-    private record LastDownload(string FolderName, string RelativePathToDataset, string? ETag);
 }

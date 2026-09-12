@@ -271,7 +271,7 @@ internal class BackgroundService : IHostedService, IDisposable
 
         // update repo
         context.WriteLine("Updating mod dataset repo...");
-        await BackgroundService.ModDatasetRepo.UpdateAsync(context.WriteLine);
+        DatasetDownload result = await BackgroundService.ModDatasetRepo.UpdateAsync(context.WriteLine);
 
         // copy files
         context.WriteLine("Copying data files for script use...");
@@ -282,6 +282,7 @@ internal class BackgroundService : IHostedService, IDisposable
         File.Copy(BackgroundService.ModDatasetRepo.GetFilePath("reference-data/SMAPI costs.jsonl"), Path.Combine(BackgroundService.WebRootPath, "Content", "data", "smapi-costs.jsonl"), overwrite: true);
         File.Copy(BackgroundService.ModDatasetRepo.GetFilePath("reference-data/SMAPI DNS queries.json"), Path.Combine(BackgroundService.WebRootPath, "Content", "data", "smapi-dns-queries.json"), overwrite: true);
 
+        Program.ModDatasetCacheBustValue = result.ETag ?? $"epoch-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
         context.WriteLine("Done!");
     }
 
