@@ -7,29 +7,35 @@
     "Blacklist": [
         // 2025-07
         {
-            "Id": "OpUlarenous.PortableCommunityCenter", // 'Even Better Portable Community Center' by OpUlarenous (Nexus:35601, dfd9e53ee3e6fb997c04a2b0c7f49a50, malicious reupload of legit mod)
+            "Id": "OpUlarenous.PortableCommunityCenter", // 'Even Better Portable Community Center' by OpUlarenous (Nexus:35601; dfd9e53ee3e6fb997c04a2b0c7f49a50, malicious reupload of legit mod)
             "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
         },
         {
-            "Id": "BrEvoiultion.GiveSpeedInMorning", // 'Give Speed In Morning' by BrEvoiultion (Nexus:35650, 97860c755192a27cdb6c16ec32327774, malicious reupload of legit mod)
+            "Id": "BrEvoiultion.GiveSpeedInMorning", // 'Give Speed In Morning' by BrEvoiultion (Nexus:35650; 97860c755192a27cdb6c16ec32327774, malicious reupload of legit mod)
             "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
         },
 
         // 2026-04
         {
-            "Id": "BritishW.ChaosWhispers", // 'Chaos Whispers' by BritishW (Nexus: 44497, 381A5A9892E6699D9DB1A8E2517A9A91)
+            "Id": "BritishW.ChaosWhispers", // 'Chaos Whispers' by BritishW (Nexus: 44497; 381A5A9892E6699D9DB1A8E2517A9A91)
             "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
         },
         {
-            "Id": "BritishW.TheStardewDoppelganger", // The Stardew Doppelganger by BritishW (Nexus: 44345, F0D1636288CB0877441D3F08134FC2CF)
+            "Id": "BritishW.TheStardewDoppelganger", // The Stardew Doppelganger by BritishW (Nexus: 44345; F0D1636288CB0877441D3F08134FC2CF)
             "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
         },
         {
-            "Id": "DweDweD1.GhostCompanion", // 'Ghost Companion' by DweDweD1 (Nexus:44342, c95364ba4634fef7826df261712e885d)
+            "Id": "DweDweD1.GhostCompanion", // 'Ghost Companion' by DweDweD1 (Nexus:44342; c95364ba4634fef7826df261712e885d)
             "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
         },
         {
-            "Id": "DweDweD1.MusicPlayer", // 'Music Player' by DweDweD1 (Nexus:44488, 159093613f4f62001db88c3078ee5c99)
+            "Id": "DweDweD1.MusicPlayer", // 'Music Player' by DweDweD1 (Nexus:44488; 159093613f4f62001db88c3078ee5c99)
+            "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
+        },
+
+        // 2026-09
+        {
+            "Id": "User.StardewSprint", // 'StardewSprint' by Hallowqueen (CurseForge:1674030; d71a32b947aa35df2eb701c0299101b0 (1.0.0), d467df7a77eb2d1c8075943a48adb22c (1.1.0), ead306d003d2fb64348add02e162de9b (1.2.0), 2721a2536655f6e425ed0f760a3487dc (1.3.0))
             "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
         }
     ],
