@@ -35,7 +35,15 @@
 
         // 2026-09
         {
+            "Id": "StardewLabs.StardewEssentials", // 'Stardew Essentials' by Hallowqueen/StardewLabs (CurseForge:1670031; 709c4ad894f1fdd8c41fe91a63ed6da8 (2.1.0), d04b1ff874f12193eef0360cdd7e5141 (2.1.1))
+            "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
+        },
+        {
             "Id": "User.StardewSprint", // 'StardewSprint' by Hallowqueen (CurseForge:1674030; d71a32b947aa35df2eb701c0299101b0 (1.0.0), d467df7a77eb2d1c8075943a48adb22c (1.1.0), ead306d003d2fb64348add02e162de9b (1.2.0), 2721a2536655f6e425ed0f760a3487dc (1.3.0))
+            "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
+        },
+        {
+            "Id": "SwitchPosty.StardewSpaceAge", // 'Stardew: Space Age' by SwitchPosty (Nexus:50051; ac3266c5b45f6c514128280f4618604c)
             "Message": "It downloads malicious code from a remote server and runs it on your computer. SMAPI refused to load the mod, but you should delete this mod and run a complete anti-malware scan of your computer now to be safe."
         }
     ],
