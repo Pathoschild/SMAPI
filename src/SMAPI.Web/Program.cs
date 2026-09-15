@@ -35,6 +35,9 @@ public class Program
         }
     }
 
+    /// <summary>The cache-bust value for the latest fetched mod dataset, if available.</summary>
+    public static string? ModDatasetCacheBustValue { get; set; }
+
 
     /*********
     ** Public methods

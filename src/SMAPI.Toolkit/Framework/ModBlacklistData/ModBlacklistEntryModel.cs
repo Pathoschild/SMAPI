@@ -6,13 +6,15 @@ public class ModBlacklistEntryModel
     /*********
     ** Accessors
     *********/
-    /// <summary>The manifest IDs to block (if any).</summary>
+    /// <summary>The manifest <c>UniqueID</c> values to block (if any).</summary>
     public string? Id { get; }
 
     /// <summary>The MD5 hash of the entry DLL to block (if any).</summary>
+    /// <remarks>This should be omitted if the <see cref="Id"/> is sufficiently unique, to block all versions of a mod.</remarks>
     public string? EntryDllHash { get; }
 
     /// <summary>A player-friendly explanation of why the mod is blocked and what they should do next.</summary>
+    /// <remarks>This should usually reuse one of the existing messages for consistency.</remarks>
     public string? Message { get; }
 
 

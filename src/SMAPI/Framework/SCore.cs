@@ -1840,7 +1840,7 @@ internal class SCore : IDisposable
 
                 // save new file
                 await using (Stream downloadStream = await newData.AsStream())
-                await using (FileStream stream = File.OpenWrite(Constants.ApiBlacklistFetchedPath))
+                await using (FileStream stream = File.Create(Constants.ApiBlacklistFetchedPath))
                     await downloadStream.CopyToAsync(stream);
 
                 this.Monitor.Log($"   Mod blacklist updated to match the server (updated from {localHash} to {serverHash}). The changes will take effect on the next SMAPI launch.");

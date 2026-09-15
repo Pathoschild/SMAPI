@@ -1,6 +1,11 @@
+@using StardewModdingAPI.Web
 @using StardewModdingAPI.Web.Framework.Extensions
 @{
     ViewData["Title"] = "Mod stats";
+
+    string? datasetCacheBust = Program.ModDatasetCacheBustValue is not null
+        ? $"?dataset={Uri.EscapeDataString(Program.ModDatasetCacheBustValue.Replace("\"", ""))}"
+        : null;
 }
 @section Head {
     @* Apache ECharts *@
@@ -18,10 +23,10 @@
     <script>
         $(function () {
             smapi.statsPage({
-                modsByTypeUri: @this.ForJson(Url.ContentWithCacheBust("~/Content/data/mods-by-type.jsonl")),
-                contentPacksByFormatUri: @this.ForJson(Url.ContentWithCacheBust("~/Content/data/content-packs-by-format.jsonl")),
-                smapiCostsUri: @this.ForJson(Url.ContentWithCacheBust("~/Content/data/smapi-costs.jsonl")),
-                smapiDnsQueriesUri: @this.ForJson(Url.ContentWithCacheBust("~/Content/data/smapi-dns-queries.json"))
+                modsByTypeUri: @this.ForJson(Url.ContentWithCacheBust($"~/Content/data/mods-by-type.jsonl{datasetCacheBust}")),
+                contentPacksByFormatUri: @this.ForJson(Url.ContentWithCacheBust($"~/Content/data/content-packs-by-format.jsonl{datasetCacheBust}")),
+                smapiCostsUri: @this.ForJson(Url.ContentWithCacheBust($"~/Content/data/smapi-costs.jsonl{datasetCacheBust}")),
+                smapiDnsQueriesUri: @this.ForJson(Url.ContentWithCacheBust($"~/Content/data/smapi-dns-queries.json{datasetCacheBust}"))
             });
         });
     </script>
