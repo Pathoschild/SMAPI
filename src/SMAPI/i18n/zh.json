@@ -1,55 +1,55 @@
 {
     /*********
-    ** Date formatting
+    ** Date formatting (日期格式)
     *********/
-    // short date format for SDate
-    // tokens: {{day}} (like 15), {{season}} (like Spring), {{seasonLowercase}} (like spring), {{year}} (like 2)
+    // short date format for SDate (SDate的简短日期格式)
+    // tokens: {{day}} (like 15), {{season}} (like Spring), {{seasonLowercase}} (like spring), {{year}} (like 2) 标记: {{day}} (例如15), {{season}} (例如春季), {{seasonLowercase}} (例如春季), {{year}} (例如2)
     "generic.date": "{{season}}{{day}}日",
     "generic.date-with-year": "第{{year}}年{{season}}{{day}}日",
 
 
     /*********
-    ** Generic Mod Config Menu UI
+    ** Generic Mod Config Menu UI (通用模组管理菜单界面)
     *********/
-    // TODO
-    // 'SMAPI features' section
-    "config.section.features": "SMAPI features",
+    // TODO (注释)
+    // 'SMAPI features' section ('SMAPI功能'部分)
+    "config.section.features": "SMAPI功能",
 
-    "config.check-for-updates.name": "Check for updates",
-    "config.check-for-updates.desc": "Whether to automatically check for newer versions of SMAPI and mods when you load the game. If new versions are available, an alert will be shown in the console. This doesn't affect the load time even if your connection is offline or slow, because it happens in the background.",
+    "config.check-for-updates.name": "检查是否有更新信息",
+    "config.check-for-updates.desc": "是否在加载游戏时自动检查SMAPI和模组是否有更新版本.如果有新版本可用,控制台将显示一条提示.即使您处于离线状态或网络速度较慢,这也不会影响加载时间,因为该操作是在后台进行的.",
 
-    "config.check-content-integrity.name": "Check content integrity",
-    "config.check-content-integrity.desc": "Whether SMAPI should check whether the game's content files are present and unmodified. This should nearly always be enabled. If disabled, SMAPI will log a warning for visibility when someone helps you troubleshoot game issues.",
+    "config.check-content-integrity.name": "检查内容完整性",
+    "config.check-content-integrity.desc": "SMAPI是否检查游戏内容文件是否存在且未被修改.此选项几乎应始终启用.如果禁用,当有人协助您排查游戏问题时,SMAPI会记录一条警告信息以便查看.",
 
-    "config.read-console-input.name": "Read console input",
-    "config.read-console-input.desc": "Whether SMAPI should listen for console input. Disabling this will prevent you from using console commands. On some specific Linux systems, disabling this may reduce CPU usage.",
+    "config.read-console-input.name": "读取控制台输入信息",
+    "config.read-console-input.desc": "是否应启用SMAPI监听控制台输入信息.禁用此选项将导致无法使用控制台命令.在某些特定的Linux系统上,禁用此选项可能会降低CPU占用率.",
 
-    // 'Console window' section
-    "config.section.console-window": "Console window",
+    // 'Console window' section ('控制台窗口'部分)
+    "config.section.console-window": "控制台窗口",
 
-    "config.developer-mode.name": "Developer mode",
-    "config.developer-mode.desc": "Whether to show much more info in the SMAPI consoler window, intended for mod developers. Not recommended for most players.",
+    "config.developer-mode.name": "开发者模式",
+    "config.developer-mode.desc": "是否在SMAPI控制台窗口中显示更多信息,该窗口专为模组开发者设计.不建议大多数游戏玩家使用.",
 
-    "config.color-scheme.name": "Color scheme",
-    "config.color-scheme.desc": "The color scheme to apply to text in the SMAPI console window. This has no effect on the game, mods, or SMAPI log file.",
-    "config.color-scheme.options.AutoDetect": "Auto-detect",
-    "config.color-scheme.options.AutoDetect.on-windows": "Auto-detect (recommended)",
-    "config.color-scheme.options.DarkBackground": "Lighter text (for dark backgrounds)",
-    "config.color-scheme.options.LightBackground": "Darker text (for light backgrounds)",
-    "config.color-scheme.options.None": "No colors",
+    "config.color-scheme.name": "配色方案",
+    "config.color-scheme.desc": "SMAPI控制台窗口中文字所采用的配色方案.这不会对游戏、模组或SMAPI日志文件产生任何影响.",
+    "config.color-scheme.options.AutoDetect": "自动检测",
+    "config.color-scheme.options.AutoDetect.on-windows": "自动检测 (推荐)",
+    "config.color-scheme.options.DarkBackground": "颜色较浅的文本内容 (适用于深色背景)",
+    "config.color-scheme.options.LightBackground": "颜色较深的文本内容 (适用于浅色背景)",
+    "config.color-scheme.options.None": "无配色",
 
-    // 'Verbose logging' section
-    "config.section.verbose-logs": "Verbose logs",
-    "config.section.verbose-logs.explanation": "To help troubleshoot, SMAPI and many mods can send extra info to the SMAPI log (called 'verbose logging'). This may cause performance issues, and should usually be disabled.",
+    // 'Verbose logging' section ('详细日志记录'部分)
+    "config.section.verbose-logs": "详细日志",
+    "config.section.verbose-logs.explanation": "为了帮助排查问题,SMAPI和许多模组可以向SMAPI日志发送额外信息（称为'详细日志记录'）.这可能会导致性能问题,因此通常应将其禁用.",
 
-    "config.enable-for.name": "Enable for",
-    "config.enable-for.desc": "Choose which mods have verbose logging enabled.",
-    "config.enable-for.options.all": "All (not recommended)",
-    "config.enable-for.options.selected": "Mods selected below",
+    "config.enable-for.name": "启用",
+    "config.enable-for.desc": "选择对应模组启用了详细日志记录.",
+    "config.enable-for.options.all": "全部启用 (不推荐)",
+    "config.enable-for.options.selected": "以下选定的模组",
 
     "config.enable-for-smapi.name": "SMAPI",
-    "config.enable-for-smapi.desc": "Whether to enable verbose logs for SMAPI itself.",
+    "config.enable-for-smapi.desc": "是否为SMAPI本身启用详细日志记录功能.",
 
     "config.enable-for-mod.name": "{{modName}}",
-    "config.enable-for-mod.desc": "Whether to enable verbose logs for the '{{modName}}' mod."
+    "config.enable-for-mod.desc": "是否为'{{modName}}'模组启用详细日志记录功能."
 }
