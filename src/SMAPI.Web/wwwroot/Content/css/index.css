@@ -4,7 +4,7 @@
 h1 {
     text-align: center;
     font-size: 6em;
-    color: #000;
+    color: var(--fg);
 }
 
 #blurb {
@@ -110,7 +110,7 @@ h1 {
 ** Subsections
 *********/
 .area {
-    background: rgba(0, 170, 0, 0.2);
+    background: var(--area-bg);
     padding: 0 1em 1em 1em;
     margin-bottom: 1em;
 }
