@@ -1944,18 +1944,17 @@ internal class SCore : IDisposable
     /// <summary>Create a directory path if it doesn't exist.</summary>
     /// <param name="path">The directory path.</param>
     private void VerifyPath(string path)
+{
+    try
     {
-        try
-        {
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-        }
-        catch (Exception ex)
-        {
-            // note: this happens before this.Monitor is initialized
-            Console.WriteLine($"Couldn't create a path: {path}\n\n{ex.GetLogSummary()}");
-        }
+        Directory.CreateDirectory(path);
     }
+    catch (Exception ex)
+    {
+        // note: this happens before this.Monitor is initialized
+        Console.WriteLine($"Couldn't create a path: {path}\n\n{ex.GetLogSummary()}");
+    }
+}
 
     /// <summary>Load and hook up the given mods.</summary>
     /// <param name="mods">The mods to load.</param>
