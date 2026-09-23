@@ -40,7 +40,6 @@
 
         <!-- Android SMAPI -->
         <PackageVersion Include="DeepCloner" Version="0.10.4" />
-        <PackageVersion Include="Lib.Harmony" Version="2.3.3" />
         <PackageVersion Include="NVorbis" Version="0.10.5" />
         <PackageVersion Include="SkiaSharp" Version="2.88.9" />
         <PackageVersion Include="StbImageWriteSharp" Version="1.16.7" />

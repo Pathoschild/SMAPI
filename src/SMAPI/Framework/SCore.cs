@@ -301,9 +301,12 @@ internal class SCore : IDisposable
             );
             GameRunner.instance = this.Game;
 
-            // fix Harmony for mods
+            // .NET Framework field-order workaround. The Android port runs on the loader's
+            // Harmony 2.4 / MonoMod.Core stack, where those internals differ and this bug does not apply.
+#if !SMAPI_FOR_ANDROID
             if (this.Settings.FixHarmony)
                 MiniMonoModHotfix.Apply();
+#endif
 
             // set window titles
             this.UpdateWindowTitles();

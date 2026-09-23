@@ -56,7 +56,6 @@
 
   <ItemGroup Condition="'$(AndroidBuild)' == 'true'">
     <PackageReference Include="DeepCloner" />
-    <PackageReference Include="Lib.Harmony" />
     <PackageReference Include="NVorbis" />
     <PackageReference Include="SkiaSharp" />
     <PackageReference Include="StbImageWriteSharp" />
@@ -86,6 +85,10 @@
     <Reference Include="Lidgren.Network">
       <HintPath>..\DependenciesDll\Lidgren.Network.dll</HintPath>
     </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>..\DependenciesDll\0Harmony.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>..\DependenciesDll\MonoGame.Framework.dll</HintPath>
     </Reference>
@@ -100,9 +103,6 @@
     </Reference>
     <Reference Include="MonoMod.ILHelpers">
       <HintPath>..\DependenciesDll\MonoMod.ILHelpers.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.RuntimeDetour">
-      <HintPath>..\DependenciesDll\MonoMod.RuntimeDetour.dll</HintPath>
     </Reference>
     <Reference Include="MonoMod.Utils">
       <HintPath>..\DependenciesDll\MonoMod.Utils.dll</HintPath>

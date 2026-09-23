@@ -1,0 +1,12 @@
+---
+description: Android SMAPI port constraints for Harmony, threading, and the loader boundary
+alwaysApply: true
+---
+
+# Android SMAPI
+
+Desktop SMAPI stays `net6.0` with `build/0Harmony.dll`. Android SMAPI is `net9.0-android35.0` (`SMAPI_FOR_ANDROID`). Loader APK, assembly-store, and launcher UI work belongs in the AndroidSMAPI repo.
+
+Android builds reference thin `src/DependenciesDll/0Harmony.dll` and modular MonoMod (`MonoMod.Core` 1.3.1, no `MonoMod.RuntimeDetour.dll`, no `Lib.Harmony` NuGet). Those binaries must match AndroidSMAPI `SharedLibs/`. Do not pack them into `dependencies.txt`; the loader already loads them.
+
+In `src/SMAPI/Mobile/`: no spin-waits, no `.Wait()` on the UI thread, no static `Activity` fields, no empty catches, no game-APK rewriting. Use prefix/postfix Harmony patches. See `AGENTS.md`.
