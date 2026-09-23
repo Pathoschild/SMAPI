@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Mono.Cecil;
 using StardewModdingAPI.Toolkit.Utilities;
+using Constants = StardewModdingAPI.Constants;
 
 namespace StardewModdingAPI.Framework.ModLoading;
 
@@ -51,7 +53,18 @@ internal class PlatformAssemblyMap : IDisposable
         // cache assembly metadata
         this.Targets = targetAssemblies;
         this.TargetReferences = this.Targets.ToDictionary(assembly => assembly, assembly => AssemblyNameReference.Parse(assembly.FullName));
+#if SMAPI_FOR_ANDROID
+        // Android assembly locations are not the paths Cecil recorded when the game was packed.
+        this.TargetModules = this.Targets.ToDictionary(
+            assembly => assembly,
+            assembly =>
+            {
+                string assemblyFullPath = Path.Combine(Constants.GamePath, assembly.Modules.Single().FullyQualifiedName);
+                return ModuleDefinition.ReadModule(assemblyFullPath, new ReaderParameters { InMemory = true });
+            });
+#else
         this.TargetModules = this.Targets.ToDictionary(assembly => assembly, assembly => ModuleDefinition.ReadModule(assembly.Modules.Single().FullyQualifiedName, new ReaderParameters { InMemory = true }));
+#endif
     }
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>

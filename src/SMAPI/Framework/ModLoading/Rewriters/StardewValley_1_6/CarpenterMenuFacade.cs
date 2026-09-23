@@ -16,10 +16,12 @@ public class CarpenterMenuFacade : CarpenterMenu, IRewriteFacade
         return new CarpenterMenu(magicalConstruction ? Game1.builder_wizard : Game1.builder_robin);
     }
 
+#if !SMAPI_FOR_ANDROID
     public void setNewActiveBlueprint()
     {
         base.SetNewActiveBlueprint(base.Blueprint);
     }
+#endif
 
 
     /*********

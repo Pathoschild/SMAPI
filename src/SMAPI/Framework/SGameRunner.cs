@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Enums;
+using StardewModdingAPI.Framework.Extensions;
 using StardewModdingAPI.Framework.Input;
 using StardewModdingAPI.Framework.Reflection;
 using StardewValley;
@@ -41,7 +42,11 @@ internal class SGameRunner : GameRunner
     private readonly Action<LoadStage> OnLoadStageChanged;
 
     /// <summary>Raised when XNA is updating (roughly 60 times per second).</summary>
+#if SMAPI_FOR_ANDROID
+    internal Action<GameTime, Action> OnGameUpdating;
+#else
     private readonly Action<GameTime, Action> OnGameUpdating;
+#endif
 
     /// <summary>Raised when the game instance for a local split-screen player is updating (once per <see cref="OnGameUpdating"/> per player).</summary>
     private readonly Action<SGame, GameTime, Action> OnPlayerInstanceUpdating;
@@ -190,4 +195,37 @@ internal class SGameRunner : GameRunner
                 Context.LastRemovedScreenId = id;
         }
     }
+
+#if SMAPI_FOR_ANDROID
+    /// <summary>Raised after the Android game draws a frame.</summary>
+    public static event Action<GameTime>? OnAndroidDraw;
+
+    /// <inheritdoc />
+    protected override void Draw(GameTime time)
+    {
+        base.Draw(time);
+
+        try
+        {
+            OnAndroidDraw?.Invoke(time);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            this.Monitor.Log(ex.GetLogSummary(), LogLevel.Error);
+        }
+    }
+
+    /// <summary>Register a callback invoked after each Android draw.</summary>
+    internal static void RegisterOnDraw(Action<GameTime> draw)
+    {
+        OnAndroidDraw += draw;
+    }
+
+    /// <summary>Remove a callback registered with <see cref="RegisterOnDraw"/>.</summary>
+    internal static void UnregisterOnDraw(Action<GameTime> draw)
+    {
+        OnAndroidDraw -= draw;
+    }
+#endif
 }

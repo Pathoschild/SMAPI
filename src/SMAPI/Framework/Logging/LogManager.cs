@@ -10,6 +10,9 @@ using StardewModdingAPI.Framework.Models;
 using StardewModdingAPI.Framework.ModLoading;
 using StardewModdingAPI.Internal;
 using StardewModdingAPI.Internal.ConsoleWriting;
+#if SMAPI_FOR_ANDROID
+using StardewModdingAPI.Mobile;
+#endif
 using StardewModdingAPI.Toolkit.Framework.BundledModData;
 using StardewModdingAPI.Toolkit.Utilities;
 using StardewValley;
@@ -91,6 +94,9 @@ internal class LogManager : IDisposable
     /// <param name="title">The new window title.</param>
     public void SetConsoleTitle(string title)
     {
+#if SMAPI_FOR_ANDROID
+        return;
+#endif
         Console.Title = title;
     }
 
@@ -127,7 +133,11 @@ internal class LogManager : IDisposable
             while (true)
             {
                 // get input
+#if SMAPI_FOR_ANDROID
+                string? input = MobileConsoleTool.ReadLine();
+#else
                 string? input = Console.ReadLine();
+#endif
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
 
@@ -154,6 +164,10 @@ internal class LogManager : IDisposable
     /// <param name="showMessage">Whether to print a 'press any key to exit' message to the console.</param>
     public void PressAnyKeyToExit(bool showMessage)
     {
+#if SMAPI_FOR_ANDROID
+        SMAPIActivityTool.ExitGame();
+        return;
+#endif
         if (showMessage)
             this.Monitor.Log("Game has ended. Press any key to exit.");
         Thread.Sleep(100);
@@ -238,12 +252,19 @@ internal class LogManager : IDisposable
     public void LogIntro(string modsPath, IDictionary<string, object?> customSettings)
     {
         // log platform
+#if SMAPI_FOR_ANDROID
+        this.Monitor.Log($"SMAPI v{Constants.ApiVersionForAndroid} - {SMAPIAndroidBuild.BuildCode} with Stardew Valley {Game1.GetVersionString()} on {EnvironmentUtility.GetFriendlyPlatformName(Constants.Platform)}", LogLevel.Info);
+        this.Monitor.Log($"Launcher v{LauncherAppInfo.CurrentVersion} - {LauncherAppInfo.CurrentBuild}", LogLevel.Info);
+#else
         this.Monitor.Log($"SMAPI {Constants.ApiVersion} with Stardew Valley {Game1.GetVersionString()} on {EnvironmentUtility.GetFriendlyPlatformName(Constants.Platform)}", LogLevel.Info);
+#endif
 
         // log basic info
         this.Monitor.Log($"Mods go here: {PathUtilities.AnonymizePathForDisplay(modsPath)}", LogLevel.Info);
+#if !SMAPI_FOR_ANDROID
         if (modsPath != Constants.DefaultModsPath)
             this.Monitor.Log($"(Using custom --mods-path argument. Game folder: {PathUtilities.AnonymizePathForDisplay(Constants.GamePath)}.)");
+#endif
         this.Monitor.Log($"Log started at {DateTime.UtcNow:s} UTC");
 
         // log custom settings
@@ -266,8 +287,10 @@ internal class LogManager : IDisposable
             this.Monitor.Log("You disabled mod blacklist updates, so you may not be protected from known malicious mods. You can undo this by reinstalling SMAPI.", LogLevel.Warn);
         if (!settings.RewriteMods)
             this.Monitor.Log("You disabled rewriting broken mods, so many older mods may fail to load. You can undo this by reinstalling SMAPI.", LogLevel.Info);
+#if !SMAPI_FOR_ANDROID
         if (!this.Monitor.WriteToConsole)
             this.Monitor.Log("Writing to the terminal is disabled because the --no-terminal argument was received. This usually means launching the terminal failed.", LogLevel.Warn);
+#endif
 
         // verbose logging
         this.Monitor.VerboseLog("Verbose logging enabled.");

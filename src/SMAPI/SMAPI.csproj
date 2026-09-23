@@ -1,28 +1,48 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AndroidBuild Condition="'$(AndroidBuild)' == '' AND $([System.String]::Copy('$(Configuration)').Contains('Android'))">true</AndroidBuild>
+
     <AssemblyName>StardewModdingAPI</AssemblyName>
     <RootNamespace>StardewModdingAPI</RootNamespace>
     <Description>The modding API for Stardew Valley.</Description>
-    <TargetFramework>net6.0</TargetFramework>
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputType>Exe</OutputType>
+    <TargetFramework Condition="'$(AndroidBuild)' != 'true'">net6.0</TargetFramework>
+    <TargetFramework Condition="'$(AndroidBuild)' == 'true'">net9.0-android35.0</TargetFramework>
+    <PlatformTarget Condition="'$(AndroidBuild)' != 'true'">x64</PlatformTarget>
+    <PlatformTarget Condition="'$(AndroidBuild)' == 'true'">ARM64</PlatformTarget>
+    <OutputType Condition="'$(AndroidBuild)' != 'true'">Exe</OutputType>
+    <OutputType Condition="'$(AndroidBuild)' == 'true'">Library</OutputType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <BaseOutputPath Condition="'$(AndroidBuild)' == 'true'">bin\ARM64\</BaseOutputPath>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationManifest Condition="'$(AndroidBuild)' != 'true'">app.manifest</ApplicationManifest>
 
     <!--copy dependency DLLs to bin folder so we can include them in installer bundle -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <!-- tiered compilation breaks Harmony -->
     <TieredCompilation>false</TieredCompilation>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <DefineConstants Condition="'$(AndroidBuild)' == 'true'">$(DefineConstants);SMAPI_FOR_ANDROID</DefineConstants>
+    <AllowUnsafeBlocks Condition="'$(AndroidBuild)' == 'true'">true</AllowUnsafeBlocks>
+    <Configurations>Debug;Release;Android Debug;Android Release</Configurations>
+    <Platforms>AnyCPU;ARM64</Platforms>
   </PropertyGroup>
+
+  <!-- build code embedded into the Android SMAPI assembly -->
+  <ItemGroup Condition="'$(AndroidBuild)' == 'true'">
+    <Constant Include="SMAPIAndroidBuild.BuildCode" Value="$([System.DateTimeOffset]::Now.ToUnixTimeSeconds())" />
+  </ItemGroup>
+
+  <!-- Mobile code references Android APIs and is only compiled into the Android build -->
+  <ItemGroup Condition="'$(AndroidBuild)' != 'true'">
+    <Compile Remove="Mobile\**\*.cs" />
+  </ItemGroup>
 
   <Import Project="..\..\build\common.targets" />
 
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" />
-    <PackageReference Include="MonoMod.Common" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Pathoschild.Http.FluentClient" />
     <PackageReference Include="Pintail" />
@@ -30,7 +50,24 @@
     <PackageReference Include="System.Reflection.Emit" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(AndroidBuild)' != 'true'">
+    <PackageReference Include="MonoMod.Common" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(AndroidBuild)' == 'true'">
+    <PackageReference Include="DeepCloner" />
+    <PackageReference Include="Lib.Harmony" />
+    <PackageReference Include="NVorbis" />
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="StbImageWriteSharp" />
+    <PackageReference Include="TextCopy" />
+    <PackageReference Include="ThisAssembly.Constants">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(AndroidBuild)' != 'true'">
     <Reference Include="..\..\build\0Harmony.dll" Private="True" />
     <Reference Include="Stardew Valley" HintPath="$(GamePath)\Stardew Valley.dll" Private="False" />
     <Reference Include="StardewValley.GameData" HintPath="$(GamePath)\StardewValley.GameData.dll" Private="False" />
@@ -42,15 +79,58 @@
     <Reference Include="xTile" HintPath="$(GamePath)\xTile.dll" Private="False" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(AndroidBuild)' == 'true'">
+    <Reference Include="BmFont">
+      <HintPath>..\DependenciesDll\BmFont.dll</HintPath>
+    </Reference>
+    <Reference Include="Lidgren.Network">
+      <HintPath>..\DependenciesDll\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\DependenciesDll\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Backports">
+      <HintPath>..\DependenciesDll\MonoMod.Backports.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Core">
+      <HintPath>..\DependenciesDll\MonoMod.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Iced">
+      <HintPath>..\DependenciesDll\MonoMod.Iced.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.ILHelpers">
+      <HintPath>..\DependenciesDll\MonoMod.ILHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour">
+      <HintPath>..\DependenciesDll\MonoMod.RuntimeDetour.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>..\DependenciesDll\MonoMod.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="StardewValley">
+      <HintPath>..\DependenciesDll\StardewValley.dll</HintPath>
+    </Reference>
+    <Reference Include="StardewValley.GameData">
+      <HintPath>..\DependenciesDll\StardewValley.GameData.dll</HintPath>
+    </Reference>
+    <Reference Include="xTile">
+      <HintPath>..\DependenciesDll\xTile.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\SMAPI.Toolkit.CoreInterfaces\SMAPI.Toolkit.CoreInterfaces.csproj" />
     <ProjectReference Include="..\SMAPI.Toolkit\SMAPI.Toolkit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="SMAPI.config.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\SMAPI.Web\wwwroot\SMAPI.blacklist.json" Link="SMAPI.blacklist.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\SMAPI.Web\wwwroot\SMAPI.metadata.json" Link="SMAPI.metadata.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- The Android SDK rejects the Content build action, so those files are copied as None instead. -->
+    <Content Condition="'$(AndroidBuild)' != 'true'" Include="SMAPI.config.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Condition="'$(AndroidBuild)' != 'true'" Include="..\SMAPI.Web\wwwroot\SMAPI.blacklist.json" Link="SMAPI.blacklist.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Condition="'$(AndroidBuild)' != 'true'" Include="..\SMAPI.Web\wwwroot\SMAPI.metadata.json" Link="SMAPI.metadata.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Condition="'$(AndroidBuild)' == 'true'" Include="SMAPI.config.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Condition="'$(AndroidBuild)' == 'true'" Include="..\SMAPI.Web\wwwroot\SMAPI.blacklist.json" Link="SMAPI.blacklist.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Condition="'$(AndroidBuild)' == 'true'" Include="..\SMAPI.Web\wwwroot\SMAPI.metadata.json" Link="SMAPI.metadata.json" CopyToOutputDirectory="PreserveNewest" />
 
     <None Update="i18n\*" CopyToOutputDirectory="PreserveNewest" />
     <None Update="steam_appid.txt" CopyToOutputDirectory="PreserveNewest" />

@@ -71,9 +71,17 @@ internal class WorldLocationsTracker : IWatcher
     /// <param name="locations">The game's list of locations.</param>
     /// <param name="activeMineLocations">The game's list of active mine locations.</param>
     /// <param name="activeVolcanoLocations">The game's list of active volcano locations.</param>
+#if SMAPI_FOR_ANDROID
+    public WorldLocationsTracker(IList<GameLocation> locations, IList<MineShaft> activeMineLocations, IList<VolcanoDungeon> activeVolcanoLocations)
+#else
     public WorldLocationsTracker(ObservableCollection<GameLocation> locations, IList<MineShaft> activeMineLocations, IList<VolcanoDungeon> activeVolcanoLocations)
+#endif
     {
+#if SMAPI_FOR_ANDROID
+        this.LocationListWatcher = WatcherFactory.ForReferenceList($"{this.Name}.{nameof(locations)}", locations);
+#else
         this.LocationListWatcher = WatcherFactory.ForObservableCollection($"{this.Name}.{nameof(locations)}", locations);
+#endif
         this.MineLocationListWatcher = WatcherFactory.ForReferenceList($"{this.Name}.{nameof(activeMineLocations)}", activeMineLocations);
         this.VolcanoLocationListWatcher = WatcherFactory.ForReferenceList($"{this.Name}.{nameof(activeVolcanoLocations)}", activeVolcanoLocations);
     }

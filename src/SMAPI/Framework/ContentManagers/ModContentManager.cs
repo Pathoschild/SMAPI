@@ -541,4 +541,33 @@ internal sealed class ModContentManager : BaseContentManager
     {
         return new SContentLoadException(ContentLoadErrorType.InvalidData, $"{this.ModName} loaded map '{relativeMapPath}' with invalid tilesheet path '{imageSource}'. {error}", ex);
     }
+
+#if SMAPI_FOR_ANDROID
+    /// <summary>Open an XNB from an absolute path. The Android content manager only accepts relative asset names.</summary>
+    protected override Stream OpenStream(string assetName)
+    {
+        try
+        {
+            assetName = assetName.Replace("//", "/");
+            string externalAbsolutePath = Path.Combine(this.RootDirectory, assetName) + ".xnb";
+            using FileStream stream = new(externalAbsolutePath, FileMode.Open, FileAccess.Read);
+            MemoryStream destination = new();
+            stream.CopyTo(destination);
+            destination.Seek(0L, SeekOrigin.Begin);
+            return destination;
+        }
+        catch (FileNotFoundException innerException)
+        {
+            throw new ContentLoadException("The content file was not found.", innerException);
+        }
+        catch (DirectoryNotFoundException innerException)
+        {
+            throw new ContentLoadException("The directory was not found.", innerException);
+        }
+        catch (Exception innerException)
+        {
+            throw new ContentLoadException("Opening stream error.", innerException);
+        }
+    }
+#endif
 }

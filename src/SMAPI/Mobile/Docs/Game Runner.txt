@@ -1,0 +1,59 @@
+
+//start first entry point in file SCore.cs
+
+var activityField = AccessTools.Field(typeof(MainActivity), nameof(MainActivity.instance));
+var activity = activityField.GetValue(null) as Android.App.Activity;
+var gameView = GameRunner.instance.Services.GetService<View>();
+activity.SetContentView(gameView);
+
+// Start Game Here
+this.Game.Run();
+
+
+in side call stack
+GameRunner : Game
+
+game.Run()
+if (!_initialized)
+{
+    DoInitialize();
+    _initialized = true;
+}
+
+
+
+void DoInitialize() in Game.cs gameEngine
+{
+    Initialize();
+}
+
+void Initialize() in Game.cs gameEngine
+{
+    if (_graphicsDeviceService != null && _graphicsDeviceService.GraphicsDevice != null)
+    {
+        LoadContent(); called virtual method
+    }
+}
+
+in GameRunner.cs Stardew Valley
+protected override void LoadContent()
+{
+    LoadInstance(gamePtr);
+    gamePtr.Instance_LoadContent();
+    // call Game1::Instance_LoadContent() -> protected Game1::LoadContent()
+
+    SaveInstance(gamePtr);
+    DebugTools.GameLoadContent(this);
+    foreach (Game1 instance in gameInstances)
+    {
+        if (instance != gamePtr)
+        {
+            LoadInstance(instance);
+            instance.Instance_LoadContent();
+            SaveInstance(instance);
+        }
+    }
+    shouldLoadContent = true;
+    base.LoadContent();
+}
+

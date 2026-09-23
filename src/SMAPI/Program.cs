@@ -5,6 +5,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using StardewModdingAPI.Framework;
+#if SMAPI_FOR_ANDROID
+using StardewModdingAPI.Mobile;
+#endif
 using StardewModdingAPI.Toolkit.Serialization.Models;
 using StardewModdingAPI.Toolkit.Utilities;
 using StardewValley;
@@ -31,16 +34,24 @@ internal class Program
     /// <param name="args">The command-line arguments.</param>
     public static void Main(string[] args)
     {
+#if SMAPI_FOR_ANDROID
+        AndroidPatcher.Setup();
+        AndroidMainThread.Init(args);
+#endif
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture; // per StardewValley.Program.Main
+#if !SMAPI_FOR_ANDROID
         Console.Title = $"SMAPI {EarlyConstants.RawApiVersion}";
+#endif
 
         try
         {
             AppDomain.CurrentDomain.AssemblyResolve += Program.CurrentDomain_AssemblyResolve;
+#if !SMAPI_FOR_ANDROID
             Program.AssertGamePresent();
             Program.AssertGameVersion();
             Program.AssertSmapiVersions();
             Program.AssertDepsJson();
+#endif
             Program.Start(args);
         }
         catch (BadImageFormatException ex) when (ex.FileName == EarlyConstants.GameAssemblyName)
@@ -84,6 +95,10 @@ internal class Program
                     }
                 }
             }
+#if SMAPI_FOR_ANDROID
+            // The Android game assembly is StardewValley.dll, while mods reference "Stardew Valley".
+            Program.AssemblyPathsByName["Stardew Valley"] = Path.Combine(EarlyConstants.GamePath, "StardewValley.dll");
+#endif
         }
 
         // resolve
@@ -228,8 +243,17 @@ internal class Program
         }
 
         // load SMAPI
+#if SMAPI_FOR_ANDROID
+        developerMode = true;
+        writeToConsole = false;
+        modsPath = Path.Combine(EarlyConstants.ExternalFilesDir, "Mods");
+        SCore core = new(modsPath, writeToConsole, developerMode);
+        AndroidPatcher.OnBeforeSCoreRun();
+        core.RunInteractively();
+#else
         using SCore core = new(modsPath, writeToConsole, developerMode);
         core.RunInteractively();
+#endif
     }
 
     /// <summary>Write an error directly to the console and exit.</summary>
@@ -237,6 +261,12 @@ internal class Program
     /// <param name="technicalMessage">An additional message to log with technical details.</param>
     private static void PrintErrorAndExit(string message, string? technicalMessage = null)
     {
+#if SMAPI_FOR_ANDROID
+        AndroidLogger.Log("PrintErrorAndExit: msg: " + message);
+        AndroidLogger.Log("technicalMsg: " + technicalMessage);
+        return;
+#endif
+
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(message);
         Console.ResetColor();
@@ -257,6 +287,12 @@ internal class Program
     /// <param name="showMessage">Whether to print a 'press any key to exit' message to the console.</param>
     private static void PressAnyKeyToExit(bool showMessage)
     {
+#if SMAPI_FOR_ANDROID
+        AndroidLogger.Log("PressAnyKeyToExit: Game has ended. Press any key to exit.");
+        SMAPIActivityTool.ExitGame();
+        return;
+#endif
+
         if (showMessage)
             Console.WriteLine("Game has ended. Press any key to exit.");
         Thread.Sleep(100);

@@ -37,5 +37,14 @@
         <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.1" />
         <PackageVersion Include="Newtonsoft.Json.Schema" Version="4.0.1" />
         <PackageVersion Include="Pathoschild.FluentNexus" Version="1.0.5" />
+
+        <!-- Android SMAPI -->
+        <PackageVersion Include="DeepCloner" Version="0.10.4" />
+        <PackageVersion Include="Lib.Harmony" Version="2.3.3" />
+        <PackageVersion Include="NVorbis" Version="0.10.5" />
+        <PackageVersion Include="SkiaSharp" Version="2.88.9" />
+        <PackageVersion Include="StbImageWriteSharp" Version="1.16.7" />
+        <PackageVersion Include="TextCopy" Version="6.2.1" />
+        <PackageVersion Include="ThisAssembly.Constants" Version="2.0.10" />
     </ItemGroup>
 </Project>

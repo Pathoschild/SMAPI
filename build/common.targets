@@ -21,8 +21,11 @@ repo. It imports the other MSBuild files as needed.
     <NoWarn Condition="'$(TargetFramework)' == 'netstandard2.0'">$(NoWarn);CS8632</NoWarn>
 
     <!--set platform-->
-    <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);SMAPI_FOR_WINDOWS</DefineConstants>
-    <CopyToGameFolder>true</CopyToGameFolder>
+    <AndroidBuild Condition="'$(AndroidBuild)' == '' AND $([System.String]::Copy('$(Configuration)').Contains('Android'))">true</AndroidBuild>
+    <DefineConstants Condition="$(OS) == 'Windows_NT' And '$(AndroidBuild)' != 'true'">$(DefineConstants);SMAPI_FOR_WINDOWS</DefineConstants>
+    <DefineConstants Condition="'$(AndroidBuild)' == 'true'">$(DefineConstants);SMAPI_FOR_ANDROID</DefineConstants>
+    <CopyToGameFolder Condition="'$(AndroidBuild)' != 'true'">true</CopyToGameFolder>
+    <CopyToGameFolder Condition="'$(AndroidBuild)' == 'true'">false</CopyToGameFolder>
 
     <!-- allow mods to be compiled as AnyCPU for compatibility with older platforms -->
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
@@ -44,7 +47,7 @@ repo. It imports the other MSBuild files as needed.
   <Import Project="find-game-folder.targets" />
   <Target Name="ValidateInstallPath" AfterTargets="BeforeBuild">
     <!-- if game path is invalid, show one user-friendly error instead of a slew of reference errors -->
-    <Error Condition="!Exists('$(GamePath)')" Text="Failed to find the game install path automatically. You can specify where to find it; see https://smapi.io/package/custom-game-path." />
+    <Error Condition="'$(AndroidBuild)' != 'true' AND !Exists('$(GamePath)')" Text="Failed to find the game install path automatically. You can specify where to find it; see https://smapi.io/package/custom-game-path." />
   </Target>
 
   <!--deploy local files-->

@@ -1,0 +1,1 @@
+smapi-androidtool adb-wifi

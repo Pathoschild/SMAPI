@@ -57,7 +57,11 @@ internal class WatcherCore
     /// <summary>Construct an instance.</summary>
     /// <param name="inputState">Manages input visible to the game.</param>
     /// <param name="gameLocations">The observable list of game locations.</param>
+#if SMAPI_FOR_ANDROID
+    public WatcherCore(SInputState inputState, IList<GameLocation> gameLocations)
+#else
     public WatcherCore(SInputState inputState, ObservableCollection<GameLocation> gameLocations)
+#endif
     {
         // init watchers
         this.CursorWatcher = WatcherFactory.ForEquatable(nameof(inputState.CursorPosition), () => inputState.CursorPosition);

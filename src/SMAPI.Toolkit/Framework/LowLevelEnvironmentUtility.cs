@@ -95,6 +95,10 @@ internal static class LowLevelEnvironmentUtility
     /// </remarks>
     private static bool IsRunningAndroid()
     {
+#if SMAPI_FOR_ANDROID
+        return true;
+#endif
+
         using Process process = new()
         {
             StartInfo =

@@ -10,6 +10,9 @@ using StardewModdingAPI.Framework.Exceptions;
 using StardewModdingAPI.Framework.Extensions;
 using StardewModdingAPI.Framework.ModLoading.Framework;
 using StardewModdingAPI.Framework.ModLoading.Symbols;
+#if SMAPI_FOR_ANDROID
+using StardewModdingAPI.Mobile.Mods;
+#endif
 using StardewModdingAPI.Metadata;
 using StardewModdingAPI.Toolkit.Framework.BundledModData;
 using StardewModdingAPI.Toolkit.Utilities;
@@ -160,6 +163,17 @@ internal class AssemblyLoader : IDisposable
                     break;
                 }
             }
+
+#if SMAPI_FOR_ANDROID
+            if (mod.Warnings != ModWarning.BrokenCodeLoaded)
+            {
+                AndroidModFixManager.Instance.TryRewriteMod(assembly, out bool hasRewriteMod, out var err);
+                if (err != null)
+                    mod.SetWarning(ModWarning.BrokenCodeLoaded);
+                else if (hasRewriteMod)
+                    changed = true;
+            }
+#endif
 
             // load assembly
             if (changed)

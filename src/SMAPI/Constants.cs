@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+#if SMAPI_FOR_ANDROID
+using Android.App;
+#endif
 using Mono.Cecil;
 using StardewModdingAPI.Enums;
 using StardewModdingAPI.Framework;
@@ -31,6 +34,17 @@ internal static class EarlyConstants
     /*********
     ** Accessors
     *********/
+#if SMAPI_FOR_ANDROID
+    /// <summary>The app-specific external files directory on Android, where saves and mods live.</summary>
+    public static string ExternalFilesDir { get; } = Application.Context.GetExternalFilesDir(null)!.AbsolutePath;
+
+    /// <summary>Android revision appended to <see cref="RawApiVersion"/>. Keep the literal below in sync with that version.</summary>
+    internal const string AndroidFixBugVersionCode = "0";
+
+    /// <summary>SMAPI version string read by the Android packer and launcher. Must stay a const so Mono.Cecil can read it.</summary>
+    internal const string RawApiVersionForAndroid = "4.5.2." + AndroidFixBugVersionCode;
+#endif
+
     /// <summary>The path to the game folder.</summary>
     public static string GamePath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
@@ -38,7 +52,11 @@ internal static class EarlyConstants
     public static readonly string InternalFilesPath = Path.Combine(EarlyConstants.GamePath, "smapi-internal");
 
     /// <summary>The target game platform.</summary>
+#if SMAPI_FOR_ANDROID
+    internal static GamePlatform Platform { get; } = GamePlatform.Android;
+#else
     internal static GamePlatform Platform { get; } = (GamePlatform)Enum.Parse(typeof(GamePlatform), LowLevelEnvironmentUtility.DetectPlatform());
+#endif
 
     /// <summary>The game framework running the game.</summary>
     internal static GameFramework GameFramework { get; } = GameFramework.MonoGame;
@@ -65,6 +83,11 @@ public static class Constants
     /// <summary>SMAPI's current semantic version.</summary>
     public static ISemanticVersion ApiVersion { get; } = new Toolkit.SemanticVersion(EarlyConstants.RawApiVersion);
 
+#if SMAPI_FOR_ANDROID
+    /// <summary>SMAPI version reported to the Android launcher, including the Android revision.</summary>
+    public static string ApiVersionForAndroid => EarlyConstants.RawApiVersionForAndroid;
+#endif
+
     /// <summary>The minimum supported version of Stardew Valley.</summary>
     public static ISemanticVersion MinimumGameVersion { get; } = new GameVersion("1.6.14");
 
@@ -87,7 +110,11 @@ public static class Constants
     public static string ContentPath { get; } = Constants.GetContentFolderPath();
 
     /// <summary>The directory path containing Stardew Valley's app data.</summary>
+#if SMAPI_FOR_ANDROID
+    public static string DataPath { get; } = EarlyConstants.ExternalFilesDir;
+#else
     public static string DataPath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley");
+#endif
 
     /// <summary>The directory path in which error logs should be stored.</summary>
     public static string LogDir { get; } = Path.Combine(Constants.DataPath, "ErrorLogs");
@@ -277,6 +304,15 @@ public static class Constants
     /// <param name="resolver">The assembly resolver.</param>
     internal static void ConfigureAssemblyResolver(AssemblyDefinitionResolver resolver)
     {
+#if SMAPI_FOR_ANDROID
+        // The Android game assembly file is StardewValley.dll, but mods may reference it as "Stardew Valley".
+        resolver.TryAddSearchDirectory(Constants.GamePath);
+        resolver.TryAddSearchDirectory(Constants.InternalFilesPath);
+        resolver.Add(AssemblyDefinition.ReadAssembly(typeof(SGame).Assembly.Location));
+        resolver.AddWithExplicitNames(AssemblyDefinition.ReadAssembly(Path.Combine(Constants.GamePath, "StardewValley.dll")), "StardewValley", "Stardew Valley", "Netcode");
+        return;
+#endif
+
         // add search paths
         resolver.TryAddSearchDirectory(Constants.GamePath);
         resolver.TryAddSearchDirectory(Constants.InternalFilesPath);

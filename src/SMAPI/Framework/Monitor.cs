@@ -4,6 +4,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using StardewModdingAPI.Framework.Logging;
 using StardewModdingAPI.Internal.ConsoleWriting;
+#if SMAPI_FOR_ANDROID
+using StardewModdingAPI.Mobile;
+#endif
 
 namespace StardewModdingAPI.Framework;
 
@@ -165,7 +168,34 @@ internal class Monitor : IMonitor
 
         // write to log file
         this.LogFile.WriteLine(fullMessage);
+#if SMAPI_FOR_ANDROID
+        AndroidLogger.Log(fullMessage);
+        lock (Monitor.OnLogImplLock)
+            Monitor.OnLogImpl?.Invoke(level, fullMessage);
+#endif
     }
+
+#if SMAPI_FOR_ANDROID
+    /// <summary>Serializes <see cref="OnLogImpl"/> add/remove.</summary>
+    private static readonly object OnLogImplLock = new();
+
+    /// <summary>Callbacks that mirror SMAPI log lines onto the Android screen.</summary>
+    private static Action<ConsoleLogLevel, string>? OnLogImpl;
+
+    /// <summary>Register a callback invoked for each log line.</summary>
+    internal static void RegisterOnLogImpl(Action<ConsoleLogLevel, string> callback)
+    {
+        lock (Monitor.OnLogImplLock)
+            Monitor.OnLogImpl += callback;
+    }
+
+    /// <summary>Remove a callback registered with <see cref="RegisterOnLogImpl"/>.</summary>
+    internal static void UnregisterOnLogImpl(Action<ConsoleLogLevel, string> callback)
+    {
+        lock (Monitor.OnLogImplLock)
+            Monitor.OnLogImpl -= callback;
+    }
+#endif
 
     /// <summary>Generate a message prefix for the current time.</summary>
     /// <param name="source">The name of the mod logging the message.</param>

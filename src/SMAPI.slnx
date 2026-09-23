@@ -62,4 +62,5 @@
   <Project Path="SMAPI.Toolkit/SMAPI.Toolkit.csproj" />
   <Project Path="SMAPI.Web/SMAPI.Web.csproj" />
   <Project Path="SMAPI/SMAPI.csproj" />
+  <Project Path="PackSMAPIZip/PackSMAPIZip.csproj" />
 </Solution>

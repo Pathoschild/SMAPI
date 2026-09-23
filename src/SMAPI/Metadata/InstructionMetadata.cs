@@ -1,5 +1,10 @@
 using System;
 using System.Collections.Generic;
+#if SMAPI_FOR_ANDROID
+using HarmonyLib;
+using StardewModdingAPI.Mobile;
+using StardewModdingAPI.Mobile.Facade;
+#endif
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -270,6 +275,23 @@ internal class InstructionMetadata
                 .MapFacade<WorldDate, WorldDateFacade>()
                 .MapFacade(typeof(WorldMapManager).FullName!, typeof(WorldMapManagerFacade))
 
+#if SMAPI_FOR_ANDROID
+                .MapFacade<GameMenu, GameMenuFacade>()
+                .MapFacade<MenuWithInventory, MenuWithInventoryFacade>()
+                .MapFacade<IClickableMenu, IClickableMenuFacadeAndroid>()
+                .MapFacade<SaveGame, SaveGameFacade>()
+                .MapFacade<ItemGrabMenu, ItemGrabMenuFacade>()
+                .MapFacade<InventoryPage, InventoryPageFacade>()
+                .MapFacade<Toolbar, ToolbarFacade>()
+                .MapFacade<OptionsPage, OptionsPageFacade>()
+                .MapFacade<SocialPage, SocialPageFacade>()
+                .MapFacade<OptionsDropDown, OptionsDropDownFacade>()
+                .MapType(typeof(KeyboardInput).FullName, typeof(KeyboardInput))
+                .MapType(typeof(KeyEventArgs).FullName, typeof(KeyEventArgs))
+                .MapType("StardewValley.Game1/BundleType", typeof(StardewValley.BundleType))
+                .MapType("StardewValley.Game1/MineChestType", typeof(MineChestType))
+#endif
+
                 // BuildableGameLocation merged into GameLocation
                 .MapFacade("StardewValley.Locations.BuildableGameLocation", typeof(BuildableGameLocationFacade))
                 .MapField("Netcode.NetCollection`1<StardewValley.Buildings.Building> StardewValley.Locations.BuildableGameLocation::buildings", typeof(GameLocation), nameof(GameLocation.buildings))
@@ -301,6 +323,69 @@ internal class InstructionMetadata
 
             // 32-bit to 64-bit in Stardew Valley 1.5.5
             yield return new ArchitectureAssemblyRewriter();
+
+#if SMAPI_FOR_ANDROID
+            yield return new MapMethodToStaticMethodRewriter()
+                .Add(typeof(OptionsElement), method => method.Name == "draw",
+                    typeof(OptionsElementRewriter), method => method.Name == "draw",
+                    map => { map.AddPramToSrc(typeof(IClickableMenu)); })
+                .AddWithMethodFullName(
+                    "System.Int32 StardewValley.Audio.IAudioEngine::GetCategoryIndex(System.String)",
+                    StardewAudioMethods.IAudioEngine_GetCategoryIndex_MethodInfo
+                )
+                .AddWithMethodFullName(
+                    "System.Void StardewValley.ISoundBank::AddCue(Microsoft.Xna.Framework.Audio.CueDefinition)",
+                    StardewAudioMethods.ISoundBank_AddCue_MethodInfo
+                )
+                .AddWithMethodFullName(
+                    StardewAudioMethods.get_Volume_FullName,
+                    StardewAudioMethods.ICue_get_Volume_MethodInfo
+                )
+                .AddWithMethodFullName(
+                    StardewAudioMethods.set_Volume_FullName,
+                    StardewAudioMethods.ICue_set_Volume_MethodInfo
+                )
+                .AddWithMethodFullName(
+                    StardewAudioMethods.get_Pitch_FullName,
+                    StardewAudioMethods.Get_Pitch_ProxyMethodInfo
+                )
+                .AddWithMethodFullName(
+                    StardewAudioMethods.set_Pitch_FullName,
+                    StardewAudioMethods.Set_Pitch_ProxyMethodInfo
+                )
+                .AddWithMethodFullName(
+                    StardewAudioMethods.get_IsPitchBeingControlledByRPC_FullName,
+                    StardewAudioMethods.Get_IsPitchBeingControlledByRPC_MethodInfo
+                )
+                .AddWithMethodFullName(
+                    StardewAudioMethods.ISoundBank_Exists_MethodFullName,
+                    StardewAudioMethods.ISoundBank_Exists_MethodInfo
+                )
+                .AddWithTypeFullName(
+                    "Force.DeepCloner.DeepClonerExtensions",
+                    DeepClonerRewriter.OnRewriterIL
+                )
+                .AddWithTypeFullName(
+                    typeof(GameWindow).FullName,
+                    GameWindowRewriter.OnRewriteIL
+                )
+                .AddWithTypeFullName(
+                    "StardewValley.KeyboardInput",
+                    KeyboardInputRewriter.OnRewriteIL
+                )
+                .AddWithMethodFullName(
+                    "System.Void StardewValley.KeyEventHandler::.ctor(System.Object,System.IntPtr)",
+                    AccessTools.Method(typeof(KeyEventHandlerRewriter), nameof(KeyEventHandlerRewriter.Ctor))
+                )
+                .AddWithMethodFullName(
+                    LetterViewerMenuRewriter.OnPageChange_FullName,
+                    LetterViewerMenuRewriter.OnPageChangeProxy_MethodInfo
+                )
+                .AddWithTypeFullName(
+                    typeof(Texture2D).FullName,
+                    Texture2DRewriter.RewriterCallback
+                );
+#endif
         }
 
         /****
@@ -313,7 +398,11 @@ internal class InstructionMetadata
         yield return new ReferenceToInvalidMemberFinder(this.ValidateReferencesToAssemblies, logTechnicalDetailsForBrokenMods);
 
         // code which may impact game stability
+#if SMAPI_FOR_ANDROID
+        yield return new FieldFinder(typeof(SaveGame).FullName!, ["serializer", "farmerSerializer", "locationSerializer"], InstructionHandleResult.DetectedSaveSerializer);
+#else
         yield return new FieldFinder(typeof(SaveGame).FullName!, [nameof(SaveGame.serializer), nameof(SaveGame.farmerSerializer), nameof(SaveGame.locationSerializer)], InstructionHandleResult.DetectedSaveSerializer);
+#endif
         yield return new EventFinder(typeof(ISpecializedEvents).FullName!, [nameof(ISpecializedEvents.UnvalidatedUpdateTicked), nameof(ISpecializedEvents.UnvalidatedUpdateTicking)], InstructionHandleResult.DetectedUnvalidatedUpdateTick);
 
         // direct console access

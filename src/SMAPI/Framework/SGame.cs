@@ -1,6 +1,11 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+#if SMAPI_FOR_ANDROID
+using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
+#endif
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -92,6 +97,24 @@ internal class SGame : Game1
     [NonInstancedStatic]
     public static Func<IServiceProvider, string, LocalizedContentManager>? CreateContentManagerImpl;
 
+#if SMAPI_FOR_ANDROID
+    /// <summary>The live game instance, for Android loaders that run before <see cref="Game1.game1"/> is ready.</summary>
+    internal static SGame? Instance { get; private set; }
+
+    /// <summary>The game's load-content enumerator, which Android advances one step per frame.</summary>
+    public static IEnumerator<int> LoadContentEnumerator
+    {
+        get => (IEnumerator<int>)AccessTools.Field(typeof(Game1), "LoadContentEnumerator").GetValue(null)!;
+        set => AccessTools.Field(typeof(Game1), "LoadContentEnumerator").SetValue(null, value);
+    }
+
+    /// <summary>Create the game's load-content enumerator.</summary>
+    public static IEnumerator<int> GetLoadContentEnumerator()
+    {
+        return (IEnumerator<int>)AccessTools.Method(typeof(Game1), "GetLoadContentEnumerator").Invoke(Game1.game1, null)!;
+    }
+#endif
+
 
     /*********
     ** Public methods
@@ -121,7 +144,11 @@ internal class SGame : Game1
         Game1.log = gameLogger;
         Game1.multiplayer = this.InitialMultiplayer = multiplayer;
         Game1.hooks = modHooks;
+#if SMAPI_FOR_ANDROID
+        SGame.Instance = this;
+#else
         this._locations = new ObservableCollection<GameLocation>();
+#endif
 
         // init SMAPI
         this.Monitor = monitor;
@@ -148,9 +175,25 @@ internal class SGame : Game1
     protected override void LoadContent()
     {
         base.LoadContent();
-
+#if SMAPI_FOR_ANDROID
+        // Mods must be initialized before Game1 reads bigCraftable data during the Android content load.
+        Console.WriteLine("Done base.LoadContent()");
+        Console.WriteLine("try call InitializeBeforeFirstAssetLoaded for load all mod");
+        var initializeBeforeFirstAssetLoaded = typeof(SCore).GetMethod("InitializeBeforeFirstAssetLoaded", BindingFlags.Instance | BindingFlags.NonPublic);
+        initializeBeforeFirstAssetLoaded!.Invoke(SCore.Instance, null);
+#else
         this.OnContentLoaded();
+#endif
     }
+
+#if SMAPI_FOR_ANDROID
+    /// <summary>Finish SMAPI content-load hooks after the Android content enumerator completes.</summary>
+    internal void OnAndroidContentLoaded()
+    {
+        this.OnContentLoaded();
+        Console.WriteLine("Ready for Game Launched");
+    }
+#endif
 
     /// <inheritdoc />
     public override bool ShouldDrawOnBuffer()
@@ -224,7 +267,11 @@ internal class SGame : Game1
         if (this.IsFirstTick)
         {
             this.Input.TrueUpdate();
+#if SMAPI_FOR_ANDROID
+            this.Watchers = new WatcherCore(this.Input, this._locations);
+#else
             this.Watchers = new WatcherCore(this.Input, (ObservableCollection<GameLocation>)this._locations);
+#endif
         }
 
         // update

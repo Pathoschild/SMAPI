@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Framework.ModLoading.Framework;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6;
 
@@ -174,6 +175,14 @@ public class Game1Facade : Game1, IRewriteFacade
     {
         Game1.playSound(cueName, pitch);
     }
+
+#if SMAPI_FOR_ANDROID
+    public static IList<IClickableMenu> onScreenMenus
+    {
+        get => Game1.onScreenMenus;
+        set => Game1.onScreenMenus = new List<IClickableMenu>(value);
+    }
+#endif
 
 
     /*********
