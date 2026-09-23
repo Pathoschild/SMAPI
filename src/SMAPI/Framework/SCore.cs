@@ -384,6 +384,14 @@ internal class SCore : IDisposable
 #if SMAPI_FOR_ANDROID
     /// <summary>SMAPI's own monitor, exposed for the Android on-screen log.</summary>
     public IMonitor SMAPIMonitor => this.LogManager.Monitor;
+
+    /// <summary>SMAPI's monitor once logging exists. Null during early startup, before <see cref="LogManager"/> is assigned.</summary>
+    [SuppressMessage("ReSharper", "ConditionalAccessQualifierIsNonNullableAccordingToAPIContract", Justification = "LogManager is null if the constructor failed before it was assigned.")]
+    public IMonitor? TryGetSMAPIMonitor()
+    {
+        LogManager? logManager = this.LogManager;
+        return logManager?.Monitor;
+    }
 #endif
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>

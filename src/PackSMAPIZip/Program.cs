@@ -26,8 +26,8 @@ internal class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-            Console.Read();
+            Console.Error.WriteLine(ex);
+            Environment.ExitCode = 1;
         }
     }
 
@@ -46,18 +46,24 @@ internal class Program
             ? args[0]
             : FindSmapiBinDir();
         var outputSMAPIZipFileName = GetOutputSMAPIZipFileName(SMAPIBinDir);
+        string packerDir = FindPackerProjectDir();
         Console.WriteLine("Start Pack: " + outputSMAPIZipFileName);
-        string smapiOutputDir = Path.Combine(Directory.GetCurrentDirectory(), outputSMAPIZipFileName);
+        string smapiOutputDir = Path.Combine(packerDir, outputSMAPIZipFileName);
         if (Directory.Exists(smapiOutputDir))
             Directory.Delete(smapiOutputDir, true);
         Directory.CreateDirectory(smapiOutputDir);
 
         //clone dll files
-        string[] dependencies = File.ReadAllLines("dependencies.txt");
+        string[] dependencies = File.ReadAllLines(Path.Combine(packerDir, "dependencies.txt"));
         foreach (string dllFileName in dependencies)
         {
             string srcPath = Path.Combine(SMAPIBinDir, dllFileName);
             string destPath = Path.Combine(smapiOutputDir, dllFileName);
+            if (!File.Exists(srcPath))
+            {
+                Console.WriteLine("skip missing: " + srcPath);
+                continue;
+            }
             Console.WriteLine("try add: " + srcPath);
             File.Copy(srcPath, destPath, true);
         }
@@ -70,14 +76,16 @@ internal class Program
         File.Copy(Path.Combine(SMAPIBinDir, "SMAPI.config.json"), Path.Combine(smapiInternalDir, "config.json"));
         File.Copy(Path.Combine(SMAPIBinDir, "SMAPI.blacklist.json"), Path.Combine(smapiInternalDir, "blacklist.json"));
 
-        await DownloadSMAPIMetadataJson();
-        File.Copy("SMAPI.metadata.json", Path.Combine(smapiInternalDir, "metadata.json"));
+        string metadataPath = Path.Combine(packerDir, "SMAPI.metadata.json");
+        await DownloadSMAPIMetadataJson(metadataPath);
+        File.Copy(metadataPath, Path.Combine(smapiInternalDir, "metadata.json"));
+        File.Delete(metadataPath);
 
         Console.WriteLine("done added smapi-internal");
 
 
         //Pack SMAPI-x.x.x.x.zip from directory SMAPI-x.x.x.x
-        string outputZipFilePath = Path.Combine(Directory.GetCurrentDirectory(), outputSMAPIZipFileName + ".zip");
+        string outputZipFilePath = Path.Combine(packerDir, outputSMAPIZipFileName + ".zip");
         string stardewModdingAPIFilePath = Path.Combine(SMAPIBinDir, StardewModdingAPIFileName);
         var buildTool = new SMAPIAndroidBuildTool(stardewModdingAPIFilePath);
         string buildCode = $"{buildTool.GetBuildCode()}";
@@ -94,13 +102,25 @@ internal class Program
         Console.WriteLine("done delete folder: " + smapiOutputDir);
 
         Console.WriteLine("Successfully Pack SMAPI Zip");
-        Console.WriteLine("result file: " + new FileInfo(outputZipFilePath).Name);
+        Console.WriteLine("result file: " + outputZipFilePath);
     }
 
-    private static async Task DownloadSMAPIMetadataJson()
+    static string FindPackerProjectDir()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null)
+        {
+            if (File.Exists(Path.Combine(dir.FullName, "PackSMAPIZip.csproj")))
+                return dir.FullName;
+            dir = dir.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Couldn't find PackSMAPIZip.csproj above " + AppContext.BaseDirectory);
+    }
+
+    private static async Task DownloadSMAPIMetadataJson(string outputPath)
     {
         var url = "https://raw.githubusercontent.com/Pathoschild/SMAPI/develop/src/SMAPI.Web/wwwroot/SMAPI.metadata.json";
-        var outputPath = "SMAPI.metadata.json";
 
         using HttpClient client = new HttpClient();
         var json = await client.GetStringAsync(url);

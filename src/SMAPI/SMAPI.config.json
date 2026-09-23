@@ -126,8 +126,9 @@ in future SMAPI versions.
      * The color scheme to apply.
      *
      * The possible values are:
-     *  - AutoDetect: SMAPI will assume a light background on macOS, and detect the background color
-     *    automatically on Linux or Windows.
+     *  - AutoDetect: SMAPI will assume a light background on macOS, a dark background on Android
+     *    (there is no console to probe), and detect the background color automatically on Linux
+     *    or Windows.
      *  - LightBackground: use darker text colors that look better on a white or light background.
      *  - DarkBackground: use lighter text colors that look better on a black or dark background.
      *  - None: disables all colors, so everything is written in the default terminal color.

@@ -141,9 +141,25 @@ internal class ColorfulConsoleWriter : IConsoleWriter
         // get color scheme ID
         if (colorSchemeId == MonitorColorScheme.AutoDetect)
         {
-            colorSchemeId = platform == Platform.Mac
-                ? MonitorColorScheme.LightBackground // macOS doesn't provide console background color info, but it's usually white.
-                : ColorfulConsoleWriter.IsDark(Console.BackgroundColor) ? MonitorColorScheme.DarkBackground : MonitorColorScheme.LightBackground;
+            // macOS doesn't provide console background color info, but it's usually white.
+            // Android has no TTY; Console.BackgroundColor throws PlatformNotSupportedException.
+            if (platform == Platform.Mac)
+                colorSchemeId = MonitorColorScheme.LightBackground;
+            else if (platform == Platform.Android)
+                colorSchemeId = MonitorColorScheme.DarkBackground;
+            else
+            {
+                try
+                {
+                    colorSchemeId = ColorfulConsoleWriter.IsDark(Console.BackgroundColor)
+                        ? MonitorColorScheme.DarkBackground
+                        : MonitorColorScheme.LightBackground;
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    colorSchemeId = MonitorColorScheme.DarkBackground;
+                }
+            }
         }
 
         // get colors for scheme

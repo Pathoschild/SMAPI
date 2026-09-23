@@ -57,4 +57,4 @@ fi
 dotnet "${build_args[@]}"
 dotnet run --project "$ROOT/src/PackSMAPIZip/PackSMAPIZip.csproj" -c Release --no-launch-profile
 echo
-echo "Zip written under src/PackSMAPIZip/bin/Release/net9.0/"
+echo "Zip written under src/PackSMAPIZip/"

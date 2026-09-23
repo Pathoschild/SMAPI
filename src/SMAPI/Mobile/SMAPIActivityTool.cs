@@ -29,19 +29,51 @@ internal static class SMAPIActivityTool
 
     public static void ExitGame()
     {
-        IMonitor? monitor = SCore.Instance?.SMAPIMonitor;
-        monitor?.Log("Try Exit Game At SMAPIActivityTool");
+        // SCore.Instance is assigned before LogManager exists. Reading SMAPIMonitor in that window
+        // throws NullReferenceException and replaces the original startup error.
+        IMonitor? monitor = TryGetMonitor();
+        LogExit("Try Exit Game At SMAPIActivityTool", monitor);
         try
         {
             MainActivity.Finish();
-            monitor?.Log("Done Exit Game.");
+            LogExit("Done Exit Game.", monitor);
         }
         catch (Exception ex)
         {
-            monitor?.Log(ex.GetLogSummary());
+            LogExit(ex.GetLogSummary(), monitor);
+            AndroidLogger.Log(ex);
             Console.WriteLine(ex);
             throw;
         }
+    }
 
+    /// <summary>Read SMAPI's monitor when it has been constructed.</summary>
+    private static IMonitor? TryGetMonitor()
+    {
+        try
+        {
+            return SCore.Instance?.TryGetSMAPIMonitor();
+        }
+        catch (Exception ex)
+        {
+            AndroidLogger.Log("SMAPI monitor is not ready during exit: " + ex);
+            return null;
+        }
+    }
+
+    /// <summary>Log an exit message through SMAPI when possible, otherwise logcat.</summary>
+    private static void LogExit(string message, IMonitor? monitor)
+    {
+        try
+        {
+            if (monitor != null)
+                monitor.Log(message);
+            else
+                AndroidLogger.Log(message);
+        }
+        catch (Exception ex)
+        {
+            AndroidLogger.Log(ex);
+        }
     }
 }
