@@ -11,6 +11,7 @@ public class DiscreteColorPickerFacade : DiscreteColorPicker, IRewriteFacade
     /*********
     ** Public methods
     *********/
+#if !SMAPI_FOR_ANDROID
     public new int getSelectionFromColor(Color c)
     {
         return DiscreteColorPicker.getSelectionFromColor(c);
@@ -20,6 +21,7 @@ public class DiscreteColorPickerFacade : DiscreteColorPicker, IRewriteFacade
     {
         return DiscreteColorPicker.getColorFromSelection(selection);
     }
+#endif
 
 
     /*********

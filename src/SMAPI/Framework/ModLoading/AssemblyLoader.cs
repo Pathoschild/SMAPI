@@ -11,7 +11,7 @@ using StardewModdingAPI.Framework.Extensions;
 using StardewModdingAPI.Framework.ModLoading.Framework;
 using StardewModdingAPI.Framework.ModLoading.Symbols;
 #if SMAPI_FOR_ANDROID
-using StardewModdingAPI.Mobile.Mods;
+using StardewModdingAPI.Mobile;
 #endif
 using StardewModdingAPI.Metadata;
 using StardewModdingAPI.Toolkit.Framework.BundledModData;

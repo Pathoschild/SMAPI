@@ -9,7 +9,7 @@ description: >-
 
 ## Prerequisites
 
-- .NET SDK from this repo's `global.json` (10.x), with the Android workload installed.
+- .NET SDK from this repo's `global.json` (10.x), with the Android workload installed. Do not switch this build to the loader's .NET 9 SDK. SMAPI uses C# extension blocks that SDK 9 cannot compile. `build/android/build.sh` sets `DOTNET_EnableWriteXorExecute=0` on macOS so the .NET 10 runtime is not killed during GC.
 - JDK 17 and Android SDK API 35.
 - Gitignored game assemblies in `src/DependenciesDll/`: `BmFont.dll`, `Lidgren.Network.dll`, `MonoGame.Framework.dll`, `StardewValley.dll`, `StardewValley.GameData.dll`, `xTile.dll`. Copy them from an official install, or from AndroidSMAPI `DependenciesDll/` after `scripts/extract-deps.sh`.
 

@@ -34,7 +34,11 @@ public partial class ShopMenuFacade : ShopMenu, IRewriteFacade
     /// <remarks>Changed in 1.6.0.</remarks>
     public static ShopMenu Constructor(List<ISalable> itemsForSale, int currency = 0, string? who = null, Func<ISalable, Farmer, int, bool>? on_purchase = null, Func<ISalable, bool>? on_sell = null, string? context = null)
     {
+#if SMAPI_FOR_ANDROID
+        return new ShopMenu(ShopMenuFacade.GetShopId(context), itemsForSale, currency, who, ToOnPurchaseDelegate(on_purchase), on_sell, context: null);
+#else
         return new ShopMenu(ShopMenuFacade.GetShopId(context), itemsForSale, currency, who, ToOnPurchaseDelegate(on_purchase), on_sell, playOpenSound: true);
+#endif
     }
 
     /// <remarks>Changed in 1.6.9.</remarks>
@@ -52,7 +56,11 @@ public partial class ShopMenuFacade : ShopMenu, IRewriteFacade
     /// <remarks>Changed in 1.6.9.</remarks>
     public static ShopMenu Constructor(string shopId, List<ISalable> itemsForSale, int currency = 0, string? who = null, Func<ISalable, Farmer, int, bool>? on_purchase = null, Func<ISalable, bool>? on_sell = null, bool playOpenSound = true)
     {
+#if SMAPI_FOR_ANDROID
+        return new ShopMenu(shopId, itemsForSale, currency, who, ToOnPurchaseDelegate(on_purchase), on_sell, context: null);
+#else
         return new ShopMenu(shopId, itemsForSale, currency, who, ToOnPurchaseDelegate(on_purchase), on_sell, playOpenSound);
+#endif
     }
 
     /*********
