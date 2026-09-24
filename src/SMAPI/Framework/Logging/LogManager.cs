@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using StardewModdingAPI.Framework.Commands;
 using StardewModdingAPI.Framework.Models;
@@ -38,6 +37,10 @@ internal class LogManager : IDisposable
     /*********
     ** Accessors
     *********/
+
+    /// <summary>The async log queue and worker thread for writing logs.</summary>
+    public AsyncLogQueue LogQueue { get; }
+
     /// <summary>The core logger and monitor for SMAPI.</summary>
     public Monitor Monitor { get; }
 
@@ -67,6 +70,8 @@ internal class LogManager : IDisposable
         // init monitor
         this.ConsoleWriter = new ColorfulConsoleWriter(Constants.Platform, colorSchemeId, colorConfig);
         this.GetMonitorImpl = (id, name) => this.CreateAndRegisterMonitor(id, name, verboseLogging, getScreenIdForLog, writeToConsole, isDeveloperMode);
+
+        this.LogQueue = new AsyncLogQueue(this.LogFile, this.ConsoleWriter);
 
         this.Monitor = this.GetMonitor("SMAPI", "SMAPI");
         this.MonitorForGame = this.GetMonitor("game", "game");
@@ -342,6 +347,8 @@ internal class LogManager : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        this.LogQueue.Flush();
+        this.LogQueue.Dispose();
         this.LogFile.Dispose();
     }
 
@@ -358,7 +365,7 @@ internal class LogManager : IDisposable
     /// <param name="isDeveloperMode">Whether to enable full console output for developers.</param>
     private Monitor CreateAndRegisterMonitor(string modId, string source, HashSet<string> verboseLogging, Func<int?> getScreenIdForLog, bool writeToConsole, bool isDeveloperMode)
     {
-        Monitor monitor = new(modId, source, this.LogFile, this.ConsoleWriter, getScreenIdForLog)
+        Monitor monitor = new(modId, source, this.LogQueue, getScreenIdForLog)
         {
             WriteToConsole = writeToConsole
         };
