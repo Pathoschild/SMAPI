@@ -345,6 +345,7 @@ internal class SCore : IDisposable
         catch (Exception ex)
         {
             Console.WriteLine("error try game.run(): " + ex);
+            AndroidLogger.Log("error try game.run(): " + ex);
         }
 #else
         try
@@ -465,6 +466,15 @@ internal class SCore : IDisposable
             return;
         }
 
+#if SMAPI_FOR_ANDROID
+        // Register the on-screen logger before the loose-file scan, mod resolution, or Task.Run.
+        // Those can throw or exit after the game view exists; without this callback the process
+        // dies on a black screen. Re-apply this if upstream replaces InitializeBeforeFirstAssetLoaded.
+        Console.WriteLine("start loading mods in background thread");
+        AndroidModLoaderManager.CurrentStatus = AndroidModLoaderManager.LoadStatus.Starting;
+        AndroidModLoaderManager.StartLoggerToScreen();
+#endif
+
         // init TMX support
         xTile.Format.FormatManager.Instance.RegisterMapFormat(new TMXTile.TMXFormat(Game1.tileSize / Game1.pixelZoom, Game1.tileSize / Game1.pixelZoom, Game1.pixelZoom, Game1.pixelZoom));
 
@@ -495,9 +505,11 @@ internal class SCore : IDisposable
 
         // check for malicious loose files
         this.Monitor.Log("Scanning for malicious files...");
+        bool foundMaliciousFiles = false;
+#if SMAPI_FOR_ANDROID
+        try
         {
-            bool foundMaliciousFiles = false;
-
+#endif
             foreach ((string filePath, LooseFileBlacklistEntryModel match) in modBlacklist.CheckLooseFiles(this.ModsPath))
             {
                 foundMaliciousFiles = true;
@@ -507,16 +519,24 @@ internal class SCore : IDisposable
                 this.Monitor.Newline();
                 this.Monitor.Log(match.Message ?? "This file has been flagged as malicious. You should immediately delete the mod containing the file, and perform a full anti-malware scan of your computer to be safe.", LogLevel.Error);
             }
-
-            if (foundMaliciousFiles)
-                this.LogManager.PressAnyKeyToExit();
+#if SMAPI_FOR_ANDROID
         }
+        catch (Exception ex)
+        {
+            // A missing Mods directory throws from CheckLooseFiles. The screen is already registered,
+            // so log and continue instead of exiting before any mod-status frame can paint.
+            this.Monitor.Log($"Failed scanning for malicious files. SMAPI will continue loading mods.\n{ex.GetLogSummary()}", LogLevel.Error);
+        }
+#endif
+
+        if (foundMaliciousFiles)
+            this.LogManager.PressAnyKeyToExit();
 
 #if SMAPI_FOR_ANDROID
-        Console.WriteLine("start loading mods in background thread");
-        AndroidModLoaderManager.CurrentStatus = AndroidModLoaderManager.LoadStatus.Starting;
-        AndroidModLoaderManager.StartLoggerToScreen();
         Task.Run(() =>
+        {
+            try
+            {
 #endif
         // load mods
         {
@@ -598,7 +618,12 @@ internal class SCore : IDisposable
                 new GenericModConfigMenuIntegration(this.Monitor, this.Translator, () => this.Settings, this.ReloadSettings).Register(this.ModRegistry);
         }
 #if SMAPI_FOR_ANDROID
-        );
+            }
+            catch (Exception ex)
+            {
+                this.Monitor.Log($"Failed loading mods.\n{ex.GetLogSummary()}", LogLevel.Error);
+            }
+        });
 #endif
 
         // update window titles

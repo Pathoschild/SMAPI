@@ -55,6 +55,16 @@ if [[ -z "${JAVA_HOME:-}" && -d "$HOME/.sdkman/candidates/java/current" ]]; then
 fi
 
 dotnet "${build_args[@]}"
+
+dll="$ROOT/src/SMAPI/bin/ARM64/$CONFIG/StardewModdingAPI.dll"
+if [[ ! -f "$dll" ]]; then
+  echo "Android SMAPI assembly not found at $dll"
+  exit 1
+fi
+
+echo "Checking Android startup invariants in $dll"
+dotnet run "$ROOT/build/android/VerifyAndroidStartup.cs" -- "$dll"
+
 dotnet run --project "$ROOT/src/PackSMAPIZip/PackSMAPIZip.csproj" -c Release --no-launch-profile
 echo
 echo "Zip written under src/PackSMAPIZip/"

@@ -49,8 +49,9 @@ internal static class AndroidModLoaderManager
     }
 
 
-    static SpriteFont smallFont;
-    static LocalizedContentManager content;
+    static SpriteFont? smallFont;
+    static LocalizedContentManager? content;
+    static bool screenDrawRegistered;
     static List<string> logLines = new();
     static float K_textLineHeight;
     internal static void TickUpdate()
@@ -128,19 +129,32 @@ internal static class AndroidModLoaderManager
     }
     internal static void StartLoggerToScreen()
     {
-
-        //initialize
-        if (content is null)
+        // Register before Fonts\SmallFont loads. If that load throws, the draw callback must already be live.
+        if (!screenDrawRegistered)
         {
-            content = Game1.game1.CreateContentManager(Game1.content.ServiceProvider, Game1.content.RootDirectory);
-            smallFont = content.Load<SpriteFont>("Fonts\\SmallFont");
-            K_textLineHeight = smallFont.MeasureString("AAA").Y;
             SGameRunner.RegisterOnDraw(Draw);
+            screenDrawRegistered = true;
         }
-        // ready
+
         StardewModdingAPI.Framework.Monitor.RegisterOnLogImpl(OnLogImpl);
         queueNumberShowLogger++;
         ClearLogs();
+
+        if (smallFont is not null)
+            return;
+
+        try
+        {
+            LocalizedContentManager manager = content ?? Game1.game1.CreateContentManager(Game1.content.ServiceProvider, Game1.content.RootDirectory);
+            content = manager;
+            smallFont = manager.Load<SpriteFont>("Fonts\\SmallFont");
+            K_textLineHeight = smallFont.MeasureString("AAA").Y;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Failed to load Fonts\\SmallFont for the mod-load screen: " + ex);
+            AndroidLogger.Log(ex);
+        }
     }
 
     internal static void StopLoggerToScreen()
@@ -163,77 +177,92 @@ internal static class AndroidModLoaderManager
 
     internal static void Draw(GameTime gameTime)
     {
-        if (IsShowLogger is false)
+        try
         {
-            return;
-        }
+            if (IsShowLogger is false)
+                return;
 
-        var spriteBatch = Game1.spriteBatch;
-        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+            Game1.game1.GraphicsDevice.Clear(Color.Black);
 
-        int lineCount;
-        lock (_lock_logLines)
-        {
-            lineCount = logLines.Count;
-        }
+            SpriteFont? font = smallFont;
+            SpriteBatch? spriteBatch = Game1.spriteBatch;
+            if (font is null || spriteBatch is null)
+                return;
 
-        var screenSize = Game1.game1.localMultiplayerWindow;
-        Game1.game1.GraphicsDevice.Clear(Color.Black);
-        Color lineColor = Color.White;
-        LogLevel currentLogLevel = LogLevel.Trace;
-        for (int lineIndex = 0; lineIndex < lineCount; lineIndex++)
-        {
-            string lineData;
-            lock (_lock_logLines)
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+            try
             {
-                lineData = logLines[lineCount - lineIndex - 1];
-            }
-
-            //draw from Left, Bottom
-            const float K_fontScale = 1.3f;
-            Vector2 pos = Vector2.Zero;
-            float lineHeight = K_fontScale * K_textLineHeight;
-            int startDrawY = screenSize.Height - 30;
-            pos.Y = startDrawY - (lineHeight + (lineHeight * lineIndex));
-            pos.X = 100;
-
-            if (pos.Y < 0)
-            {
-                //stop draw
-                break;
-            }
-
-            if (GetLoglevel(lineData, ref currentLogLevel))
-            {
-                //update new log level
-                switch (currentLogLevel)
+                int lineCount;
+                lock (_lock_logLines)
                 {
-                    case LogLevel.Trace:
-                    case LogLevel.Info:
-                        lineColor = Color.White;
+                    lineCount = logLines.Count;
+                }
+
+                var screenSize = Game1.game1.localMultiplayerWindow;
+                Color lineColor = Color.White;
+                LogLevel currentLogLevel = LogLevel.Trace;
+                for (int lineIndex = 0; lineIndex < lineCount; lineIndex++)
+                {
+                    string lineData;
+                    lock (_lock_logLines)
+                    {
+                        lineData = logLines[lineCount - lineIndex - 1];
+                    }
+
+                    //draw from Left, Bottom
+                    const float K_fontScale = 1.3f;
+                    Vector2 pos = Vector2.Zero;
+                    float lineHeight = K_fontScale * K_textLineHeight;
+                    int startDrawY = screenSize.Height - 30;
+                    pos.Y = startDrawY - (lineHeight + (lineHeight * lineIndex));
+                    pos.X = 100;
+
+                    if (pos.Y < 0)
+                    {
+                        //stop draw
                         break;
-                    case LogLevel.Alert:
-                        lineColor = new(155, 56, 255);
-                        break;
-                    case LogLevel.Warn:
-                        lineColor = new(255, 146, 56);
-                        break;
-                    case LogLevel.Error:
-                        lineColor = new(255, 56, 70);
-                        break;
-                    default:
-                        break;
+                    }
+
+                    if (GetLoglevel(lineData, ref currentLogLevel))
+                    {
+                        //update new log level
+                        switch (currentLogLevel)
+                        {
+                            case LogLevel.Trace:
+                            case LogLevel.Info:
+                                lineColor = Color.White;
+                                break;
+                            case LogLevel.Alert:
+                                lineColor = new(155, 56, 255);
+                                break;
+                            case LogLevel.Warn:
+                                lineColor = new(255, 146, 56);
+                                break;
+                            case LogLevel.Error:
+                                lineColor = new(255, 56, 70);
+                                break;
+                            default:
+                                break;
+
+                        }
+                    }
+
+                    string lineText = lineData[(lineData.IndexOf("<line>") + 6)..lineData.IndexOf("</line>")];
+                    spriteBatch.DrawString(font, lineText, pos, lineColor,
+                        0f, Vector2.Zero, K_fontScale, SpriteEffects.None, 10);
 
                 }
             }
-
-            string lineText = lineData[(lineData.IndexOf("<line>") + 6)..lineData.IndexOf("</line>")];
-            spriteBatch.DrawString(smallFont, lineText, pos, lineColor,
-                0f, Vector2.Zero, K_fontScale, SpriteEffects.None, 10);
-
+            finally
+            {
+                spriteBatch.End();
+            }
         }
-
-        spriteBatch.End();
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            AndroidLogger.Log(ex);
+        }
     }
     static bool GetLoglevel(string lineData, ref LogLevel logLevel)
     {

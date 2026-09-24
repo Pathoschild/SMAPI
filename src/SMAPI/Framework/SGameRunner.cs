@@ -176,7 +176,25 @@ internal class SGameRunner : GameRunner
     /// <param name="gameTime">A snapshot of the game timing state.</param>
     protected override void Update(GameTime gameTime)
     {
+#if SMAPI_FOR_ANDROID
+        // Catch inside this callback. base.Update throwing out of the lambda kills the process,
+        // and an upstream GameRunner.Update rewrite must not delete the handler.
+        this.OnGameUpdating(gameTime, () =>
+        {
+            try
+            {
+                base.Update(gameTime);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("error on SGameRunner.Update: " + ex);
+                StardewModdingAPI.Mobile.AndroidLogger.Log("error on SGameRunner.Update: " + ex);
+                this.Monitor.Log($"error on SGameRunner.Update: {ex.GetLogSummary()}", LogLevel.Error);
+            }
+        });
+#else
         this.OnGameUpdating(gameTime, () => base.Update(gameTime));
+#endif
     }
 
     /// <summary>Update metadata when a split screen is added or removed.</summary>
@@ -204,8 +222,18 @@ internal class SGameRunner : GameRunner
     /// <inheritdoc />
     protected override void Draw(GameTime time)
     {
-        base.Draw(time);
+        try
+        {
+            base.Draw(time);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            this.Monitor.Log(ex.GetLogSummary(), LogLevel.Error);
+        }
 
+        // OnAndroidDraw stays outside the try that protects base.Draw, so a throw from
+        // GameRunner.InnerDraw still paints the mod-load screen.
         try
         {
             OnAndroidDraw?.Invoke(time);

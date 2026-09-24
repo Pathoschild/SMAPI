@@ -10,3 +10,5 @@ Desktop SMAPI stays `net6.0` with `build/0Harmony.dll`. Android SMAPI is `net9.0
 Android builds reference thin `src/DependenciesDll/0Harmony.dll` and modular MonoMod (`MonoMod.Core` 1.3.1, no `MonoMod.RuntimeDetour.dll`, no `Lib.Harmony` NuGet). Those binaries must match AndroidSMAPI `SharedLibs/`. Do not pack them into `dependencies.txt`; the loader already loads them.
 
 In `src/SMAPI/Mobile/`: no spin-waits, no `.Wait()` on the UI thread, no static `Activity` fields, no empty catches, no game-APK rewriting. Use prefix/postfix Harmony patches. See `AGENTS.md`.
+
+The on-screen logger is registered before the loose-file scan and mod load. `SGameRunner.Update` and `Draw` swallow game-loop exceptions on Android and still paint `OnAndroidDraw`. `MobileConsoleTool` must not spin. If a rebase replaces `SCore.InitializeBeforeFirstAssetLoaded`, `SGameRunner.Update`, or `SGameRunner.Draw`, re-apply those hooks. `build/android/build.sh` runs `build/android/VerifyAndroidStartup.cs` on the built DLL and fails the zip when an invariant is missing.
