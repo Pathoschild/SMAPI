@@ -58,7 +58,7 @@ on the wiki for help contributing translations.
 locale      | status
 ----------- | :----------------
 default     | ✓ [original text](../src/SMAPI/i18n/default.json)
-Chinese     | ↻ [partly translated](../src/SMAPI/i18n/zh.json)
+Chinese     | ✓ [fully translated](../src/SMAPI/i18n/zh.json)
 French      | ✓ [fully translated](../src/SMAPI/i18n/fr.json)
 German      | ↻ [partly translated](../src/SMAPI/i18n/de.json)
 Hungarian   | ↻ [partly translated](../src/SMAPI/i18n/hu.json)
