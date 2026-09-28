@@ -20,6 +20,7 @@ using StardewModdingAPI.Toolkit.Framework.Clients.CurseForgeExport;
 using StardewModdingAPI.Toolkit.Framework.Clients.ModDropExport;
 using StardewModdingAPI.Toolkit.Framework.Clients.NexusExport;
 using StardewModdingAPI.Toolkit.Serialization;
+using StardewModdingAPI.Web.BackgroundJobs;
 using StardewModdingAPI.Web.Framework;
 using StardewModdingAPI.Web.Framework.Caching.CompatibilityRepo;
 using StardewModdingAPI.Web.Framework.Caching.CurseForgeExport;
@@ -133,6 +134,15 @@ internal class Startup
             });
 
         // init background service
+        // These are singletons since some of them track state between runs.
+        services
+            .AddSingleton<CompatibilityListJob>()
+            .AddSingleton<CurseForgeExportJob>()
+            .AddSingleton<MalwareBlacklistJob>()
+            .AddSingleton<ModDatasetJob>()
+            .AddSingleton<ModDropExportJob>()
+            .AddSingleton<NexusExportJob>()
+            .AddSingleton<RemoveStaleModsJob>();
         if (backgroundServicesConfig.Enabled)
             services.AddHostedService<BackgroundService>();
 
