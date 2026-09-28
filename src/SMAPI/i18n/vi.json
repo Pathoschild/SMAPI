@@ -1,0 +1,54 @@
+{
+  /*********
+   ** Date formatting
+   *********/
+  // short date format for SDate
+  // tokens: {{day}} (like 15), {{season}} (like Spring), {{seasonLowercase}} (like spring), {{year}} (like 2)
+  "generic.date": "Ngày {{day}} mùa {{season}}",
+  "generic.date-with-year": "Ngày {{day}} mùa {{season}} năm {{year}}",
+
+
+  /*********
+   ** Generic Mod Config Menu UI
+   *********/
+  // 'SMAPI features' section
+  "config.section.features": "Các tính năng của SMAPI",
+
+  "config.check-for-updates.name": "Kiểm tra bản cập nhật",
+  "config.check-for-updates.desc": "Tự động kiểm tra phiên bản mới của SMAPI và các mod khi tải game. Nếu có bản cập nhật mới, một thông báo sẽ hiển thị trên bảng điều khiển console. Quá trình này chạy ngầm nên không ảnh hưởng đến thời gian tải game dù mạng chậm hay ngoại tuyến.",
+
+  "config.check-content-integrity.name": "Kiểm tra tính toàn vẹn của dữ liệu",
+  "config.check-content-integrity.desc": "Cho phép SMAPI kiểm tra các tệp dữ liệu của game có đầy đủ và có bị chỉnh sửa hay không. Nên bật tùy chọn này. Nếu tắt, SMAPI sẽ hiển thị một cảnh báo để những người hỗ trợ bạn khắc phục lỗi game biết.",
+
+  "config.read-console-input.name": "Đọc lệnh console",
+  "config.read-console-input.desc": "Cho phép SMAPI nhận lệnh từ bảng console. Nếu tắt, bạn sẽ không thể sử dụng các lệnh console. Trên một số hệ thống Linux nhất định, việc tắt tính năng này có thể giúp giảm mức sử dụng CPU.",
+
+  // 'Console window' section
+  "config.section.console-window": "Cửa sổ console",
+
+  "config.developer-mode.name": "Chế độ nhà phát triển",
+  "config.developer-mode.desc": "Hiển thị nhiều thông tin chi tiết hơn trên cửa sổ console SMAPI, dành riêng cho các nhà phát triển mod. Không khuyến nghị cho người chơi thông thường.",
+
+  "config.color-scheme.name": "Bảng màu",
+  "config.color-scheme.desc": "Bảng màu áp dụng cho văn bản trong cửa sổ console SMAPI. Cài đặt này không ảnh hưởng đến game, mod hoặc tệp nhật ký (log) của SMAPI.",
+  "config.color-scheme.options.AutoDetect": "Tự động phát hiện",
+  "config.color-scheme.options.AutoDetect.on-windows": "Tự động phát hiện (Khuyến nghị)",
+  "config.color-scheme.options.DarkBackground": "Chữ sáng (dành cho nền tối)",
+  "config.color-scheme.options.LightBackground": "Chữ tối (dành cho nền sáng)",
+  "config.color-scheme.options.None": "Không màu",
+
+  // 'Verbose logging' section
+  "config.section.verbose-logs": "Nhật ký chi tiết",
+  "config.section.verbose-logs.explanation": "Để hỗ trợ khắc phục sự cố, SMAPI và nhiều mod khác có thể gửi thêm thông tin bổ sung vào nhật ký (log) của SMAPI (được gọi là 'nhật ký chi tiết'). Có thể làm giảm hiệu suất và nên tắt nếu không cần thiết.",
+
+  "config.enable-for.name": "Bật cho",
+  "config.enable-for.desc": "Chọn mod nào sẽ được ghi nhật ký chi tiết.",
+  "config.enable-for.options.all": "Tất cả (Không khuyến nghị)",
+  "config.enable-for.options.selected": "Các mod được chọn bên dưới",
+
+  "config.enable-for-smapi.name": "SMAPI",
+  "config.enable-for-smapi.desc": "Bật tính năng ghi nhật ký chi tiết cho riêng SMAPI.",
+
+  "config.enable-for-mod.name": "{{modName}}",
+  "config.enable-for-mod.desc": "Bật tính năng ghi nhật ký chi tiết cho mod '{{modName}}'."
+}
