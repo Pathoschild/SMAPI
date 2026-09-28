@@ -5,51 +5,50 @@
     // short date format for SDate
     // tokens: {{day}} (like 15), {{season}} (like Spring), {{seasonLowercase}} (like spring), {{year}} (like 2)
     "generic.date": "{{day}} {{seasonLowercase}}",
-    "generic.date-with-year": "{{day}} {{seasonLowercase}} w roku {{year}}",
+    "generic.date-with-year": "{{day}} {{seasonLowercase}}, rok {{year}}",
 
 
     /*********
     ** Generic Mod Config Menu UI
     *********/
-    // TODO
     // 'SMAPI features' section
-    "config.section.features": "SMAPI features",
+    "config.section.features": "Funkcje SMAPI",
 
-    "config.check-for-updates.name": "Check for updates",
-    "config.check-for-updates.desc": "Whether to automatically check for newer versions of SMAPI and mods when you load the game. If new versions are available, an alert will be shown in the console. This doesn't affect the load time even if your connection is offline or slow, because it happens in the background.",
+    "config.check-for-updates.name": "Sprawdzaj aktualizacje",
+    "config.check-for-updates.desc": "Czy podczas wczytywania gry automatycznie sprawdzać, czy są dostępne nowsze wersje SMAPI i modów. Jeśli nowe wersje są dostępne, w konsoli pojawi się powiadomienie. Nie wydłuża to czasu wczytywania nawet przy wolnym lub niedostępnym połączeniu, ponieważ sprawdzanie odbywa się w tle.",
 
-    "config.check-content-integrity.name": "Check content integrity",
-    "config.check-content-integrity.desc": "Whether SMAPI should check whether the game's content files are present and unmodified. This should nearly always be enabled. If disabled, SMAPI will log a warning for visibility when someone helps you troubleshoot game issues.",
+    "config.check-content-integrity.name": "Sprawdzaj integralność zawartości",
+    "config.check-content-integrity.desc": "Czy SMAPI ma sprawdzać, czy pliki zawartości gry są obecne i niezmodyfikowane. Ta opcja powinna być włączona niemal zawsze. Po jej wyłączeniu SMAPI zapisze ostrzeżenie w logu, aby było ono widoczne, gdy ktoś pomaga ci rozwiązać problemy z grą.",
 
-    "config.read-console-input.name": "Read console input",
-    "config.read-console-input.desc": "Whether SMAPI should listen for console input. Disabling this will prevent you from using console commands. On some specific Linux systems, disabling this may reduce CPU usage.",
+    "config.read-console-input.name": "Odczytuj dane wejściowe konsoli",
+    "config.read-console-input.desc": "Czy SMAPI ma nasłuchiwać danych wejściowych konsoli. Wyłączenie tej opcji uniemożliwi korzystanie z poleceń konsoli. W niektórych systemach Linux jej wyłączenie może zmniejszyć zużycie procesora.",
 
     // 'Console window' section
-    "config.section.console-window": "Console window",
+    "config.section.console-window": "Okno konsoli",
 
-    "config.developer-mode.name": "Developer mode",
-    "config.developer-mode.desc": "Whether to show much more info in the SMAPI consoler window, intended for mod developers. Not recommended for most players.",
+    "config.developer-mode.name": "Tryb dewelopera",
+    "config.developer-mode.desc": "Czy pokazywać znacznie więcej informacji w oknie konsoli SMAPI. Ta opcja jest przeznaczona dla twórców modów. Nie jest zalecana dla większości graczy.",
 
-    "config.color-scheme.name": "Color scheme",
-    "config.color-scheme.desc": "The color scheme to apply to text in the SMAPI console window. This has no effect on the game, mods, or SMAPI log file.",
-    "config.color-scheme.options.AutoDetect": "Auto-detect",
-    "config.color-scheme.options.AutoDetect.on-windows": "Auto-detect (recommended)",
-    "config.color-scheme.options.DarkBackground": "Lighter text (for dark backgrounds)",
-    "config.color-scheme.options.LightBackground": "Darker text (for light backgrounds)",
-    "config.color-scheme.options.None": "No colors",
+    "config.color-scheme.name": "Schemat kolorów",
+    "config.color-scheme.desc": "Schemat kolorów tekstu w oknie konsoli SMAPI. Nie ma on wpływu na grę, mody ani na plik logu SMAPI.",
+    "config.color-scheme.options.AutoDetect": "Wykryj automatycznie",
+    "config.color-scheme.options.AutoDetect.on-windows": "Wykryj automatycznie (zalecane)",
+    "config.color-scheme.options.DarkBackground": "Jaśniejszy tekst (dla ciemnego tła)",
+    "config.color-scheme.options.LightBackground": "Ciemniejszy tekst (dla jasnego tła)",
+    "config.color-scheme.options.None": "Bez kolorów",
 
     // 'Verbose logging' section
-    "config.section.verbose-logs": "Verbose logs",
-    "config.section.verbose-logs.explanation": "To help troubleshoot, SMAPI and many mods can send extra info to the SMAPI log (called 'verbose logging'). This may cause performance issues, and should usually be disabled.",
+    "config.section.verbose-logs": "Szczegółowe logi",
+    "config.section.verbose-logs.explanation": "Aby ułatwić rozwiązywanie problemów, SMAPI i wiele modów może wysyłać dodatkowe informacje do logu SMAPI (tak zwane „szczegółowe logi”). Może to powodować spadki wydajności, więc zwykle powinny być wyłączone.",
 
-    "config.enable-for.name": "Enable for",
-    "config.enable-for.desc": "Choose which mods have verbose logging enabled.",
-    "config.enable-for.options.all": "All (not recommended)",
-    "config.enable-for.options.selected": "Mods selected below",
+    "config.enable-for.name": "Włącz dla",
+    "config.enable-for.desc": "Wybierz, dla których modów włączyć szczegółowe logi.",
+    "config.enable-for.options.all": "Wszystkich (niezalecane)",
+    "config.enable-for.options.selected": "Modów wybranych poniżej",
 
     "config.enable-for-smapi.name": "SMAPI",
-    "config.enable-for-smapi.desc": "Whether to enable verbose logs for SMAPI itself.",
+    "config.enable-for-smapi.desc": "Czy włączyć szczegółowe logi dla samego SMAPI.",
 
     "config.enable-for-mod.name": "{{modName}}",
-    "config.enable-for-mod.desc": "Whether to enable verbose logs for the '{{modName}}' mod."
+    "config.enable-for-mod.desc": "Czy włączyć szczegółowe logi dla moda „{{modName}}”."
 }
