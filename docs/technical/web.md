@@ -374,7 +374,7 @@ Initial setup:
    property name                   | description
    ------------------------------- | -----------------
    `ApiClients.AzureBlobConnectionString` | The connection string for the Azure Blob storage account created in step 2.
-   `ApiClients.GitHubUsername`<br />`ApiClients.GitHubPassword` | The login credentials for the GitHub account with which to fetch release info. If these are omitted, GitHub will impose much stricter rate limits.
+   `ApiClients.GitHubUsername`<br />`ApiClients.GitHubPassword` | The login credentials for the GitHub account with which to fetch release info and the malware blacklist. If these are omitted, GitHub will impose much stricter rate limits, and the malware blacklist won't be synced from its private repo.
    `ApiClients:NexusApiKey`        | The [Nexus API authentication key](https://github.com/Pathoschild/FluentNexus#init-a-client).
 
    Optional settings:
@@ -382,6 +382,7 @@ Initial setup:
    property name                   | description
    ------------------------------- | -----------------
    `BackgroundServices:Enabled`    | Set to `true` to enable background processes like fetching data from the wiki, or false to disable them.
+   `MalwareBlacklist:GitHubRepo`<br />`MalwareBlacklist:GitRef`<br />`MalwareBlacklist:FilePath` | The GitHub repository, branch, and file path from which to sync the malware blacklist. Set `GitHubRepo` to `null` to disable syncing.
    `Site:OtherBlurb`               | A message to show below the download button (e.g. for details on downloading a beta version), in Markdown format.
    `Site:SupporterList`            | A list of Patreon supports to credit on the download page.
 

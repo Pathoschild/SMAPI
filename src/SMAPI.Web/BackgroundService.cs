@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
@@ -16,6 +17,7 @@ using StardewModdingAPI.Toolkit.Framework.Clients.CompatibilityRepo;
 using StardewModdingAPI.Toolkit.Framework.Clients.CurseForgeExport;
 using StardewModdingAPI.Toolkit.Framework.Clients.ModDropExport;
 using StardewModdingAPI.Toolkit.Framework.Clients.NexusExport;
+using StardewModdingAPI.Toolkit.Framework.ModBlacklistData;
 using StardewModdingAPI.Web.Framework.Caching;
 using StardewModdingAPI.Web.Framework.Caching.CompatibilityRepo;
 using StardewModdingAPI.Web.Framework.Caching.CurseForgeExport;
@@ -24,6 +26,7 @@ using StardewModdingAPI.Web.Framework.Caching.ModDropExport;
 using StardewModdingAPI.Web.Framework.Caching.Mods;
 using StardewModdingAPI.Web.Framework.Caching.NexusExport;
 using StardewModdingAPI.Web.Framework.Clients.CurseForge;
+using StardewModdingAPI.Web.Framework.Clients.GitHub;
 using StardewModdingAPI.Web.Framework.Clients.ModDrop;
 using StardewModdingAPI.Web.Framework.Clients.Nexus;
 using StardewModdingAPI.Web.Framework.ConfigModels;
@@ -52,6 +55,9 @@ internal class BackgroundService : IHostedService, IDisposable
     /// <summary>The cache in which to store the mod data from the CurseForge export API.</summary>
     private static ICurseForgeExportCacheRepository? CurseForgeExportCache;
 
+    /// <summary>The HTTP client for fetching data from GitHub.</summary>
+    private static IGitHubClient? GitHubClient;
+
     /// <summary>The HTTP client for fetching the mod export from the ModDrop export API.</summary>
     private static IModDropExportApiClient? ModDropExportApiClient;
 
@@ -70,6 +76,12 @@ internal class BackgroundService : IHostedService, IDisposable
     /// <summary>The mod dataset repository.</summary>
     private static IModDatasetRepository? ModDatasetRepo;
 
+    /// <summary>The config settings for syncing the malware blacklist.</summary>
+    private static IOptions<MalwareBlacklistConfig>? MalwareBlacklistConfig;
+
+    /// <summary>The HTTP ETag header for the last fetched malware blacklist file, if any.</summary>
+    private static string? LastMalwareBlacklistETag;
+
     /// <summary>The web root path for writing static data files.</summary>
     private static string? WebRootPath;
 
@@ -80,11 +92,13 @@ internal class BackgroundService : IHostedService, IDisposable
         nameof(BackgroundService.CompatibilityCache),
         nameof(BackgroundService.CurseForgeExportApiClient),
         nameof(BackgroundService.CurseForgeExportCache),
+        nameof(BackgroundService.GitHubClient),
         nameof(BackgroundService.ModDropExportApiClient),
         nameof(BackgroundService.ModDropExportCache),
         nameof(BackgroundService.NexusExportApiClient),
         nameof(BackgroundService.NexusExportCache),
         nameof(BackgroundService.ModDatasetRepo),
+        nameof(BackgroundService.MalwareBlacklistConfig),
         nameof(BackgroundService.UpdateCheckConfig),
         nameof(BackgroundService.WebRootPath)
     )]
@@ -105,12 +119,14 @@ internal class BackgroundService : IHostedService, IDisposable
     /// <param name="modCache"><inheritdoc cref="ModCache" path="/summary"/></param>
     /// <param name="curseForgeExportCache"><inheritdoc cref="CurseForgeExportCache" path="/summary"/></param>
     /// <param name="curseForgeExportApiClient"><inheritdoc cref="CurseForgeExportApiClient" path="/summary"/></param>
+    /// <param name="gitHubClient"><inheritdoc cref="GitHubClient" path="/summary"/></param>
     /// <param name="modDropExportCache"><inheritdoc cref="ModDropExportCache" path="/summary"/></param>
     /// <param name="modDropExportApiClient"><inheritdoc cref="ModDropExportApiClient" path="/summary"/></param>
     /// <param name="nexusExportCache"><inheritdoc cref="NexusExportCache" path="/summary"/></param>
     /// <param name="nexusExportApiClient"><inheritdoc cref="NexusExportApiClient" path="/summary"/></param>
     /// <param name="modDatasetRepo"><inheritdoc cref="ModDatasetRepo" path="/summary"/></param>
     /// <param name="hangfireStorage">The Hangfire storage implementation.</param>
+    /// <param name="malwareBlacklistConfig"><inheritdoc cref="MalwareBlacklistConfig" path="/summary"/></param>
     /// <param name="updateCheckConfig"><inheritdoc cref="UpdateCheckConfig" path="/summary"/></param>
     /// <param name="hostEnvironment">The web host environment metadata.</param>
     [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "The Hangfire reference forces it to initialize first, since it's needed by the background service.")]
@@ -119,12 +135,14 @@ internal class BackgroundService : IHostedService, IDisposable
         IModCacheRepository modCache,
         ICurseForgeExportCacheRepository curseForgeExportCache,
         ICurseForgeExportApiClient curseForgeExportApiClient,
+        IGitHubClient gitHubClient,
         IModDropExportCacheRepository modDropExportCache,
         IModDropExportApiClient modDropExportApiClient,
         INexusExportCacheRepository nexusExportCache,
         INexusExportApiClient nexusExportApiClient,
         IModDatasetRepository modDatasetRepo,
         JobStorage hangfireStorage,
+        IOptions<MalwareBlacklistConfig> malwareBlacklistConfig,
         IOptions<ModUpdateCheckConfig> updateCheckConfig,
         IWebHostEnvironment hostEnvironment
     )
@@ -133,11 +151,13 @@ internal class BackgroundService : IHostedService, IDisposable
         BackgroundService.ModCache = modCache;
         BackgroundService.CurseForgeExportApiClient = curseForgeExportApiClient;
         BackgroundService.CurseForgeExportCache = curseForgeExportCache;
+        BackgroundService.GitHubClient = gitHubClient;
         BackgroundService.ModDropExportApiClient = modDropExportApiClient;
         BackgroundService.ModDropExportCache = modDropExportCache;
         BackgroundService.NexusExportCache = nexusExportCache;
         BackgroundService.NexusExportApiClient = nexusExportApiClient;
         BackgroundService.ModDatasetRepo = modDatasetRepo;
+        BackgroundService.MalwareBlacklistConfig = malwareBlacklistConfig;
         BackgroundService.UpdateCheckConfig = updateCheckConfig;
         BackgroundService.WebRootPath = hostEnvironment.WebRootPath;
 
@@ -153,6 +173,7 @@ internal class BackgroundService : IHostedService, IDisposable
         bool enableCurseForgeExport = BackgroundService.CurseForgeExportApiClient is not DisabledCurseForgeExportApiClient;
         bool enableModDropExport = BackgroundService.ModDropExportApiClient is not DisabledModDropExportApiClient;
         bool enableNexusExport = BackgroundService.NexusExportApiClient is not DisabledNexusExportApiClient;
+        bool enableMalwareBlacklist = !string.IsNullOrWhiteSpace(BackgroundService.MalwareBlacklistConfig?.Value.GitHubRepo);
 
         // set startup tasks
         BackgroundJob.Enqueue(() => BackgroundService.UpdateCompatibilityListAsync(null));
@@ -164,6 +185,8 @@ internal class BackgroundService : IHostedService, IDisposable
             BackgroundJob.Enqueue(() => BackgroundService.UpdateNexusExportAsync(null));
         BackgroundJob.Enqueue(() => BackgroundService.RemoveStaleModsAsync());
         BackgroundJob.Enqueue(() => BackgroundService.UpdateModDatasetAsync(null));
+        if (enableMalwareBlacklist)
+            BackgroundJob.Enqueue(() => BackgroundService.UpdateMalwareBlacklistAsync(null));
 
         // set recurring tasks
         RecurringJob.AddOrUpdate("update compatibility list", () => BackgroundService.UpdateCompatibilityListAsync(null), "*/10 * * * *");      // every 10 minutes
@@ -175,6 +198,8 @@ internal class BackgroundService : IHostedService, IDisposable
             RecurringJob.AddOrUpdate("update Nexus export", () => BackgroundService.UpdateNexusExportAsync(null), "*/10 * * * *");
         RecurringJob.AddOrUpdate("remove stale mods", () => BackgroundService.RemoveStaleModsAsync(), "2/10 * * * *"); // offset by 2 minutes so it runs after updates (e.g. 00:02, 00:12, etc)
         RecurringJob.AddOrUpdate("update mod dataset", () => BackgroundService.UpdateModDatasetAsync(null), "0 * * * *"); // hourly
+        if (enableMalwareBlacklist)
+            RecurringJob.AddOrUpdate("update malware blacklist", () => BackgroundService.UpdateMalwareBlacklistAsync(null), "*/10 * * * *");
 
         BackgroundService.IsStarted = true;
 
@@ -283,6 +308,60 @@ internal class BackgroundService : IHostedService, IDisposable
         File.Copy(BackgroundService.ModDatasetRepo.GetFilePath("reference-data/SMAPI DNS queries.json"), Path.Combine(BackgroundService.WebRootPath, "Content", "data", "smapi-dns-queries.json"), overwrite: true);
 
         Program.ModDatasetCacheBustValue = result.ETag ?? $"epoch-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        context.WriteLine("Done!");
+    }
+
+    /// <summary>Fetch the malware blacklist and convert it into the static file fetched by SMAPI.</summary>
+    /// <param name="context">Information about the context in which the job is performed. This is injected automatically by Hangfire.</param>
+    [AutomaticRetry(Attempts = 3, DelaysInSeconds = [30, 60, 120])]
+    public static async Task UpdateMalwareBlacklistAsync(PerformContext? context)
+    {
+        if (!BackgroundService.IsStarted)
+            throw new InvalidOperationException($"Must call {nameof(BackgroundService.StartAsync)} before scheduling tasks.");
+
+        // get config
+        MalwareBlacklistConfig config = BackgroundService.MalwareBlacklistConfig.Value;
+        string repo = config.GitHubRepo ?? throw new InvalidOperationException("Can't update the malware blacklist: no GitHub repository is configured.");
+        string outputPath = Path.Combine(BackgroundService.WebRootPath, Startup.BlacklistFileName);
+
+        // fetch file
+        GitFile file;
+        {
+            context.WriteLine($"Fetching '{config.FilePath}' from {repo}{(config.GitRef != null ? $"@{config.GitRef}" : "")}...");
+
+            string? previousETag = File.Exists(outputPath)
+                ? BackgroundService.LastMalwareBlacklistETag
+                : null;
+
+            file =
+                await BackgroundService.GitHubClient.GetFileAsync(repo, config.FilePath, config.GitRef, previousETag)
+                ?? throw new InvalidOperationException($"Can't update the malware blacklist: file '{config.FilePath}' not found in GitHub repository '{repo}'. If the repository is private, the configured GitHub credentials may not have read access to it.");
+        }
+
+        // skip if unchanged
+        if (!file.IsModified)
+        {
+            context.WriteLine($"Skipped: file hasn't changed since the last sync (ETag {file.ETag}).");
+            return;
+        }
+
+        // convert to public format
+        context.WriteLine($"Parsing blacklist (ETag {file.ETag})...");
+        MalwareListModel rawBlacklist = MalwareBlacklistConverter.FromInternalFormat(file.Content);
+        ModBlacklistModel blacklist = MalwareBlacklistConverter.ToPublicModel(rawBlacklist);
+        string publicJson = MalwareBlacklistConverter.ToPublicJson(blacklist);
+        context.WriteLine($"Updated malware blacklist ({blacklist.Blacklist.Length} mod entries and {blacklist.LooseFileBlacklist.Length} loose file entries).");
+
+        // save file
+        {
+            string tempPath = $"{outputPath}.tmp";
+            await File.WriteAllTextAsync(tempPath, publicJson, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            File.Move(tempPath, outputPath, overwrite: true);
+
+            context.WriteLine($"Saved to {Startup.BlacklistFileName}.");
+        }
+
+        BackgroundService.LastMalwareBlacklistETag = file.ETag;
         context.WriteLine("Done!");
     }
 

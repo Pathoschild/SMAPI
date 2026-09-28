@@ -19,7 +19,6 @@ This assumes `find-game-folder.targets` has already been imported and validated.
     <Copy SourceFiles="$(TargetDir)\$(TargetName).exe" DestinationFolder="$(GamePath)" Condition="$(OS) == 'Windows_NT'" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName)" DestinationFolder="$(GamePath)" Condition="$(OS) != 'Windows_NT'" />
     <Copy SourceFiles="$(TargetDir)\$(TargetName).xml" DestinationFolder="$(GamePath)" />
-    <Copy SourceFiles="$(TargetDir)\SMAPI.blacklist.json" DestinationFiles="$(GamePath)\smapi-internal\blacklist.json" />
     <Copy SourceFiles="$(TargetDir)\SMAPI.config.json" DestinationFiles="$(GamePath)\smapi-internal\config.json" />
     <Copy SourceFiles="$(TargetDir)\SMAPI.metadata.json" DestinationFiles="$(GamePath)\smapi-internal\metadata.json" />
     <Copy SourceFiles="$(TargetDir)\Markdig.dll" DestinationFolder="$(GamePath)\smapi-internal" />

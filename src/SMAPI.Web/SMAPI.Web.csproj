@@ -38,7 +38,6 @@
 
     <Content Update="Views\Index\Privacy.cshtml" Pack="$(IncludeRazorContentInPack)" />
     <Content Update="Views\Mods\Index.cshtml" Pack="$(IncludeRazorContentInPack)" />
-    <Content Update="wwwroot\SMAPI.blacklist.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Update="wwwroot\SMAPI.metadata.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

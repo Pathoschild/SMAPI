@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Pathoschild.Http.Client;
 using StardewModdingAPI.Toolkit.Framework.UpdateData;
@@ -42,9 +43,7 @@ internal class GitHubClient : IGitHubClient
             this.Client = this.Client.SetBasicAuthentication(username, password!);
     }
 
-    /// <summary>Get basic metadata for a GitHub repository, if available.</summary>
-    /// <param name="repo">The repository key (like <c>Pathoschild/SMAPI</c>).</param>
-    /// <returns>Returns the repository info if it exists, else <c>null</c>.</returns>
+    /// <inheritdoc />
     public async Task<GitRepo?> GetRepositoryAsync(string repo)
     {
         this.AssertKeyFormat(repo);
@@ -60,10 +59,7 @@ internal class GitHubClient : IGitHubClient
         }
     }
 
-    /// <summary>Get the latest release for a GitHub repository.</summary>
-    /// <param name="repo">The repository key (like <c>Pathoschild/SMAPI</c>).</param>
-    /// <param name="includePrerelease">Whether to return a prerelease version if it's latest.</param>
-    /// <returns>Returns the release if found, else <c>null</c>.</returns>
+    /// <inheritdoc />
     public async Task<GitRelease?> GetLatestReleaseAsync(string repo, bool includePrerelease = false)
     {
         this.AssertKeyFormat(repo);
@@ -87,8 +83,53 @@ internal class GitHubClient : IGitHubClient
         }
     }
 
-    /// <summary>Get update check info about a mod.</summary>
-    /// <param name="id">The mod ID.</param>
+    /// <inheritdoc />
+    public async Task<GitFile?> GetFileAsync(string repo, string path, string? gitRef = null, string? eTag = null)
+    {
+        this.AssertKeyFormat(repo);
+
+        // build URL
+        string[] pathSegments = path.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        string escapedPath = string.Join('/', pathSegments.Select(Uri.EscapeDataString));
+        string url = $"repos/{repo}/contents/{escapedPath}";
+        if (gitRef != null)
+            url += $"?ref={Uri.EscapeDataString(gitRef)}";
+
+        // fetch file
+        IResponse response;
+        try
+        {
+            response = await this.Client
+                .GetAsync(url)
+                .WithCustom(request =>
+                {
+                    // get raw file content
+                    request.Headers.Accept.Clear();
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.raw+json"));
+
+                    // only fetch if changed
+                    if (eTag != null)
+                        request.Headers.TryAddWithoutValidation("If-None-Match", eTag);
+                })
+                .AsResponse();
+        }
+        catch (ApiException ex) when (ex.Status == HttpStatusCode.NotModified)
+        {
+            return new GitFile(eTag);
+        }
+        catch (ApiException ex) when (ex.Status == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        // read content
+        return new GitFile(
+            content: await response.AsString(),
+            eTag: response.Message.Headers.ETag?.ToString()
+        );
+    }
+
+    /// <inheritdoc />
     public async Task<IModPage?> GetModData(string id)
     {
         IModPage page = new GenericModPage(this.SiteKey, id);
@@ -135,7 +176,7 @@ internal class GitHubClient : IGitHubClient
         return page.SetInfo(name: name, url: url, version: null, downloads: downloads);
     }
 
-    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    /// <inheritdoc />
     public void Dispose()
     {
         this.Client.Dispose();

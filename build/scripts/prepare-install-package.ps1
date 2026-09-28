@@ -186,6 +186,22 @@ foreach ($name in @("install on Linux.sh", "install on macOS.command", "install 
     Copy-Item "$installAssets/$name" "$packagePath"
 }
 
+# fetch 'malicious mods' blacklist
+# SMAPI fetches it from the same URL automatically, but this avoids known malicious mods being loaded on first launch.
+Write-Host "Fetching mod blacklist..."
+$blacklistUrl = "https://smapi.io/SMAPI.blacklist.json" # same as BlacklistUrl in SMAPI.config.json
+$blacklistPath = [System.IO.Path]::GetTempFileName()
+try {
+    Invoke-WebRequest -Uri "$blacklistUrl" -OutFile "$blacklistPath" -TimeoutSec 30 -MaximumRetryCount 2 -RetryIntervalSec 5
+    $blacklistData = Get-Content "$blacklistPath" -Raw | ConvertFrom-Json
+    Write-Host "   Fetched blacklist with $($blacklistData.Blacklist.Count) mod entries and $($blacklistData.LooseFileBlacklist.Count) loose file entries."
+}
+catch {
+    Write-Warning "Couldn't fetch the mod blacklist from $blacklistUrl, so it'll be omitted from the release. SMAPI will fetch the latest blacklist when launched, but it won't take effect until the next launch. Error: $($_.Exception.Message)"
+    Remove-Item "$blacklistPath"
+    $blacklistPath = $null
+}
+
 # copy per-platform files
 foreach ($folder in $folders) {
     $runtime = $runtimes[$folder]
@@ -231,7 +247,9 @@ foreach ($folder in $folders) {
         Copy-Item "$smapiBin/VdfConverter.dll" "$bundlePath/smapi-internal"
     }
 
-    Copy-Item "$smapiBin/SMAPI.blacklist.json" "$bundlePath/smapi-internal/blacklist.json"
+    if ($blacklistPath) {
+        Copy-Item "$blacklistPath" "$bundlePath/smapi-internal/blacklist.json"
+    }
     Copy-Item "$smapiBin/SMAPI.config.json" "$bundlePath/smapi-internal/config.json"
     Copy-Item "$smapiBin/SMAPI.metadata.json" "$bundlePath/smapi-internal/metadata.json"
     if ($folder -eq "linux" -or $folder -eq "macOS") {
@@ -261,6 +279,11 @@ foreach ($folder in $folders) {
             Copy-Item -Recurse "$fromPath/i18n" "$targetPath"
         }
     }
+}
+
+# remove temporary files
+if ($blacklistPath) {
+    Remove-Item "$blacklistPath"
 }
 
 # mark scripts executable

@@ -435,8 +435,16 @@ internal class SCore : IDisposable
         }
         if (modBlacklist is null)
         {
-            modBlacklist = toolkit.GetModBlacklist(Constants.ApiBlacklistPath);
-            Constants.ApiBlacklistActualPath = Constants.ApiBlacklistPath;
+            if (File.Exists(Constants.ApiBlacklistPath))
+            {
+                modBlacklist = toolkit.GetModBlacklist(Constants.ApiBlacklistPath);
+                Constants.ApiBlacklistActualPath = Constants.ApiBlacklistPath;
+            }
+            else
+            {
+                this.Monitor.Log("SMAPI's mod blacklist is missing, so it can't block known malicious mods yet. SMAPI will try to download it from the web server, which will take effect on the next launch.", LogLevel.Warn);
+                modBlacklist = new ModBlacklist();
+            }
         }
 
         // check for malicious loose files
@@ -1825,7 +1833,9 @@ internal class SCore : IDisposable
                 }
 
                 // skip if up-to-date
-                string localHash = FileUtilities.GetFileHash(Constants.ApiBlacklistActualPath!);
+                string? localHash = Constants.ApiBlacklistActualPath != null
+                    ? FileUtilities.GetFileHash(Constants.ApiBlacklistActualPath)
+                    : null; // no local blacklist
                 if (localHash == serverHash)
                 {
                     this.Monitor.Log("   Mod blacklist OK.");
@@ -1843,7 +1853,7 @@ internal class SCore : IDisposable
                 await using (FileStream stream = File.Create(Constants.ApiBlacklistFetchedPath))
                     await downloadStream.CopyToAsync(stream);
 
-                this.Monitor.Log($"   Mod blacklist updated to match the server (updated from {localHash} to {serverHash}). The changes will take effect on the next SMAPI launch.");
+                this.Monitor.Log($"   Mod blacklist updated to match the server (updated from {localHash ?? "none"} to {serverHash}). The changes will take effect on the next SMAPI launch.");
             }
             catch (Exception ex)
             {

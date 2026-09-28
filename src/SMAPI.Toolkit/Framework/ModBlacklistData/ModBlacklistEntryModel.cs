@@ -25,7 +25,7 @@ public class ModBlacklistEntryModel
     /// <param name="id"><inheritdoc cref="Id" path="/summary"/></param>
     /// <param name="entryDllHash"><inheritdoc cref="EntryDllHash" path="/summary"/></param>
     /// <param name="message"><inheritdoc cref="Message" path="/summary"/></param>
-    public ModBlacklistEntryModel(string? id, string? entryDllHash, string message)
+    public ModBlacklistEntryModel(string? id, string? entryDllHash, string? message)
     {
         this.Id = id;
         this.EntryDllHash = entryDllHash;

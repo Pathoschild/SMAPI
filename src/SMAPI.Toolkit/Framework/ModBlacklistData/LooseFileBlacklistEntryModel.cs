@@ -27,7 +27,7 @@ public class LooseFileBlacklistEntryModel
     /// <param name="extension"><inheritdoc cref="Extension" path="/summary"/></param>
     /// <param name="hash"><inheritdoc cref="Hash" path="/summary"/></param>
     /// <param name="message"><inheritdoc cref="Message" path="/summary"/></param>
-    public LooseFileBlacklistEntryModel(string? name, string? extension, string? hash, string message)
+    public LooseFileBlacklistEntryModel(string? name, string? extension, string? hash, string? message)
     {
         this.Name = name;
         this.Extension = extension;

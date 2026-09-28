@@ -33,6 +33,8 @@ appsettings.Development.json
 
 # auto-generated files
 src/SMAPI.Web/wwwroot/Content/data
+src/SMAPI.Web/wwwroot/SMAPI.blacklist.json
+src/SMAPI.Web/wwwroot/SMAPI.blacklist.json.tmp
 src/SMAPI.Web/Properties/PublishProfiles
 src/SMAPI.Web/Properties/ServiceDependencies
 

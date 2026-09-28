@@ -6,8 +6,8 @@
   * Improved performance.
   * Improved error message when a mod is blocked by Windows Smart App Control.
   * Improved translations. Thanks to To2morrow (updated Korean)!
+  * Migrated to the revamped malware blacklist.
   * Fixed rare edge case where a mod blacklist update could fail.
-  * Updated internal mod blacklist.
 
 * For mod authors:
   * Added OS metrics to the [metrics API](technical/web.md#modsmetrics).
