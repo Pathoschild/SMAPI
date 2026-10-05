@@ -173,17 +173,7 @@ internal class AssetDataForMap : AssetData<Map>, IAssetDataForMap
             // build new tile matrix
             int width = Math.Max(minWidth, layer.LayerWidth);
             int height = Math.Max(minHeight, layer.LayerHeight);
-            Tile[,] tiles = new Tile[width, height];
-            for (int x = 0; x < layer.LayerWidth; x++)
-            {
-                for (int y = 0; y < layer.LayerHeight; y++)
-                    tiles[x, y] = layer.Tiles[x, y];
-            }
-
-            // update fields
-            this.Reflection.GetField<Tile[,]>(layer, "m_tiles").SetValue(tiles);
-            this.Reflection.GetField<TileArray>(layer, "m_tileArray").SetValue(new TileArray(layer, tiles));
-            this.Reflection.GetField<Size>(layer, "m_layerSize").SetValue(new Size(width, height));
+            layer.LayerSize = new Size(width, height);
         }
 
         // resize map

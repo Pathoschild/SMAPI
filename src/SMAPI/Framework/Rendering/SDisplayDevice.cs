@@ -23,11 +23,11 @@ internal class SDisplayDevice : XnaDisplayDevice
         : base(contentManager, graphicsDevice) { }
 
     /// <inheritdoc />
-    protected override void DrawImpl(Tile tile, Location location, float layerDepth, Texture2D tileSheetTexture)
+    protected override void DrawImpl(TileSheet sheet, int tileIndex, IPropertyCollection? tileProps, Location location, float layerDepth, Texture2D tileSheetTexture)
     {
         // get rotation and effects
-        float rotation = this.GetRotation(tile);
-        SpriteEffects effects = this.GetSpriteEffects(tile);
+        float rotation = this.GetRotation(tileProps);
+        SpriteEffects effects = this.GetSpriteEffects(tileProps);
         var sourceRect = this.m_sourceRectangle;
         var origin = new Vector2(sourceRect.Width / 2f, sourceRect.Height / 2f);
         this.m_tilePosition.X += origin.X * Layer.zoom;
@@ -38,19 +38,22 @@ internal class SDisplayDevice : XnaDisplayDevice
     }
 
     /// <summary>Get the sprite effects to apply for a tile.</summary>
-    /// <param name="tile">The tile being drawn.</param>
-    private SpriteEffects GetSpriteEffects(Tile tile)
+    /// <param name="tileProps">The properties of the tile being drawn.</param>
+    private SpriteEffects GetSpriteEffects(IPropertyCollection? tileProps)
     {
-        return tile.Properties.TryGetValue("@Flip", out PropertyValue? propertyValue) && int.TryParse(propertyValue, out int value)
+        if (tileProps == null)
+            return SpriteEffects.None;
+
+        return tileProps.TryGetValue("@Flip", out PropertyValue? propertyValue) && int.TryParse(propertyValue, out int value)
             ? (SpriteEffects)value
             : SpriteEffects.None;
     }
 
     /// <summary>Get the draw rotation to apply for a tile.</summary>
-    /// <param name="tile">The tile being drawn.</param>
-    private float GetRotation(Tile tile)
+    /// <param name="tileProps">The properties of the tile being drawn.</param>
+    private float GetRotation(IPropertyCollection? tileProps)
     {
-        if (!tile.Properties.TryGetValue("@Rotation", out PropertyValue? propertyValue) || !int.TryParse(propertyValue, out int value))
+        if (tileProps == null || !tileProps.TryGetValue("@Rotation", out PropertyValue? propertyValue) || !int.TryParse(propertyValue, out int value))
             return 0;
 
         value %= 360;
