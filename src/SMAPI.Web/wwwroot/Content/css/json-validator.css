@@ -61,12 +61,12 @@
 
 .banner.success {
     border-color: green;
-    background: #CFC;
+    background: var(--ok-bg);
 }
 
 .banner.error {
     border-color: red;
-    background: #FCC;
+    background: var(--error-bg);
 }
 
 .save-metadata {
@@ -79,7 +79,7 @@
 ** Validation results
 *********/
 .table {
-    border-bottom: 1px dashed #888888;
+    border-bottom: 1px dashed var(--border-strong);
     margin-bottom: 5px;
 }
 
@@ -89,25 +89,25 @@
 }
 
 .table {
-    border: 1px solid #000000;
-    background: #ffffff;
+    border: 1px solid var(--surface-border);
+    background: var(--surface);
     border-radius: 5px;
     border-spacing: 1px;
     overflow: hidden;
     cursor: default;
-    box-shadow: 1px 1px 1px 1px #dddddd;
+    box-shadow: 1px 1px 1px 1px var(--border);
 }
 
 .table tr {
-    background: #eee;
+    background: var(--surface-alt);
 }
 
 .table tr:nth-child(even) {
-    background: #fff;
+    background: var(--surface);
 }
 
 #output div.sunlight-line-highlight-active {
-    background-color: #eeeacc;
+    background-color: var(--warn-bg);
 }
 
 .footer-tip {

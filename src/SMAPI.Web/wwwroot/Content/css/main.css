@@ -1,3 +1,82 @@
+/* theme */
+:root {
+    /* base */
+    --bg: #FFF;
+    --fg: #000;
+    --fg-muted: #888;
+    --border: #CCC;
+    --border-strong: #AAA;
+    --link: #006;
+    --link-muted: #77B;
+
+    /* surfaces */
+    --surface: #f8f9fa;
+    --surface-alt: #eaecf0;
+    --surface-border: #a2a9b1;
+    --area-bg: rgba(0, 170, 0, 0.2);
+
+    /* status (rows, banners, chips, fix-list) */
+    --ok-bg: #BFB;
+    --ok-bg-hover: #efe;
+    --ok-fg: #080;
+    --warn-bg: #FFC;
+    --warn-fg: #880;
+    --error-bg: #FBB;
+    --error-bg-hover: #fee;
+    --error-fg: #880000;
+    --notice-bg: #EEFFEE;
+    --neutral-bg: #BBB;
+
+    /* log parser */
+    --log-trace: #999;
+    --log-debug: #595959;
+    --log-tooltip-bg: #efefef;
+    --log-tooltip-border: #ccc;
+    --log-tooltip-shadow: #ccc;
+    --highlight-bg: yellow;
+    --highlight-fg: inherit;
+    --pager-bg: #eee;
+    --pager-border: #888;
+    --pager-hover: #fff;
+}
+
+[data-theme="dark"] {
+    --bg: #1D1D1D;
+    --fg: #fff;
+    --fg-muted: #999;
+    --border: #333;
+    --border-strong: #444;
+    --link: #8ab4f8;
+    --link-muted: #aab;
+
+    --surface: #232323;
+    --surface-alt: #2c2c2c;
+    --surface-border: #444;
+    --area-bg: rgba(38, 44, 38, 0.9);
+
+    --ok-bg: #1f3a1f;
+    --ok-bg-hover: #244a24;
+    --ok-fg: #4a8a4a;
+    --warn-bg: #3a3a1a;
+    --warn-fg: #aa9b00;
+    --error-bg: #3a1f1f;
+    --error-bg-hover: #4a2424;
+    --error-fg: #ff8a8a;
+    --notice-bg: #1f3a1f;
+    --neutral-bg: #2a2a2a;
+
+    --log-trace: #777;
+    --log-debug: #aaa;
+    --log-tooltip-bg: #2c2c2c;
+    --log-tooltip-border: #555;
+    --log-tooltip-shadow: #000;
+    --highlight-bg: #806000;
+    --highlight-fg: #fff;
+    --pager-bg: #2c2c2c;
+    --pager-border: #666;
+    --pager-hover: #3a3a3a;
+}
+
 /* tags */
 html {
     height: 100%;
@@ -6,6 +85,8 @@ html {
 body {
     height: 100%;
     font-family: sans-serif;
+    background: var(--bg);
+    color: var(--fg);
 }
 
 h1, h2, h3 {
@@ -16,24 +97,24 @@ h1, h2, h3 {
 
 h1 {
     font-size: 1.5em;
-    color: #888;
+    color: var(--fg-muted);
     margin-bottom: 0;
 }
 
 h2 {
     font-size: 1.5em;
-    border-bottom: 1px solid #AAA;
+    border-bottom: 1px solid var(--border-strong);
 }
 
 h3 {
     font-size: 1.2em;
-    border-bottom: 1px solid #AAA;
+    border-bottom: 1px solid var(--border-strong);
     width: 55em;
     max-width: 100%;
 }
 
 a {
-    color: #006;
+    color: var(--link);
 }
 
 /* content */
@@ -48,8 +129,8 @@ a {
     width: calc(100% - 2em);
     max-width: 60em;
     padding: 0 1em 1em 1em;
-    border-left: 1px solid #CCC;
-    background: #FFF;
+    border-left: 1px solid var(--border);
+    background: var(--bg);
     font-size: 0.9em;
 }
 
@@ -58,7 +139,7 @@ a {
 }
 
 .section {
-    border: 1px solid #CCC;
+    border: 1px solid var(--border);
     padding: 0.5em;
     margin-bottom: 1em;
 }
@@ -122,19 +203,19 @@ a {
     min-height: 75%;
     width: 12em;
     background: url("../images/sidebar-bg.svg") no-repeat top right;
-    color: #666;
+    color: var(--fg-muted);
 }
 
 #sidebar h4 {
     margin: 1.5em 0 0.2em 0;
     width: 10em;
-    border-bottom: 1px solid #CCC;
+    border-bottom: 1px solid var(--border);
     font-size: 0.8em;
     font-weight: normal;
 }
 
 #sidebar a {
-    color: #77B;
+    color: var(--link-muted);
     border: 0;
 }
 
@@ -143,11 +224,19 @@ a {
     padding: 0;
     list-style: none none;
     font-size: 0.9em;
-    color: #888;
+    color: var(--fg-muted);
 }
 
 #sidebar li {
     margin-left: 1em;
+}
+
+/* theme picker */
+html[data-theme-mode="system"] #theme-picker [data-theme-mode="system"],
+html[data-theme-mode="light"] #theme-picker [data-theme-mode="light"],
+html[data-theme-mode="dark"] #theme-picker [data-theme-mode="dark"] {
+    font-weight: bold;
+    text-decoration: none;
 }
 
 /* quick navigation */
@@ -170,11 +259,11 @@ a {
     margin: 1em;
     padding: 1em;
     font-size: 0.6em;
-    color: gray;
+    color: var(--fg-muted);
 }
 
 #footer a {
-    color: #669;
+    color: var(--link-muted);
 }
 
 /* mobile fixes */

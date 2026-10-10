@@ -39,12 +39,12 @@ table caption {
 
 .banner.success {
     border-color: green;
-    background: #CFC;
+    background: var(--ok-bg);
 }
 
 .banner.error {
     border-color: red;
-    background: #FCC;
+    background: var(--error-bg);
 }
 
 .save-metadata {
@@ -63,8 +63,8 @@ table caption {
 
 #fix-list li {
     padding: 0.5em;
-    background: #FFC;
-    border: 1px solid #880;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-fg);
     border-radius: 5px;
     list-style-type: none;
 }
@@ -74,13 +74,13 @@ table caption {
 }
 
 #fix-list li.notice {
-    background: #EEFFEE;
-    border-color: #080;
+    background: var(--notice-bg);
+    border-color: var(--ok-fg);
 }
 
 #fix-list li.important {
-    background: #FCC;
-    border-color: #800;
+    background: var(--error-bg);
+    border-color: var(--error-fg);
 }
 
 #fix-list li::before {
@@ -92,7 +92,7 @@ table caption {
 ** Log metadata & filters
 *********/
 .table, #filters {
-    border-bottom: 1px dashed #888888;
+    border-bottom: 1px dashed var(--border-strong);
     margin-bottom: 5px;
 }
 
@@ -102,13 +102,13 @@ table caption {
 }
 
 .table {
-    border: 1px solid #000000;
-    background: #ffffff;
+    border: 1px solid var(--surface-border);
+    background: var(--surface);
     border-radius: 5px;
     border-spacing: 1px;
     overflow: hidden;
     cursor: default;
-    box-shadow: 1px 1px 1px 1px #dddddd;
+    box-shadow: 1px 1px 1px 1px var(--border);
 }
 
 .mod-entry {
@@ -144,7 +144,7 @@ table caption {
 }
 
 .table tr {
-    background: #eee;
+    background: var(--surface-alt);
 }
 
 #mods span.notice {
@@ -157,12 +157,12 @@ table caption {
 
 #mods span.notice.btn {
     cursor: pointer;
-    border: 1px solid #000;
+    border: 1px solid var(--surface-border);
     border-radius: 5px;
     position: relative;
     top: -1px;
     padding: 0 2px;
-    background: #eee;
+    background: var(--surface-alt);
 }
 
 #mods span.notice.txt {
@@ -190,7 +190,7 @@ table caption {
 }
 
 .table tr:nth-child(even) {
-    background: #fff;
+    background: var(--surface);
 }
 
 #filters {
@@ -219,7 +219,7 @@ table caption {
 }
 
 #filters .filter-error {
-    color: #880000;
+    color: var(--error-fg);
 }
 
 #filters .filter-error,
@@ -232,7 +232,7 @@ table caption {
     position: fixed;
     top: 0;
     left: 0em;
-    background: #fff;
+    background: var(--bg);
     margin: 0;
     padding: 0.5em;
     width: calc(100% - 1em);
@@ -257,14 +257,13 @@ table caption {
 #filters span {
     padding: 3px 1em;
     display: inline-block;
-    border: 1px solid #000000;
+    border: 1px solid var(--error-fg);
     border-radius: 3px;
     font-family: monospace;
     cursor: pointer;
     font-weight: bold;
-    color: #000;
-    border-color: #880000;
-    background-color: #fcc;
+    color: var(--fg);
+    background-color: var(--error-bg);
 
     user-select: none;
 }
@@ -279,16 +278,16 @@ table caption {
 }
 
 #filters span:hover {
-    background-color: #fee;
+    background-color: var(--error-bg-hover);
 }
 
 #filters span.active {
-    background: #cfc;
-    border-color: #008800;
+    background: var(--ok-bg);
+    border-color: var(--ok-fg);
 }
 
 #filters span.active:hover {
-    background: #efe;
+    background: var(--ok-bg-hover);
 }
 
 #filters .pager {
@@ -306,8 +305,8 @@ table caption {
 }
 
 #filters .pager span {
-    background-color: #eee;
-    border-color: #888;
+    background-color: var(--pager-bg);
+    border-color: var(--pager-border);
 }
 
 #filters .pager span.active {
@@ -323,7 +322,7 @@ table caption {
 }
 
 #filters .pager span:not(.disabled):hover {
-    background-color: #fff;
+    background-color: var(--pager-hover);
 }
 
 
@@ -336,15 +335,15 @@ table caption {
 }
 
 #log .trace {
-    color: #999;
+    color: var(--log-trace);
 }
 
 #log .debug {
-    color: #595959;
+    color: var(--log-debug);
 }
 
 #log .info {
-    color: #000;
+    color: var(--fg);
 }
 
 #log .alert {
@@ -370,7 +369,7 @@ table caption {
 }
 
 #log .section-toggle-message {
-    color: blue;
+    color: var(--link);
 }
 
 #log .log-message-text {
@@ -378,7 +377,8 @@ table caption {
 }
 
 #log .log-message-text strong {
-    background-color: yellow;
+    background-color: var(--highlight-bg);
+    color: var(--highlight-fg);
     font-weight: normal;
 }
 
@@ -387,14 +387,14 @@ table caption {
 }
 
 #log tr {
-    background: #fff;
+    background: var(--bg);
 }
 
 #log td {
     padding: 0 1px;
     background: inherit;
-    border-bottom: 1px dotted #ccc;
-    border-top: 2px solid #fff;
+    border-bottom: 1px dotted var(--border);
+    border-top: 2px solid var(--bg);
     vertical-align: top;
 }
 
@@ -415,15 +415,15 @@ table caption {
     display: block;
     position: absolute;
     border-radius: 4px;
-    box-shadow: 1px 1px 2px #ccc;
+    box-shadow: 1px 1px 2px var(--log-tooltip-shadow);
     background: inherit;
-    border: 1px solid #ccc;
-    background: #efefef;
+    border: 1px solid var(--log-tooltip-border);
+    background: var(--log-tooltip-bg);
     padding: 1px 1px 0 1px;
     font-size: 10pt;
     top: -2px;
     left: 2px;
-    color: #000;
+    color: var(--fg);
 }
 
 #log td:last-child {
@@ -445,17 +445,24 @@ table caption {
 
 #os-instructions [role="tablist"] {
     border: 0;
+    border-bottom-color: var(--border);
 }
 
 #os-instructions [role="tab"] {
     display: block;
     border: 0;
+    border-top-color: var(--border);
     position: relative;
 }
 
 #os-instructions [role="tab"][aria-selected="true"] {
     font-weight: bold;
     border-radius: 0 10px 10px 0;
+    background-color: var(--surface-alt);
+}
+
+#os-instructions [role="tab"]:hover:not([aria-selected="true"]) {
+    background-color: var(--surface);
 }
 
 [role="tab"][aria-selected="true"]::after {
