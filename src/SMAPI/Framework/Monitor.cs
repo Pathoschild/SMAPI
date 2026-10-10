@@ -16,17 +16,14 @@ internal class Monitor : IMonitor
     /// <summary>The name of the module which logs messages using this instance.</summary>
     private readonly string Source;
 
-    /// <summary>Handles writing text to the console.</summary>
-    private readonly IConsoleWriter ConsoleWriter;
-
-    /// <summary>The log file to which to write messages.</summary>
-    private readonly LogFileManager LogFile;
-
     /// <summary>The maximum length of the <see cref="LogLevel"/> values.</summary>
     private static readonly int MaxLevelLength = Enum.GetValues<LogLevel>().Max(level => level.ToString().Length);
 
     /// <summary>The cached representation for each level when added to a log header.</summary>
     private static readonly Dictionary<ConsoleLogLevel, string> LogStrings = Enum.GetValues<ConsoleLogLevel>().ToDictionary(level => level, level => level.ToString().ToUpperInvariant().PadRight(Monitor.MaxLevelLength));
+
+    /// <summary>The async log queue and worker thread for writing logs.</summary>
+    private readonly AsyncLogQueue LogQueue;
 
     /// <summary>A cache of messages that should only be logged once.</summary>
     private readonly HashSet<LogOnceCacheKey> LogOnceCache = [];
@@ -76,10 +73,9 @@ internal class Monitor : IMonitor
     /// <summary>Construct an instance.</summary>
     /// <param name="modId">The mod ID, if applicable.</param>
     /// <param name="source">The name of the module which logs messages using this instance.</param>
-    /// <param name="logFile">The log file to which to write messages.</param>
-    /// <param name="consoleWriter">Handles writing text to the console.</param>
+    /// <param name="logQueue">The async log queue responsible for writing messages.</param>
     /// <param name="getScreenIdForLog">Get the screen ID that should be logged to distinguish between players in split-screen mode, if any.</param>
-    public Monitor(string modId, string source, LogFileManager logFile, IConsoleWriter consoleWriter, Func<int?> getScreenIdForLog)
+    public Monitor(string modId, string source, AsyncLogQueue logQueue, Func<int?> getScreenIdForLog)
     {
         // validate
         if (string.IsNullOrWhiteSpace(source))
@@ -88,8 +84,7 @@ internal class Monitor : IMonitor
         // initialize
         this.ModId = modId;
         this.Source = source;
-        this.LogFile = logFile ?? throw new ArgumentNullException(nameof(logFile), "The log file manager cannot be null.");
-        this.ConsoleWriter = consoleWriter ?? throw new ArgumentNullException(nameof(consoleWriter), "The console writer cannot be null.");
+        this.LogQueue = logQueue ?? throw new ArgumentNullException(nameof(logQueue), "The log queue cannot be null.");
         this.GetScreenIdForLog = getScreenIdForLog;
     }
 
@@ -123,9 +118,7 @@ internal class Monitor : IMonitor
     /// <summary>Write a newline to the console and log file.</summary>
     internal void Newline()
     {
-        if (this.WriteToConsole)
-            Console.WriteLine();
-        this.LogFile.WriteLine("");
+        this.LogQueue.EnqueueNewline(this.WriteToConsole);
     }
 
     /// <summary>Log a fatal error message.</summary>
@@ -141,7 +134,7 @@ internal class Monitor : IMonitor
     {
         // user input already appears in the console, so just need to write to file
         string prefix = this.GenerateMessagePrefix(this.Source, (ConsoleLogLevel)LogLevel.Info);
-        this.LogFile.WriteLine($"{prefix} $>{input}");
+        this.LogQueue.Enqueue(string.Empty, $"{prefix} $>{input}", (ConsoleLogLevel)LogLevel.Info, false);
     }
 
 
@@ -160,11 +153,9 @@ internal class Monitor : IMonitor
         string consoleMessage = this.ShowFullStampInConsole ? fullMessage : $"[{source}] {message}";
 
         // write to console
-        if (this.WriteToConsole && (this.ShowTraceInConsole || level != ConsoleLogLevel.Trace || Monitor.ForceVerboseLoggingForAll || Monitor.ForceVerboseLogging.Contains(this.ModId)))
-            this.ConsoleWriter.WriteLine(consoleMessage, level);
+        bool writeToConsole = this.WriteToConsole && (this.ShowTraceInConsole || level != ConsoleLogLevel.Trace || Monitor.ForceVerboseLoggingForAll || Monitor.ForceVerboseLogging.Contains(this.ModId));
 
-        // write to log file
-        this.LogFile.WriteLine(fullMessage);
+        this.LogQueue.Enqueue(consoleMessage, fullMessage, level, writeToConsole);
     }
 
     /// <summary>Generate a message prefix for the current time.</summary>
