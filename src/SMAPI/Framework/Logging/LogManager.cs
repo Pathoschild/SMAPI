@@ -124,12 +124,87 @@ internal class LogManager : IDisposable
         // start handling command line input
         Thread inputThread = new(() =>
         {
+            List<string> history = [];
+            StringBuilder currentInput = new();
+            int historyIndex = -1;
+
             while (true)
             {
+                // Windows handles arrow keys natively
+#if SMAPI_FOR_WINDOWS
                 // get input
                 string? input = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
+                // MacOS/Linux: read character by character to handle arrow keys
+#else
+                    string? input = null;
+                    currentInput.Clear();
+                    historyIndex = -1;
+
+                    while(true)
+                    {
+                        ConsoleKeyInfo key = Console.ReadKey(intercept: true);
+
+                        // handle escape sequences (arrow keys)
+                        if (key.Key == ConsoleKey.UpArrow)
+                        {
+                            if(history.Count == 0) continue;
+                            historyIndex = Math.Min(historyIndex + 1, history.Count - 1);
+                            ClearCurrentLine(currentInput.Length);
+                            currentInput.Clear();
+                            currentInput.Append(history[historyIndex]);
+                            Console.Write(currentInput);
+                            continue;
+                        }
+
+                        if (key.Key == ConsoleKey.DownArrow)
+                        {
+                            ClearCurrentLine(currentInput.Length);
+                            currentInput.Clear();
+                            if (historyIndex > 0)
+                            {
+                                historyIndex--;
+                                currentInput.Append(history[historyIndex]);
+                            }
+                            else 
+                                historyIndex = -1;
+                            Console.Write(currentInput);
+                            continue;
+                        }
+
+                        // submit on Enter
+                        if (key.Key == ConsoleKey.Enter)
+                        {
+                            Console.WriteLine();
+                            input = currentInput.ToString();
+                            break;
+                        }
+
+                        // handle backspace
+                        if (key.Key == ConsoleKey.Backspace && currentInput.Length > 0)
+                        {
+                            currentInput.Remove(currentInput.Length - 1, 1);
+                            Console.Write("\b \b");
+                            continue;
+                        }
+
+                        // normal character
+                        if (!char.IsControl(key.KeyChar))
+                        {
+                            currentInput.Append(key.KeyChar);
+                            Console.Write(key.KeyChar);
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(input))
+                        continue;
+#endif
+
+                // track history
+                history.Insert(0, input);
+                if (history.Count > 50)
+                    history.RemoveAt(history.Count - 1);
 
                 // handle command
                 this.Monitor.LogUserInput(input);
@@ -647,4 +722,11 @@ internal class LogManager : IDisposable
     {
         this.LogModWarningGroup(mods, mod => mod.HasWarnings(warning), level, heading, blurb);
     }
+
+    /// <summary>Clear the current console input line.</summary>
+    /// <param name="length">The number of characters to clear.</param>
+    private static void ClearCurrentLine(int length)
+    {
+        Console.Write(new string('\b', length) + new string(' ', length) + new string('\b', length));
+    } 
 }
