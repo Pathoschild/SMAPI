@@ -77,3 +77,5 @@ Turkish     | ↻ [partly translated](../src/SMAPI/i18n/tr.json)
 [Polish]: https://www.nexusmods.com/stardewvalley/mods/3616
 [Thai]: https://www.nexusmods.com/stardewvalley/mods/7052
 [Ukrainian]: https://www.nexusmods.com/stardewvalley/mods/8427
+
+<!-- temp comment to try and get github actions to trigger a new build -->
