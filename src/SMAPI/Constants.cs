@@ -92,7 +92,7 @@ public static class Constants
     public static string LogDir { get; } = Path.Combine(Constants.DataPath, "ErrorLogs");
 
     /// <summary>The directory path where all saves are stored.</summary>
-    public static string SavesPath { get; } = Path.Combine(Constants.DataPath, "Saves");
+    public static string SavesPath { get => StardewValley.Program.GetSavesFolder(); }
 
     /// <summary>The name of the current save folder (if save info is available, regardless of whether the save file exists yet).</summary>
     public static string? SaveFolderName => Constants.GetSaveFolderName();
