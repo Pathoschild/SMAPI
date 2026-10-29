@@ -35,8 +35,30 @@ foreach ($arg in $args) {
 ##########
 ## Find the game folder
 ##########
+$customPaths = @()
+
+$targetFiles = @(
+    "$PSScriptRoot/../../stardewvalley.targets",
+    "$PSScriptRoot/../../src/stardewvalley.targets"
+)
+
+foreach ($file in $targetFiles) {
+    if (Test-Path $file) {
+        [xml]$xml = Get-Content $file
+        if ($xml.Project.PropertyGroup.GamePath) {
+            $customPaths += $xml.Project.PropertyGroup.GamePath
+        }
+        if ($xml.Project.PropertyGroup.StardewPath) {
+            $customPaths += $xml.Project.PropertyGroup.StardewPath
+        }
+    }
+}
+
+if ($env:StardewPath) { $customPaths += $env:StardewPath }
+if ($env:GamePath) { $customPaths += $env:GamePath }
+
 if ($IsWindows) {
-    $possibleGamePaths=(
+    $possibleGamePaths = $customPaths + @(
         # GOG
         "C:\Program Files\GalaxyClient\Games\Stardew Valley",
         "C:\Program Files\GOG Galaxy\Games\Stardew Valley",
@@ -51,7 +73,7 @@ if ($IsWindows) {
     )
 }
 else {
-    $possibleGamePaths=(
+    $possibleGamePaths = $customPaths + @(
         # override
         "$HOME/StardewValley",
 
